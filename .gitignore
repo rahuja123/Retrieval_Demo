@@ -1,0 +1,8 @@
+
+__pycache__/
+
+*database.db
+yolo3/yolo3.weights
+reid/weights/*
+static/*
+*.DS_Store

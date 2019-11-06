@@ -1,0 +1,6 @@
+fire
+opencv-python
+sqlalchemy
+dash
+dash-daq
+flask
