@@ -65,7 +65,7 @@ class ipcamCapture:
 
     def queryframe(self):
         while (not self.isstop):
-            self.status, self.Frame = self.capture.read()        
+            self.status, self.Frame = self.capture.read()
         self.capture.release()
 
 ## Load Video ["S1-B4b-L_5","S21-B4-L-13","S21-B4-L-15","S21-B4-R-10"]
@@ -82,10 +82,10 @@ class Camera_Process(object):
             image_path = os.path.join('static',cam_name)
             if not os.path.exists(image_path):
                 os.makedirs(image_path)
-    
+
         vdo = cv2.VideoCapture()
         vdo.set(cv2.CAP_PROP_FPS, 10)
-        
+
         if rtsp:
             vdo.open(self.camera[cam_list[0]])
         else:
@@ -93,15 +93,15 @@ class Camera_Process(object):
         self.im_width = int(vdo.get(cv2.CAP_PROP_FRAME_WIDTH))
         self.im_height = int(vdo.get(cv2.CAP_PROP_FRAME_HEIGHT))
         self.area = 0, 0, self.im_width, self.im_height
-        
+
         self.cam_list=cam_list
         self.rtsp=rtsp
-        
+
         yolov3_weights_downloader('./yolo3/')
         self.yolo3 = YOLO3('yolo3/yolo_v3.cfg','yolo3/yolov3.weights','yolo3/coco.names', yolo_device=reid_device, is_xywh=True)
-        
+
         self.extractor = Extractor(reid_model,reid_weight,reid_device=reid_device)
-        
+
     def start(self):
         print('started!')
         self.isstop = False
@@ -110,24 +110,24 @@ class Camera_Process(object):
     def stop(self):
         self.isstop = True
         print('ipcam stopped!')
-    
+
     def camera_run(self):
-        
+
         ########################
-        
+
         if self.rtsp:
             ipcam_1 = ipcamCapture(self.camera[self.cam_list[0]])
             ipcam_1.start()
             time.sleep(1)
-            
+
             ipcam_2 = ipcamCapture(self.camera[self.cam_list[1]])
             ipcam_2.start()
             time.sleep(1)
-            
+
             ipcam_3 = ipcamCapture(self.camera[self.cam_list[2]])
             ipcam_3.start()
             time.sleep(1)
-            
+
             ipcam_4 = ipcamCapture(self.camera[self.cam_list[3]])
             ipcam_4.start()
             time.sleep(1)
@@ -135,15 +135,15 @@ class Camera_Process(object):
             ipcam_1 = ipcamCapture('./media/videos/'+self.cam_list[0]+'.mp4')
             ipcam_1.start()
             time.sleep(1)
-            
+
             ipcam_2 = ipcamCapture('./media/videos/'+self.cam_list[1]+'.mp4')
             ipcam_2.start()
             time.sleep(1)
-            
+
             ipcam_3 = ipcamCapture('./media/videos/'+self.cam_list[2]+'.mp4')
             ipcam_3.start()
             time.sleep(1)
-            
+
             ipcam_4 = ipcamCapture('./media/videos/'+self.cam_list[3]+'.mp4')
             ipcam_4.start()
             time.sleep(1)
@@ -155,10 +155,10 @@ class Camera_Process(object):
             frame_2 = ipcam_2.getframe()
             frame_3 = ipcam_3.getframe()
             frame_4 = ipcam_4.getframe()
-            
+
             for cam_i in range(4):
                 if cam_i == 0:
-                    frame = frame_1          
+                    frame = frame_1
                 elif cam_i == 1:
                     frame = frame_2
                 elif cam_i == 2:
@@ -192,6 +192,3 @@ class Camera_Process(object):
 
     def stop(self):
         print('ipcam stopped!')
-        
-if __name__=="__main__":
-    fire.Fire(camera_run)
