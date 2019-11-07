@@ -123,24 +123,70 @@ def update_weight_dropdown(name):
 def update_weight_dropdown(name):
     return [{'label': i, 'value': i} for i in models_dict[name]]
 
-for i in range(4):
-    @app.callback(
-        Output('camera_run_result_{}'.format(i+1), 'children'),
-        [Input('camera_run_{}'.format(i+1), 'n_clicks')],
-        [State('network_dropdown','value'),
-         State('network_weight_dropdown', 'value'),
-         State('camera_name_dropdown_{}'.format(i+1), 'value'),
-         State('devices_dropdown_{}'.format(i+1),'value')]
-    )
-    def run_camera_run(n_clicks, reid_model, reid_weight,cam_name, reid_device):
+
+@app.callback(
+    Output('camera_run_result_run', 'children'),
+    [Input('run_button', 'n_clicks')],
+    [State('network_dropdown','value'),
+     State('network_weight_dropdown', 'value'),
+     State('camera_name_dropdown_1', 'value'),
+     State('devices_dropdown_1','value')]
+)
+def run_camera_run(n_clicks, reid_model, reid_weight,cam_name, reid_device):
 
         if n_clicks is None:
             raise PreventUpdate
         else:
-            from camera.camera_run import camera_run
-            camera_run(cam_name=cam_name, rtsp=False, skip_frame=10,reid_model=reid_model,reid_weight=reid_weight, reid_device=reid_device)
-            print("Done Donaaa Done")
+            if 'ALL' in cam_name:
+                cam_name= global_camera_names
+            
+
+            """
+            Make your changes here, Shan!
+            """
+            # from camera.camera_run import camera_run
+            # camera_run(cam_name=cam_name, rtsp=False, skip_frame=10,reid_model=reid_model,reid_weight=reid_weight, reid_device=reid_device)
+            # print("Done Donaaa Done")
             return [html.P("Done!")]
+
+
+@app.callback(
+    Output('camera_run_result_stop', 'children'),
+    [Input('stop_button', 'n_clicks')],
+)
+def stop_camera_run(n_clicks):
+
+        if n_clicks is None:
+            raise PreventUpdate
+        else:
+
+            """
+            Make your changes here, Shan!
+            """
+            # from camera.camera_run import camera_run
+            # camera_run(cam_name=cam_name, rtsp=False, skip_frame=10,reid_model=reid_model,reid_weight=reid_weight, reid_device=reid_device)
+            # print("Done Donaaa Done")
+            return [html.P("Stopped!")]
+
+
+# for i in range(4):
+#     @app.callback(
+#         Output('camera_run_result_{}'.format(i+1), 'children'),
+#         [Input('camera_run_{}'.format(i+1), 'n_clicks')],
+#         [State('network_dropdown','value'),
+#          State('network_weight_dropdown', 'value'),
+#          State('camera_name_dropdown_{}'.format(i+1), 'value'),
+#          State('devices_dropdown_{}'.format(i+1),'value')]
+#     )
+#     def run_camera_run(n_clicks, reid_model, reid_weight,cam_name, reid_device):
+#
+#         if n_clicks is None:
+#             raise PreventUpdate
+#         else:
+#             from camera.camera_run import camera_run
+#             camera_run(cam_name=cam_name, rtsp=False, skip_frame=10,reid_model=reid_model,reid_weight=reid_weight, reid_device=reid_device)
+#             print("Done Donaaa Done")
+#             return [html.P("Done!")]
 
 
 def parse_contents(contents):
@@ -359,4 +405,4 @@ def update_experiments(hoverData):
     'max-height':'750px'}), style={'textAlign':'center'})
 
 if __name__ == '__main__':
-    app.run_server(debug=True, port=8050)
+    app.run_server(debug=True, port=8051)

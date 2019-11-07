@@ -107,6 +107,7 @@ def retrieval_run_layout(global_camera_names,models_dict):
             ]
         ),
 
+        html.Br(),
         html.Div(
             className="row",
             style={'textAlign':'center'},
