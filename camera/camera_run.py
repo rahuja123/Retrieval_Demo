@@ -21,43 +21,42 @@ from sqlalchemy.ext.declarative import declarative_base
 import warnings
 warnings.filterwarnings("ignore")
 
-### Create Dataset ##
-engine = create_engine('sqlite:///database.db')
-Session = sessionmaker(bind=engine)
-session = Session()
-
-Base = declarative_base()
-
-class Feature(Base):
-    __tablename__ = 'features'
-    id = Column(Integer, Sequence('id'), primary_key=True)
-    cam_name = Column(String(50))
-    track_num = Column(Integer)
-    feature = Column(String(3000000))
-    bb_coord = Column(String(50))
-    time = Column(DateTime, nullable=False, default=datetime.now())
-    image_name = Column(String(100))
-
-    def __repr__(self):
-        return "< id='%s', cam_name='%s', track_num='%s', feature='%s', bb_coord='%s')>" % (self.id, self.track_num, self.cam_name, self.feature,self.bb_coord)
-
-Base.metadata.create_all(engine)
-########################
-reader = csv.reader(open('camera/camera.csv', 'r'))
-camera = {}
-for row in reader:
-    k, v = row
-    camera[k] = v
-
-## Load Yolo
-yolov3_weights_downloader('./yolo3/')
-yolo_network = 'yolo3/yolo_v3.cfg'
-yolo_classes = 'yolo3/coco.names'
-yolo_weight = 'yolo3/yolov3.weights'
-
-
 ## Load Video
 def camera_run(cam_name="S21-B4-L-13", rtsp=False, skip_frame=10, reid_model='ResNet50', reid_weight='ResNet50_Market.pth', reid_device='cpu'):
+    ### Create Dataset ##
+    engine = create_engine('sqlite:///database.db')
+    Session = sessionmaker(bind=engine)
+    session = Session()
+
+    Base = declarative_base()
+
+    class Feature(Base):
+        __tablename__ = 'features'
+        id = Column(Integer, Sequence('id'), primary_key=True)
+        cam_name = Column(String(50))
+        track_num = Column(Integer)
+        feature = Column(String(3000000))
+        bb_coord = Column(String(50))
+        time = Column(DateTime, nullable=False, default=datetime.now())
+        image_name = Column(String(100))
+
+        def __repr__(self):
+            return "< id='%s', cam_name='%s', track_num='%s', feature='%s', bb_coord='%s')>" % (self.id, self.track_num, self.cam_name, self.feature,self.bb_coord)
+
+    Base.metadata.create_all(engine)
+    ########################
+    reader = csv.reader(open('camera/camera.csv', 'r'))
+    camera = {}
+    for row in reader:
+        k, v = row
+        camera[k] = v
+
+    ## Load Yolo
+    yolov3_weights_downloader('./yolo3/')
+    yolo_network = 'yolo3/yolo_v3.cfg'
+    yolo_classes = 'yolo3/coco.names'
+    yolo_weight = 'yolo3/yolov3.weights'
+
     yolo3 = YOLO3(yolo_network,yolo_weight,yolo_classes, yolo_device=reid_device, is_xywh=True)
     extractor = Extractor(reid_model,reid_weight,reid_device=reid_device)
     image_path = os.path.join('static',cam_name)
@@ -87,7 +86,7 @@ def camera_run(cam_name="S21-B4-L-13", rtsp=False, skip_frame=10, reid_model='Re
             if bbox_xywh is not None:
                 for i,box in enumerate(bbox_xywh):
                     x,y,w,h = box
-                    if h/w > 2:
+                    if h/w > 2 and w > 30:
                         x1 = max(int(x-w/2),0)
                         x2 = min(int(x+w/2),im_width-1)
                         y1 = max(int(y-h/2),0)
