@@ -189,9 +189,6 @@ class Camera_Process(object):
                                 record = Feature(cam_name=cam_name, track_num=i, feature=embed,bb_coord=str(box),current_time=current_time,image_name=image_name)
                                 session.add(record)
                         session.commit()
-
-    def stop(self):
-        print('ipcam stopped!')
         
 if __name__=="__main__":
     fire.Fire(camera_run)
