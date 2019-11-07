@@ -26,7 +26,7 @@ server = app.server
 
 global_camera_names= ["S21-B4-L-13" , "S21-B4-L-15", "S21-B4-R-10"]
 cams_map_testing= ["S2.1-B4-L-B", "S2.1-B4-L-T", "S2.1-B4-R-B"]
-models_dict={'ResNet50':['ResNet50_Market.pth', 'ResNet101_Market.pth'], 'Net':['Net_Market.t7'], 'SE_ResNet':['SE_ResNet50_Market.pth', 'SE_ResNet101_Market.pth']}
+models_dict={'ResNet50':['ResNet50_Market.pth'], 'Net':['Net_Market.t7'], 'SE_ResNet50':['SE_ResNet50_Market.pth']}
 image_value_list=[]
 output_result=[]
 camera_dict= dict.fromkeys(global_camera_names)

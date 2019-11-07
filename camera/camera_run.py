@@ -55,13 +55,9 @@ yolo_network = 'yolo3/yolo_v3.cfg'
 yolo_classes = 'yolo3/coco.names'
 yolo_weight = 'yolo3/yolov3.weights'
 
-## Load ReID
-reid_model='Net'
-reid_weight = 'Net_Market.t7'
-
 
 ## Load Video
-def camera_run(cam_name="S1-B3b-R-BR", rtsp=True, skip_frame=10, reid_model='ResNet50', reid_weight='ResNet50_Market.pth', reid_device='cpu'):
+def camera_run(cam_name="S21-B4-L-13", rtsp=False, skip_frame=10, reid_model='ResNet50', reid_weight='ResNet50_Market.pth', reid_device='cpu'):
     yolo3 = YOLO3(yolo_network,yolo_weight,yolo_classes, yolo_device=reid_device, is_xywh=True)
     extractor = Extractor(reid_model,reid_weight,reid_device=reid_device)
     image_path = os.path.join('static',cam_name)
@@ -91,19 +87,20 @@ def camera_run(cam_name="S1-B3b-R-BR", rtsp=True, skip_frame=10, reid_model='Res
             if bbox_xywh is not None:
                 for i,box in enumerate(bbox_xywh):
                     x,y,w,h = box
-                    x1 = max(int(x-w/2),0)
-                    x2 = min(int(x+w/2),im_width-1)
-                    y1 = max(int(y-h/2),0)
-                    y2 = min(int(y+h/2),im_height-1)
-                    cropped = frame[y1:y2,x1:x2]
-                    print(x1,y1,x2,y2)
-                    image_name = str(time.strftime("%Y-%m-%d-%H-%M-%S-%f"))+'_'+str(i)+'.jpg'
-                    cv2.imwrite(os.path.join(image_path,image_name),cropped)
-                    pil_image=cv2.cvtColor(cropped, cv2.COLOR_BGR2RGB)
-                    feature = extractor(pil_image)[0]
-                    embed = str(feature.tostring())
-                    record = Feature(cam_name=cam_name, track_num=i, feature=embed,bb_coord=str(box),time=time,image_name=image_name)
-                    session.add(record)
-            session.commit()
+                    if h/w > 2:
+                        x1 = max(int(x-w/2),0)
+                        x2 = min(int(x+w/2),im_width-1)
+                        y1 = max(int(y-h/2),0)
+                        y2 = min(int(y+h/2),im_height-1)
+                        cropped = frame[y1:y2,x1:x2]
+                        print(x1,y1,x2,y2)
+                        image_name = str(time.strftime("%Y-%m-%d-%H-%M-%S-%f"))+'_'+str(i)+'.jpg'
+                        cv2.imwrite(os.path.join(image_path,image_name),cropped)
+                        pil_image=cv2.cvtColor(cropped, cv2.COLOR_BGR2RGB)
+                        feature = extractor(pil_image)[0]
+                        embed = str(feature.tostring())
+                        record = Feature(cam_name=cam_name, track_num=i, feature=embed,bb_coord=str(box),time=time,image_name=image_name)
+                        session.add(record)
+        session.commit()
 if __name__=="__main__":
     fire.Fire(camera_run)
