@@ -118,8 +118,8 @@ class Camera_Process(object):
 
         if self.rtsp:
             for i in range(self.num_cam):
-                globals()['ipcam_'+str(i+1)] = ipcamCapture(self.camera[self.cam_list[0]])
-                globals()['ipcam_'+str(i+1)].start()
+                globals()['ipcam_'+str(i)] = ipcamCapture(self.camera[self.cam_list[i]])
+                globals()['ipcam_'+str(i)].start()
                 time.sleep(1)
         else:
             ipcam_1 = ipcamCapture('./media/videos/'+self.cam_list[0]+'.mp4')
@@ -142,10 +142,10 @@ class Camera_Process(object):
 
         while not self.isstop:
             for i in range(self.num_cam):
-                globals()['frame_'+str(i+1)] = globals()['ipcam_'+str(i+1)].getframe()
+                globals()['frame_'+str(i)] = globals()['ipcam_'+str(i)].getframe()
 
             for cam_i in range(self.num_cam):
-                frame = globals()['frame_'+str(cam_i+1)]
+                frame = globals()['frame_'+str(cam_i)]
                 if frame is not None:
                     im = frame[ymin:ymax, xmin:xmax, (2,1,0)]
                     bbox_xywh, cls_conf, cls_ids = self.yolo3(im)
