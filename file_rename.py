@@ -18,10 +18,6 @@ def random_date(start):
 startDate = datetime.time(13,00,20)
 
 
-
-
-
-
 for file in files:
     # x= random_date(startDate)
     # print(type(x))
