@@ -13,7 +13,7 @@ from plotting.floormap_cross_numbers import floormap_cross_numbers
 import base64
 import os
 from layout.feature_extractor_layout_2 import feature_extractor_layout
-from layout.retrieval_run_layout_2 import retrieval_run_layout
+from layout.retrieval_run_layout import retrieval_run_layout
 
 #path to save the image that you upload on the server.
 UPLOAD_DIRECTORY = "static/query"
@@ -244,7 +244,6 @@ def parse_gallery(folder_name, camera_name, frame_rate,reid_model, reid_weight, 
     images_timestamp=[]
     for i in range(int(MIN_NUM)):
         image_src= image_list[i]
-        print(image_src)
         image_id= "{}".format(camera_name)+ " "+ "Rank {}".format(i+1)
         time_stamp= image_src.split('/')[-1].split('.')[0].split('_')[0]
         time_stamp= datetime.strptime(time_stamp, '%Y-%m-%d-%H-%M-%S-%f')
@@ -295,7 +294,7 @@ def update_output2(n_clicks, camera_dropdown_values, frame_rate, reid_model, rei
 
         for camera in camera_dropdown_values:
             print("came here for 5 times")
-            output_array.append(parse_gallery(folder_name, camera, frame_rate, reid_model, reid_weight, reid_device))
+            output_array.append(parse_gallery(folder_name, camera, int(frame_rate), reid_model, reid_weight, reid_device))
             path = path + "<-- "+ str(camera)+" "
 
         hidden_divs=[]

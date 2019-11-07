@@ -48,7 +48,7 @@ def camera_run(cam_name="S1-B3b-R-BR", rtsp=True, skip_frame=10, reid_model='Res
         track_num = Column(Integer)
         feature = Column(String(3000000))
         bb_coord = Column(String(50))
-        time = Column(DateTime, nullable=False, default=datetime.now())
+        current_time = Column(DateTime, nullable=False, default=datetime.now())
         image_name = Column(String(100))
 
         def __repr__(self):
@@ -92,7 +92,7 @@ def camera_run(cam_name="S1-B3b-R-BR", rtsp=True, skip_frame=10, reid_model='Res
             if not ret: break
             im = frame[ymin:ymax, xmin:xmax, (2,1,0)]
             bbox_xywh, cls_conf, cls_ids = yolo3(im)
-            time = datetime.now()
+            current_time = datetime.now()
             if bbox_xywh is not None:
                 for i,box in enumerate(bbox_xywh):
                     x,y,w,h = box
@@ -107,7 +107,7 @@ def camera_run(cam_name="S1-B3b-R-BR", rtsp=True, skip_frame=10, reid_model='Res
                     pil_image=cv2.cvtColor(cropped, cv2.COLOR_BGR2RGB)
                     feature = extractor(pil_image)[0]
                     embed = str(feature.tostring())
-                    record = Feature(cam_name=cam_name, track_num=i, feature=embed,bb_coord=str(box),time=time,image_name=image_name)
+                    record = Feature(cam_name=cam_name, track_num=i, feature=embed,bb_coord=str(box),current_time=current_time,image_name=image_name)
                     session.add(record)
             # print("commit time")
             session.commit()

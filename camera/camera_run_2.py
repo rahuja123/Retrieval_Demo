@@ -72,6 +72,7 @@ class ipcamCapture:
 class Camera_Process(object):
     def __init__(self, cam_list=["S1-B4b-L-B","S21-B4-T","S1-B3b-L-TL","S2-B4b-L-B"], rtsp=True, reid_model='ResNet50', reid_weight='ResNet50_Market.pth', reid_device='cpu'):
         self.isstop = False
+        self.num_cam = len(cam_list)
         reader = csv.reader(open('camera/camera.csv', 'r'))
         self.camera = {}
         for row in reader:
@@ -116,21 +117,10 @@ class Camera_Process(object):
         ########################
 
         if self.rtsp:
-            ipcam_1 = ipcamCapture(self.camera[self.cam_list[0]])
-            ipcam_1.start()
-            time.sleep(1)
-
-            ipcam_2 = ipcamCapture(self.camera[self.cam_list[1]])
-            ipcam_2.start()
-            time.sleep(1)
-
-            ipcam_3 = ipcamCapture(self.camera[self.cam_list[2]])
-            ipcam_3.start()
-            time.sleep(1)
-
-            ipcam_4 = ipcamCapture(self.camera[self.cam_list[3]])
-            ipcam_4.start()
-            time.sleep(1)
+            for i in range(self.num_cam):
+                globals()['ipcam_'+str(i+1)] = ipcamCapture(self.camera[self.cam_list[0]])
+                globals()['ipcam_'+str(i+1)].start()
+                time.sleep(1)
         else:
             ipcam_1 = ipcamCapture('./media/videos/'+self.cam_list[0]+'.mp4')
             ipcam_1.start()
@@ -151,20 +141,11 @@ class Camera_Process(object):
         xmin, ymin, xmax, ymax = self.area
 
         while not self.isstop:
-            frame_1 = ipcam_1.getframe()
-            frame_2 = ipcam_2.getframe()
-            frame_3 = ipcam_3.getframe()
-            frame_4 = ipcam_4.getframe()
+            for i in range(self.num_cam):
+                globals()['frame_'+str(i+1)] = globals()['ipcam_'+str(i+1)].getframe()
 
-            for cam_i in range(4):
-                if cam_i == 0:
-                    frame = frame_1
-                elif cam_i == 1:
-                    frame = frame_2
-                elif cam_i == 2:
-                    frame = frame_3
-                else:
-                    frame = frame_4
+            for cam_i in range(self.num_cam):
+                frame = globals()['frame_'+str(cam_i+1)]
                 if frame is not None:
                     im = frame[ymin:ymax, xmin:xmax, (2,1,0)]
                     bbox_xywh, cls_conf, cls_ids = self.yolo3(im)
@@ -181,7 +162,7 @@ class Camera_Process(object):
                                 print(x1,y1,x2,y2)
                                 cam_name = self.cam_list[cam_i]
                                 image_path = os.path.join('static',cam_name)
-                                image_name = str(time.strftime("%Y-%m-%d-%H-%M-%S-%f"))+'_'+str(i)+'.jpg'
+                                image_name = str(current_time.strftime('%Y-%m-%d-%H-%M-%S-%f'))+'_'+str(i)+'.jpg'
                                 cv2.imwrite(os.path.join(image_path,image_name),cropped)
                                 pil_image=cv2.cvtColor(cropped, cv2.COLOR_BGR2RGB)
                                 feature = self.extractor(pil_image)[0]
