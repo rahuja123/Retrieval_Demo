@@ -54,17 +54,15 @@ yolov3_weights_downloader('./yolo3/')
 yolo_network = 'yolo3/yolo_v3.cfg'
 yolo_classes = 'yolo3/coco.names'
 yolo_weight = 'yolo3/yolov3.weights'
-yolo_device = 'cpu'
 
 ## Load ReID
 reid_model='Net'
 reid_weight = 'Net_Market.t7'
-reid_device = yolo_device
 
 
 ## Load Video
 def camera_run(cam_name="S1-B3b-R-BR", rtsp=True, skip_frame=10, reid_model='ResNet50', reid_weight='ResNet50_Market.pth', reid_device='cpu'):
-    yolo3 = YOLO3(yolo_network,yolo_weight,yolo_classes, yolo_device=yolo_device, is_xywh=True)
+    yolo3 = YOLO3(yolo_network,yolo_weight,yolo_classes, yolo_device=reid_device, is_xywh=True)
     extractor = Extractor(reid_model,reid_weight,reid_device=reid_device)
     image_path = os.path.join('static',cam_name)
     if not os.path.exists(image_path):
