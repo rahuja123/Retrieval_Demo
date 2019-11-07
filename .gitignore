@@ -6,3 +6,8 @@ yolo3/yolo3.weights
 reid/weights/*
 static/*
 *.DS_Store
+yolo3/yolov3.weights
+
+.ipynb_checkpoints/
+
+.vscode/
