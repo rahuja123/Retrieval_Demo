@@ -51,234 +51,183 @@ def feature_extractor_layout(global_camera_names,models_dict):
 
 
         html.Div(
-            [
-                html.P("Cameras:", className='p-dropdown'),
-                dcc.Dropdown(
-                    id="camera_name_dropdown_1",
-                    className="div-for-dropdown",
-                    options=populate_camera_dropdown_menu(global_camera_names),
-                    placeholder="Choose the cameras...",
-                    multi=True,
-                )
-            ]
-        ),
-
-        html.Div(
-            [
-                html.P("Devices:", className='p-dropdown'),
-                dcc.Dropdown(
-                    id="devices_dropdown_1",
-                    className="div-for-dropdown",
-                    options=populate_devices(),
-                    placeholder="Choose the GPU device...",
-                    multi=True,
-                )
-            ]
-        ),
-
-        html.Div(
-            className="row",
-            style={'textAlign':'center'},
+            className='twelve rows',
             children=[
-                html.Button('Run', id='run_button', className="button_show"),
-                html.Button('Stop', id='stop_button', className="button_show")
-            ]
-        ),
-
-        html.Div(
-            [
                 html.Div(
-                    id='camera_run_result_run',
-                    className="row",
-                    style={'textAlign':'center'},
+                    className='three rows row',
+                    children=[
+                        html.Div(
+                            className='four columns',
+                            children=[
+                                html.P("Camera:", className="p-dropdown"),
+                                dcc.Dropdown(
+                                    id='camera_name_dropdown_1',
+                                    options=populate_camera_dropdown_menu(global_camera_names),
+                                    placeholder="Camera...",
+                                )
+                            ]
+                        ),
+                        html.Div(
+                            className='four columns',
+                            children=[
+                                html.P("Device:", className="p-dropdown"),
+                                dcc.Dropdown(
+                                    id="devices_dropdown_1",
+                                    options=populate_devices(),
+                                    placeholder="Select device...",
+                                )
+                            ]
+                        ),
+                        html.Div(
+                            className='three columns',
+                            children=[
+                                html.Button(
+                                    "Run", id="camera_run_1", className="button_submit"
+                                ),
+                            ]
+                        ),
+
+                        html.Div(
+                            className="one column camera-run-done",
+                            id="camera_run_result_1",
+                        )
+
+                    ]
                 ),
+
+                html.Br(),
+
                 html.Div(
-                    id='camera_run_result_stop',
-                    className="row",
-                    style={'textAlign':'center'},
+                    className='three rows row',
+                    children=[
+                        html.Div(
+                            className='four columns',
+                            children=[
+                                html.P("Camera:", className="p-dropdown"),
+                                dcc.Dropdown(
+                                    id='camera_name_dropdown_2',
+                                    options=populate_camera_dropdown_menu(global_camera_names),
+                                    placeholder="Camera...",
+                                )
+                            ]
+                        ),
+                        html.Div(
+                            className='four columns',
+                            children=[
+                                html.P("Device:", className="p-dropdown"),
+                                dcc.Dropdown(
+                                    id="devices_dropdown_2",
+                                    options=populate_devices(),
+                                    placeholder="Select device...",
+                                )
+                            ]
+                        ),
+                        html.Div(
+                            className='three columns',
+                            children=[
+                                html.Button(
+                                    "Run", id="camera_run_2", className="button_submit"
+                                ),
+                            ]
+                        ),
+
+                        html.Div(
+                            className="one column camera-run-done",
+                            id="camera_run_result_2",
+                        )
+
+                    ]
+                ),
+
+                html.Br(),
+
+                html.Div(
+                    className='three rows row',
+                    children=[
+                        html.Div(
+                            className='four columns',
+                            children=[
+                                html.P("Camera:", className="p-dropdown"),
+                                dcc.Dropdown(
+                                    id='camera_name_dropdown_3',
+                                    options=populate_camera_dropdown_menu(global_camera_names),
+                                    placeholder="Camera...",
+                                )
+                            ]
+                        ),
+                        html.Div(
+                            className='four columns',
+                            children=[
+                                html.P("Device:", className="p-dropdown"),
+                                dcc.Dropdown(
+                                    id="devices_dropdown_3",
+                                    options=populate_devices(),
+                                    placeholder="Select device...",
+                                )
+                            ]
+                        ),
+                        html.Div(
+                            className='three columns',
+                            children=[
+                                html.Button(
+                                    "Run", id="camera_run_3", className="button_submit"
+                                ),
+                            ]
+                        ),
+
+                        html.Div(
+                            className="one column camera-run-done",
+                            id="camera_run_result_3",
+                        )
+                    ]
+                ),
+
+
+                html.Br(),
+
+
+                html.Div(
+                    className='three rows row',
+                    children=[
+                        html.Div(
+                            className='four columns',
+                            children=[
+                                html.P("Camera:", className="p-dropdown"),
+                                dcc.Dropdown(
+                                    id='camera_name_dropdown_4',
+                                    options=populate_camera_dropdown_menu(global_camera_names),
+                                    placeholder="Camera...",
+                                )
+                            ]
+                        ),
+                        html.Div(
+                            className='four columns',
+                            children=[
+                                html.P("Device:", className="p-dropdown"),
+                                dcc.Dropdown(
+                                    id="devices_dropdown_4",
+                                    options=populate_devices(),
+                                    placeholder="Select device...",
+                                )
+                            ]
+                        ),
+                        html.Div(
+                            className='three columns',
+                            children=[
+                                html.Button(
+                                    "Run", id="camera_run_4", className="button_submit"
+                                ),
+                            ]
+                        ),
+
+                        html.Div(
+                            className="one column camera-run-done",
+                            id="camera_run_result_4",
+                        )
+                    ]
                 )
-
             ]
-
         )
-        # html.Div(
-        #     className='twelve rows',
-        #     children=[
-        #         html.Div(
-        #             className='three rows row',
-        #             children=[
-        #                 html.Div(
-        #                     className='four columns',
-        #                     children=[
-        #                         html.P("Camera:", className="p-dropdown"),
-        #                         dcc.Dropdown(
-        #                             id='camera_name_dropdown_1',
-        #                             options=populate_camera_dropdown_menu(global_camera_names),
-        #                             placeholder="Camera...",
-        #                         )
-        #                     ]
-        #                 ),
-        #                 html.Div(
-        #                     className='four columns',
-        #                     children=[
-        #                         html.P("Device:", className="p-dropdown"),
-        #                         dcc.Dropdown(
-        #                             id="devices_dropdown_1",
-        #                             options=populate_devices(),
-        #                             placeholder="Select device...",
-        #                         )
-        #                     ]
-        #                 ),
-        #                 html.Div(
-        #                     className='three columns',
-        #                     children=[
-        #                         html.Button(
-        #                             "Run", id="camera_run_1", className="button_submit"
-        #                         ),
-        #                     ]
-        #                 ),
-        #
-        #                 html.Div(
-        #                     className="one column camera-run-done",
-        #                     id="camera_run_result_1",
-        #                 )
-        #
-        #             ]
-        #         ),
-        #
-        #         html.Br(),
-        #
-        #         html.Div(
-        #             className='three rows row',
-        #             children=[
-        #                 html.Div(
-        #                     className='four columns',
-        #                     children=[
-        #                         html.P("Camera:", className="p-dropdown"),
-        #                         dcc.Dropdown(
-        #                             id='camera_name_dropdown_2',
-        #                             options=populate_camera_dropdown_menu(global_camera_names),
-        #                             placeholder="Camera...",
-        #                         )
-        #                     ]
-        #                 ),
-        #                 html.Div(
-        #                     className='four columns',
-        #                     children=[
-        #                         html.P("Device:", className="p-dropdown"),
-        #                         dcc.Dropdown(
-        #                             id="devices_dropdown_2",
-        #                             options=populate_devices(),
-        #                             placeholder="Select device...",
-        #                         )
-        #                     ]
-        #                 ),
-        #                 html.Div(
-        #                     className='three columns',
-        #                     children=[
-        #                         html.Button(
-        #                             "Run", id="camera_run_2", className="button_submit"
-        #                         ),
-        #                     ]
-        #                 ),
-        #
-        #                 html.Div(
-        #                     className="one column camera-run-done",
-        #                     id="camera_run_result_2",
-        #                 )
-        #
-        #             ]
-        #         ),
-        #
-        #         html.Br(),
-        #
-        #         html.Div(
-        #             className='three rows row',
-        #             children=[
-        #                 html.Div(
-        #                     className='four columns',
-        #                     children=[
-        #                         html.P("Camera:", className="p-dropdown"),
-        #                         dcc.Dropdown(
-        #                             id='camera_name_dropdown_3',
-        #                             options=populate_camera_dropdown_menu(global_camera_names),
-        #                             placeholder="Camera...",
-        #                         )
-        #                     ]
-        #                 ),
-        #                 html.Div(
-        #                     className='four columns',
-        #                     children=[
-        #                         html.P("Device:", className="p-dropdown"),
-        #                         dcc.Dropdown(
-        #                             id="devices_dropdown_3",
-        #                             options=populate_devices(),
-        #                             placeholder="Select device...",
-        #                         )
-        #                     ]
-        #                 ),
-        #                 html.Div(
-        #                     className='three columns',
-        #                     children=[
-        #                         html.Button(
-        #                             "Run", id="camera_run_3", className="button_submit"
-        #                         ),
-        #                     ]
-        #                 ),
-        #
-        #                 html.Div(
-        #                     className="one column camera-run-done",
-        #                     id="camera_run_result_3",
-        #                 )
-        #             ]
-        #         ),
-        #
-        #
-        #         html.Br(),
-        #
-        #
-        #         html.Div(
-        #             className='three rows row',
-        #             children=[
-        #                 html.Div(
-        #                     className='four columns',
-        #                     children=[
-        #                         html.P("Camera:", className="p-dropdown"),
-        #                         dcc.Dropdown(
-        #                             id='camera_name_dropdown_4',
-        #                             options=populate_camera_dropdown_menu(global_camera_names),
-        #                             placeholder="Camera...",
-        #                         )
-        #                     ]
-        #                 ),
-        #                 html.Div(
-        #                     className='four columns',
-        #                     children=[
-        #                         html.P("Device:", className="p-dropdown"),
-        #                         dcc.Dropdown(
-        #                             id="devices_dropdown_4",
-        #                             options=populate_devices(),
-        #                             placeholder="Select device...",
-        #                         )
-        #                     ]
-        #                 ),
-        #                 html.Div(
-        #                     className='three columns',
-        #                     children=[
-        #                         html.Button(
-        #                             "Run", id="camera_run_4", className="button_submit"
-        #                         ),
-        #                     ]
-        #                 ),
-        #
-        #                 html.Div(
-        #                     className="one column camera-run-done",
-        #                     id="camera_run_result_4",
-        #                 )
-        #             ]
-        #         )
-        #     ]
-        # )
 
     ]
 

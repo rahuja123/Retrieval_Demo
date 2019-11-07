@@ -12,8 +12,8 @@ import cv2
 from plotting.floormap_cross_numbers import floormap_cross_numbers
 import base64
 import os
-from layout.feature_extractor_layout import feature_extractor_layout
-from layout.retrieval_run_layout import retrieval_run_layout
+from layout.feature_extractor_layout_2 import feature_extractor_layout
+from layout.retrieval_run_layout_2 import retrieval_run_layout
 
 #path to save the image that you upload on the server.
 UPLOAD_DIRECTORY = "static/query"
@@ -24,9 +24,9 @@ app.scripts.config.serve_locally = True
 server = app.server
 
 
-global_camera_names= ["S21-B4-L-13" , "S21-B4-L-15", "S21-B4-R-10"]
-cams_map_testing= ["S2.1-B4-L-B", "S2.1-B4-L-T", "S2.1-B4-R-B"]
-models_dict={'ResNet50':['ResNet50_Market.pth'], 'Net':['Net_Market.t7'], 'SE_ResNet50':['SE_ResNet50_Market.pth']}
+global_camera_names= ["S1-B4b-L-B","S21-B4-T","S1-B3b-L-TL","S2-B4b-L-B"]
+cams_map_testing= ["S1-B4b-L-B","S21-B4-T","S1-B3b-L-TL","S2-B4b-L-B"]
+models_dict={'Net':['Net_Market.t7'],'ResNet50':['ResNet50_Market.pth'],'SE_ResNet':['SE_ResNet50_Market.pth']}
 image_value_list=[]
 output_result=[]
 camera_dict= dict.fromkeys(global_camera_names)
@@ -139,11 +139,13 @@ def run_camera_run(n_clicks, reid_model, reid_weight,cam_name, reid_device):
         else:
             if 'ALL' in cam_name:
                 cam_name= global_camera_names
+                
+            from camera.camera_run_2 import Camera_Process
+            globals()['p'] = Camera_Process(cam_list=cam_name, rtsp=True, reid_model=reid_model,reid_weight=reid_weight, reid_device=reid_device)
+            p.start()
             
-
-            """
-            Make your changes here, Shan!
-            """
+            # camera_run(cam_name=cam_name, rtsp=False, skip_frame=10,reid_model=reid_model,reid_weight=reid_weight, reid_device=reid_device)
+            # print("Done Donaaa Done")
             # from camera.camera_run import camera_run
             # camera_run(cam_name=cam_name, rtsp=False, skip_frame=10,reid_model=reid_model,reid_weight=reid_weight, reid_device=reid_device)
             # print("Done Donaaa Done")
@@ -159,7 +161,11 @@ def stop_camera_run(n_clicks):
         if n_clicks is None:
             raise PreventUpdate
         else:
-
+            # try:
+            global p
+            p.stop()
+            # except:
+            #     pass
             """
             Make your changes here, Shan!
             """
