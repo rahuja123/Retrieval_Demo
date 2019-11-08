@@ -35,8 +35,8 @@ def floormap_cross_numbers(img_path,camera_names, img_cord=(610,457)):
 
         prev_cordinates= current_cordinates
 
-    cv2.imwrite('output_number_cross.png', img)
-    # cv2.imwrite('static/output_number_cross.png', img)
+    # cv2.imwrite('output_number_cross.png', img)
+    cv2.imwrite('static/output_number_cross.png', img)
 
 
 

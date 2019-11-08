@@ -2,8 +2,8 @@ import re
 xac = re.compile(r'^S([-\d+])-B[-\d+]([ac])-([\w])$')
 xb_ = re.compile(r'^S([-\d+])-B[-\d+]b-[\w]-([\w])$')
 xb = re.compile(r'^S([-\d+])-B[-\d+]b-[\w]-([\w])[\w]$')
-xEs = re.compile(r'^S2.[\d]-B[-\d+]-([\w])$')
-xE = re.compile(r'^S2.[\d]-B[-\d+]-[\w]-([\w])$')
+xEs = re.compile(r'^S2[\d]-B[-\d+]-([\w])$')
+xE = re.compile(r'^S2[\d]-B[-\d+]-[\w]-([\w])$')
 
 x1=0
 x2=28
@@ -68,6 +68,7 @@ def get_x(name):
             elif res[1]=='B':
                 return x14
 
+
     res = xEs.match(name)
     if res is not None:
         res = res.groups()
@@ -95,8 +96,8 @@ def get_x(name):
 yac = re.compile(r'^S([-\d+])-B[-\d+]([ac])-([\w])$')
 yb_ = re.compile(r'^S[-\d+]-B[-\d+]b-([\w])-[\w]$')
 yb = re.compile(r'^S[-\d+]-B[-\d+]b-([\w])-[\w]([\w])$')
-yE = re.compile(r'^S2.([-\d+])-B[-\d+]-([\w])$')
-yEs = re.compile(r'^S2.([-\d+])-B[-\d+]-([\w])-[\w]$')
+yE = re.compile(r'^S2([-\d+])-B[-\d+]-([\w])$')
+yEs = re.compile(r'^S2([-\d+])-B[-\d+]-([\w])-[\w]$')
 
 y1=0
 y2=50
@@ -192,8 +193,8 @@ def get_coordinate(cam_name):
 c_ac = re.compile(r'^S([-\d+])-B[-\d+]([ac])-[\w]$')
 c_b_ = re.compile(r'^S([-\d+])-B[-\d+]b-([\w])-([\w])$')
 c_b = re.compile(r'^S([-\d+])-B[-\d+]b-([\w])-([\w])[\w]$')
-c_E = re.compile(r'^S2.([-\d+])-B[-\d+]-([\w])$')
-c_Es = re.compile(r'^S2.([-\d+])-B[-\d+]-([\w])-[\w]$')
+c_E = re.compile(r'^S2([-\d+])-B[-\d+]-([\w])$')
+c_Es = re.compile(r'^S2([-\d+])-B[-\d+]-([\w])-[\w]$')
 
 
 def get_cluster(cam_name):
@@ -218,12 +219,12 @@ def get_cluster(cam_name):
     res = c_E.match(cam_name)
     if res is not None:
         res = res.groups()
-        return "S2.{}-{}".format(res[0], res[1])
+        return "S2{}-{}".format(res[0], res[1])
 
     res = c_Es.match(cam_name)
     if res is not None:
         res = res.groups()
-        return "S2.{}-{}".format(res[0], res[1])
+        return "S2{}-{}".format(res[0], res[1])
 
     raise ValueError('Invalid camera name.')
 
@@ -231,7 +232,7 @@ def get_cluster(cam_name):
 
 _cac = re.compile(r'^S([-\d+])-([ac])$')
 _cb = re.compile(r'^S([-\d+])-b-([\w])-([\w])$')
-_cE = re.compile(r'^S2.([-\d+])-([\w])$')
+_cE = re.compile(r'^S2([-\d+])-([\w])$')
 
 def _mean(*ps):
     ps = [get_coordinate(p) for p in ps]
@@ -257,11 +258,11 @@ def get_cluster_position(cluster_name):
     if res is not None:
         res = res.groups()
         if res[1]=="T" or res[1]=="B":
-            p = "S2.{}-B1-{}".format(res[0], res[1])
+            p = "S2{}-B1-{}".format(res[0], res[1])
             return _mean(p)
         elif res[1]=="L" or res[1]=="R":
-            p1 = "S2.{}-B1-{}-T".format(res[0], res[1])
-            p2 = "S2.{}-B1-{}-B".format(res[0], res[1])
+            p1 = "S2{}-B1-{}-T".format(res[0], res[1])
+            p2 = "S2{}-B1-{}-B".format(res[0], res[1])
             return _mean(p1, p2)
 
     raise ValueError('Invalid camera name.')
@@ -269,18 +270,18 @@ def get_cluster_position(cluster_name):
 
 if __name__ == '__main__':
     assert get_coordinate('S1-B3b-L-T')==(194, 42)
-    assert get_coordinate('S2.1-B2-L-T')==(348, 178)
+    assert get_coordinate('S21-B2-L-T')==(348, 178)
     assert get_coordinate('S2-B5a-T')==(558, 352)
-    assert get_coordinate('S2.2-B3-R-M')==(586, 222)
+    assert get_coordinate('S22-B3-R-M')==(586, 222)
     assert get_coordinate('S2-B5c-B')==(50, 426)
     # assert get_coordinate('S2-B5b-L-TR')==(50, 426)
 
     assert get_cluster('S1-B3b-L-T')=='S1-b-L-B'
-    assert get_cluster('S2.1-B2-L-T')=='S2.1-L'
+    assert get_cluster('S21-B2-L-T')=='S21-L'
     assert get_cluster('S2-B5a-T')=='S2-a'
-    assert get_cluster('S2.2-B3-R-M')=='S2.2-R'
+    assert get_cluster('S22-B3-R-M')=='S22-R'
     assert get_cluster('S2-B5c-B')=='S2-c'
 
     # assert get_cluster_position
 
-    print(get_cluster_position(get_cluster("S2.1-B4-T")))
+    print(get_cluster_position(get_cluster("S21-B4-T")))

@@ -28,10 +28,10 @@ def weights_init_classifier(m):
         
 class SE_ResNet101(BasicModule):
     in_planes = 2048
-    def __init__(self, num_classes, last_stride, pooling):
+    def __init__(self, num_classes, last_stride=1, pooling='MAX'):
         super(SE_ResNet101, self).__init__()
         self.model_name = 'SE_ResNet101'
-        self.base = se_resnet101(pretrained=True, last_stride=last_stride)
+        self.base = se_resnet101(pretrained=False, last_stride=last_stride)
         if pooling == 'AVG':
             self.gap = nn.AdaptiveAvgPool2d(1)
         elif pooling == 'MAX':

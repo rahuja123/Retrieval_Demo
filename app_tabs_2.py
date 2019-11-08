@@ -24,9 +24,9 @@ app.scripts.config.serve_locally = True
 server = app.server
 
 
-global_camera_names= ["S1-B4b-L-B","S21-B4-T","S1-B3b-L-TL","S2-B4b-L-B"]
-cams_map_testing= ["S1-B4b-L-B","S21-B4-T","S1-B3b-L-TL","S2-B4b-L-B"]
-models_dict={'Net':['Net_Market.t7'],'ResNet50':['ResNet50_Market.pth'],'SE_ResNet':['SE_ResNet50_Market.pth']}
+global_camera_names= ["S1-B4b-L-B","S1-B4b-L-BR","S1-B4b-L-BL","S1-B4b-R-B","S1-B4b-R-BR","S1-B4b-R-BL"]
+cams_map_testing= ["S1-B4b-L-B","S1-B4b-L-BR","S1-B4b-L-BL","S1-B4b-R-B","S1-B4b-R-BR","S1-B4b-R-BL"]
+models_dict={'Net':['Net_Market.t7'],'ResNet50':['ResNet50_Market.pth'],'ResNet101':['ResNet101_Market.pth'],'SE_ResNet50':['SE_ResNet50_Market.pth'],'SE_ResNet101':['SE_ResNet101_Market.pth']}
 image_value_list=[]
 output_result=[]
 camera_dict= dict.fromkeys(global_camera_names)
@@ -326,8 +326,10 @@ for counter,name in enumerate(global_camera_names):
 def calculate_line_trace(camera_dict_list):
     final_trace={'S1':{'x':[], 'y':[], 'customdata':[]}, 'S2':{'x':[], 'y':[], 'customdata':[]}, 'S21':{'x':[],'y':[], 'customdata':[]}}
     # final_trace={}
+    final_cameras_list=[]
     for tuple in camera_dict_list:
         camera_name= tuple[0]
+        final_cameras_list.append(camera_name)
         building_name= camera_name.split('-')[0]
         floor_name= camera_name.split('-')[1]
         time= tuple[1]
@@ -336,7 +338,8 @@ def calculate_line_trace(camera_dict_list):
         final_trace[building_name]['y'].append(floor_name)
         final_trace[building_name]['customdata'].append(camera_name)
 
-    return final_trace
+    return final_trace, final_cameras_list
+
 
 
 @app.callback(Output('floormaps_output', 'children'),
@@ -364,10 +367,10 @@ def update_floormaps(n_clicks):
         print(camera_dict_list)
         print(camera_sorted_list)
 
-        img_path= "./assets/images/overview_B3_cluster_1.png"
-        floormap_cross_numbers(img_path, cams_map_testing)
+        line_traces, final_camera_list= calculate_line_trace(camera_dict_list)
 
-        line_traces= calculate_line_trace(camera_dict_list)
+        img_path= "./assets/images/overview_B3_cluster_1.png"
+        floormap_cross_numbers(img_path, final_camera_list)
 
         df_line_traces= line_traces
 
