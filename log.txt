@@ -1,0 +1,4 @@
+2019-11-12 13:20:25,811 feature_extractor INFO: Initialised feature extractor function
+2019-11-12 13:23:18,472 feature_extractor INFO: Starting the cameras
+2019-11-12 13:24:49,489 feature_extractor INFO: stopped the process!
+019-11-12 13:24:49,489 feature_extractor INFO: stopped the process!

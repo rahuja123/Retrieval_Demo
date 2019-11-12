@@ -14,7 +14,7 @@ import base64
 import os
 from layout.feature_extractor_layout_2 import feature_extractor_layout
 from layout.retrieval_run_layout import retrieval_run_layout
-from logger import make_logger
+from layout.header_layout import header_layout
 
 #path to save the image that you upload on the server.
 UPLOAD_DIRECTORY = "static/query"
@@ -25,99 +25,87 @@ app.scripts.config.serve_locally = True
 server = app.server
 
 
-logger = make_logger('feature_extractor','.','log')
-
-
-
-
 global_camera_names= ["S1-B4b-L-B","S1-B4b-L-BR","S1-B4b-L-BL","S1-B4b-R-B","S1-B4b-R-BR","S1-B4b-R-BL"]
-cams_map_testing= ["S1-B4b-L-B","S1-B4b-L-BR","S1-B4b-L-BL","S1-B4b-R-B","S1-B4b-R-BR","S1-B4b-R-BL"]
 models_dict={'Net':['Net_Market.t7'],'ResNet50':['ResNet50_Market.pth'],'ResNet101':['ResNet101_Market.pth'],'SE_ResNet50':['SE_ResNet50_Market.pth'],'SE_ResNet101':['SE_ResNet101_Market.pth']}
 image_value_list=[]
 output_result=[]
 camera_dict= dict.fromkeys(global_camera_names)
 count=0
 
+port="8052"
+
 app.layout= html.Div(
-    children=[
-        html.Div(
-            className="row",
-            children=[
-                html.Div(
-                    [
-                        html.Div(
-                            [
-                                html.Img(
-                                    src= app.get_asset_url("NTU_logo_white.png"), className="logo"
-                                ),
-                                # html.Img(
-                                #     src= app.get_asset_url("rose_lab_logo.png"), className="rose-lab-logo"
-                                # )
-                            ],className="logo_section"
-                        ),
+        id='main_page',
+        children=[
+            html.Div(
+                id='app-page-header',
+                children=header_layout(port="8052"),
+            ),
+            html.Div(
+                id='app-page-content',
+                children=[
+                    html.Div(
+                        id='mol3d-body',
+                        className='app-body',
+                        children=[
+                            html.Div(
+                                id='mol3d-control-tabs',
+                                className='control-tabs',
+                                children=[
+                                    dcc.Tabs(id='mol3d-tabs', value='what-is', children=[
+                                        dcc.Tab(
+                                            label='Feature Extractor',
+                                            value='tab1',
+                                            # className='custom-tab',
+                                            # selected_className='custom-tab--selected',
+                                            # selected_style={'color':'#60b5ab'},
+                                            children=[
+                                                html.Div(
+                                                    # className="row",
+                                                    children=feature_extractor_layout(global_camera_names, models_dict)
+                                                )
+                                            ]),
 
-                        html.H1(children=["NTU ReID Demo"]),
-                        html.P(
-                            """Select feature extractor to run detection code and Retreival run to find the person from a query. """
-                        ),
-
-                        dcc.Tabs(id="tabs",
-                            className="custom-tabs-container",
-                            parent_className='custom-tabs',
-                            children=[
-                                dcc.Tab(
-                                    label='Feature Extractor',
-                                    value='tab1',
-                                    className='custom-tab',
-                                    selected_className='custom-tab--selected',
-                                    selected_style={'color':'#60b5ab'},
-                                    children=[
-                                        html.Div(
-                                            className="row",
-                                            children=feature_extractor_layout(global_camera_names, models_dict)
-                                        )
+                                        dcc.Tab(
+                                            label='Retrieval Run',
+                                            value='tab2',
+                                            # className='custom-tab',
+                                            # selected_className='custom-tab--selected',
+                                            # selected_style={'color':'#60b5ab'},
+                                            children=[
+                                                html.Div(
+                                                    # className="row",
+                                                    children=retrieval_run_layout(global_camera_names, models_dict)
+                                                )
+                                            ])
                                     ]),
+                                ]),
 
-                                dcc.Tab(
-                                    label='Retrieval Run',
-                                    value='tab2',
-                                    className='custom-tab',
-                                    selected_className='custom-tab--selected',
-                                    selected_style={'color':'#60b5ab'},
-                                    children=[
-                                        html.Div(
-                                            className="row",
-                                            children=retrieval_run_layout(global_camera_names, models_dict)
-                                        )
-                                    ]),
+                            dcc.Loading(html.Div(
+                                id='mol3d-biomolecule-viewer',
+                                children=[
+                                    html.Div(id='state_container', style={'display': 'none'}),
+                                    html.Div(id="camera_outputs", style={'margin-top':50,}),
+                                    html.Br(),
+                                    html.Div(id="floormaps_output", className='floormaps_output'),
+                                    html.Br(),
+                                    html.Br(),
+                                    html.Div(id="experimental_section"),
+                                ]
+                            )),
 
-                            ]),
-
-                            html.Iframe(id='console-out',className="console-out", srcDoc='Hello'),
-                            dcc.Interval(id="interval", interval=500, n_intervals=0),
-
-                    ], className="four columns div-user-controls"
-                ),
-                html.Div(
-                    [
-                        html.Div(id='state_container', style={'display': 'none'}),
-                        html.Div(id="camera_outputs", style={'margin-top':50,}),
-                        html.Br(),
-                        html.Div(id="floormaps_output", className='floormaps_output'),
-                        html.Br(),
-                        html.Br(),
-                        html.Div(id="experimental_section"),
-
-                    ], className="eight columns div-for-charts bg-grey"
-                )
-
-            ]
-
-        )
+                            dcc.Store(
+                                id='mol3d-color-storage',
+                                data={}
+                            ),
+                        ]
+                    ),
+                ]
+            ),
+        ]
+    )
 
 
-    ]
-)
 
 @app.callback(
     Output('network_weight_dropdown', 'options'),
@@ -146,12 +134,11 @@ def run_camera_run(n_clicks, reid_model, reid_weight,cam_name, reid_device):
         if n_clicks is None:
             raise PreventUpdate
         else:
-            logger.info("called the function")
             if 'ALL' in cam_name:
                 cam_name= global_camera_names
 
             from camera.camera_run_2 import Camera_Process
-            globals()['p'] = Camera_Process(cam_list=cam_name, rtsp=True, reid_model=reid_model,reid_weight=reid_weight, reid_device=reid_device, logger=logger)
+            globals()['p'] = Camera_Process(cam_list=cam_name, rtsp=True, reid_model=reid_model,reid_weight=reid_weight, reid_device=reid_device)
             p.start()
 
             # camera_run(cam_name=cam_name, rtsp=False, skip_frame=10,reid_model=reid_model,reid_weight=reid_weight, reid_device=reid_device)
@@ -171,8 +158,11 @@ def stop_camera_run(n_clicks):
         if n_clicks is None:
             raise PreventUpdate
         else:
+            # try:
             global p
             p.stop()
+            # except:
+            #     pass
             """
             Make your changes here, Shan!
             """
@@ -300,6 +290,7 @@ def update_output2(n_clicks, camera_dropdown_values, frame_rate, reid_model, rei
         path= "ROSE LAB "
 
         for camera in camera_dropdown_values:
+            print("came here for 5 times")
             output_array.append(parse_gallery(folder_name, camera, int(frame_rate), reid_model, reid_weight, reid_device))
             path = path + "<-- "+ str(camera)+" "
 
@@ -309,6 +300,7 @@ def update_output2(n_clicks, camera_dropdown_values, frame_rate, reid_model, rei
 
 
         final_output= html.Div(children=output_array)
+        print(final_output)
 
         return  final_output, hidden_divs
 
@@ -369,6 +361,8 @@ def update_floormaps(n_clicks):
 
         camera_sorted_list,x = zip(*camera_dict_list)
 
+        print(camera_dict_list)
+        print(camera_sorted_list)
 
         line_traces, final_camera_list= calculate_line_trace(camera_dict_list)
 
@@ -415,21 +409,5 @@ def update_experiments(hoverData):
     return html.Div(html.Img(src='static/output_number_cross.png', style={'max-width':'750px',
     'max-height':'750px'}), style={'textAlign':'center'})
 
-@app.callback(dash.dependencies.Output('console-out','srcDoc'),
-    [dash.dependencies.Input('interval', 'n_intervals')])
-def update_console_output(n):
-    file = open('log.txt', 'r')
-    data=''
-    lines = file.readlines()
-    if lines.__len__()<=20:
-        last_lines=lines
-    else:
-        last_lines = lines[-20:]
-    for line in last_lines:
-        data=data+line + '<BR>'
-    file.close()
-    return data
-
-
 if __name__ == '__main__':
-    app.run_server(debug=True, port=8051)
+    app.run_server(debug=True, port=8052)

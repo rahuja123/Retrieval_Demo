@@ -31,6 +31,14 @@ p {
   margin-top: 20px;
 }
 
+/* style={'width':'100%','height':200, 'border':'none', 'color':'white'} */
+.console-out{
+  width:100%;
+  height: 200;
+  /* border: none; */
+  color: #ffffff;
+
+}
 .img_style {
   height: 225px;
   width: 105px;
@@ -49,11 +57,14 @@ a {
   text-decoration: none;
 }
 .bg-grey{
-  background-color: #31302F;
+  background-color: #1E1E1E;
 }
 .text-padding{
   padding: 5px;
 }
+
+
+
 /*
 @media (max-width: 950px) {
   .button_submit_1,
@@ -143,7 +154,7 @@ a {
 .div-for-charts{
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  height: 150vh;
   width: 100%;
   overflow-y: scroll;
 }
@@ -160,8 +171,19 @@ a {
 .div-user-controls {
   padding-left: 55px;
   padding-top: 64px;
-
+  /* overflow: auto; */
 }
+/*
+.div-user-control {
+  background-color:#01183A;
+  margin: 0px;
+  padding: 0px;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100%;
+  overflow: auto;
+} */
 .div-for-dropdown {
   padding-top: 12px;
   padding-bottom: 12px;
@@ -257,6 +279,9 @@ a {
 @media only screen and (max-width: 768px) {
   .four, .eight {
       min-width: 100%;
+      /* min-height: 100%;
+      max-height: 100%; */
+
  }
   h1, h2, h3, p {
       text-align: center;
@@ -272,8 +297,8 @@ a {
       text-align: center;
  }
 
- .div-user-controls {
-    padding: 32px;
+  .div-user-controls {
+    padding: 20px;
  }
 
  .side-by-side{
@@ -298,6 +323,7 @@ a {
     margin-left: 2%;
     margin-top:2%;
     margin-bottom:8%;
+    overflow-y: auto;
 }
 
 
@@ -315,6 +341,7 @@ a {
     display: flex !important;
     align-items: center;
     justify-content: center;
+    overflow-y: auto;
 }
 
 .custom-tab--selected {
@@ -323,6 +350,7 @@ a {
     border-right: 1px solid #60b5ab !important;
     border-top: 3px solid #60b5ab !important;
     border-bottom: 3px solid #60b5ab !important;
+    overflow-y: auto;
 }
 
 
