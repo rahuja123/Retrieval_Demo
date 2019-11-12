@@ -54,13 +54,13 @@ class ipcamCapture:
 
     def start(self):
         print('ipcam started!')
-        self.logger.info('ipcam started!')
+        logger.info('ipcam started!')
         threading.Thread(target=self.queryframe, daemon=True, args=()).start()
 
     def stop(self):
         self.isstop = True
         print('ipcam stopped!')
-        self.logger.info('ipcam stopped!')
+        logger.info('ipcam stopped!')
 
     def getframe(self):
         return self.Frame
@@ -72,7 +72,7 @@ class ipcamCapture:
 
 ## Load Video ["S1-B4b-L_5","S21-B4-L-13","S21-B4-L-15","S21-B4-R-10"]
 class Camera_Process(object):
-    def __init__(self, cam_list=["S1-B4b-L-B","S21-B4-T","S1-B3b-L-TL","S2-B4b-L-B"], rtsp=True, reid_model='ResNet50', reid_weight='ResNet50_Market.pth', reid_device='cpu', logger=logger):
+    def __init__(self, cam_list=["S1-B4b-L-B","S21-B4-T","S1-B3b-L-TL","S2-B4b-L-B"], rtsp=True, reid_model='ResNet50', reid_weight='ResNet50_Market.pth', reid_device='cpu'):
         self.isstop = False
         self.num_cam = len(cam_list)
         reader = csv.reader(open('camera/camera.csv', 'r'))
@@ -99,8 +99,7 @@ class Camera_Process(object):
 
         self.cam_list=cam_list
         self.rtsp=rtsp
-        self.logger = logger
-        self.logger.info("Initialised feature extractor function")
+        logger.info("Initialised feature extractor function")
 
         yolov3_weights_downloader('./yolo3/')
         self.yolo3 = YOLO3('yolo3/yolo_v3.cfg','yolo3/yolov3.weights','yolo3/coco.names', yolo_device=reid_device, is_xywh=True)
@@ -108,7 +107,7 @@ class Camera_Process(object):
         self.extractor = Extractor(reid_model,reid_weight,reid_device=reid_device)
 
     def start(self):
-        self.logger.info("Starting the cameras")
+        logger.info("Starting the cameras")
         print('started!')
         self.isstop = False
         threading.Thread(target=self.camera_run, daemon=True, args=()).start()
@@ -116,7 +115,7 @@ class Camera_Process(object):
     def stop(self):
         self.isstop = True
         print('ipcam stopped!')
-        self.logger.info('stopped the process!')
+        logger.info('stopped the process!')
 
     def camera_run(self):
 
@@ -167,7 +166,7 @@ class Camera_Process(object):
                                 cropped = frame[y1:y2,x1:x2]
 
                                 print("Detection {}, {}, {}, {}".format(x1,y1,x2,y2))
-                                self.logger.info("Detection {}, {}, {}, {}".format(x1,y1,x2,y2))
+                                logger.info("Detection {}, {}, {}, {}".format(x1,y1,x2,y2))
 
                                 cam_name = self.cam_list[cam_i]
                                 image_path = os.path.join('static',cam_name)

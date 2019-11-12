@@ -14,7 +14,6 @@ import base64
 import os
 from layout.feature_extractor_layout_2 import feature_extractor_layout
 from layout.retrieval_run_layout import retrieval_run_layout
-from logger import make_logger
 
 #path to save the image that you upload on the server.
 UPLOAD_DIRECTORY = "static/query"
@@ -23,9 +22,6 @@ app = dash.Dash(__name__, meta_tags=[{"name": "viewport", "content": "width=devi
 app.config.suppress_callback_exceptions = True
 app.scripts.config.serve_locally = True
 server = app.server
-
-
-logger = make_logger('feature_extractor','.','log')
 
 
 
@@ -146,12 +142,11 @@ def run_camera_run(n_clicks, reid_model, reid_weight,cam_name, reid_device):
         if n_clicks is None:
             raise PreventUpdate
         else:
-            logger.info("called the function")
             if 'ALL' in cam_name:
                 cam_name= global_camera_names
 
             from camera.camera_run_2 import Camera_Process
-            globals()['p'] = Camera_Process(cam_list=cam_name, rtsp=True, reid_model=reid_model,reid_weight=reid_weight, reid_device=reid_device, logger=logger)
+            globals()['p'] = Camera_Process(cam_list=cam_name, rtsp=True, reid_model=reid_model,reid_weight=reid_weight, reid_device=reid_device)
             p.start()
 
             # camera_run(cam_name=cam_name, rtsp=False, skip_frame=10,reid_model=reid_model,reid_weight=reid_weight, reid_device=reid_device)

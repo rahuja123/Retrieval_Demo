@@ -11,3 +11,4 @@ yolo3/yolov3.weights
 .ipynb_checkpoints/
 
 .vscode/
+log.txt
