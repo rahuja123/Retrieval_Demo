@@ -24,8 +24,8 @@ app.scripts.config.serve_locally = True
 server = app.server
 
 
-global_camera_names= ["S1-B4b-L-B","S1-B4b-L-BR","S1-B4b-L-BL","S1-B4b-R-B","S1-B4b-R-BR","S1-B4b-R-BL"]
-cams_map_testing= ["S1-B4b-L-B","S1-B4b-L-BR","S1-B4b-L-BL","S1-B4b-R-B","S1-B4b-R-BR","S1-B4b-R-BL"]
+global_camera_names= ["S2-B4b-L-B","S2-B4b-L-BR","S1-B4b-L-BL","S1-B4b-R-B","S21-B4-T","S22-B4-T"]
+cams_map_testing= ["S2-B4b-L-B","S2-B4b-L-BR","S1-B4b-L-BL","S1-B4b-R-B","S21-B4-T","S22-B4-T"]
 models_dict={'Net':['Net_Market.t7'],'ResNet50':['ResNet50_Market.pth'],'ResNet101':['ResNet101_Market.pth'],'SE_ResNet50':['SE_ResNet50_Market.pth'],'SE_ResNet101':['SE_ResNet101_Market.pth']}
 image_value_list=[]
 output_result=[]
