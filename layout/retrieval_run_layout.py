@@ -43,7 +43,7 @@ def retrieval_run_layout(global_camera_names,models_dict):
                     id='network_dropdown_reid',
                     className="div-for-dropdown",
                     options=[{'label': model, 'value': model} for model in list(models_dict.keys())],
-                    value= list(models_dict.keys())[1],
+                    value= list(models_dict.keys())[0],
                     placeholder="Select a Network...",
                     clearable=False,
                 )

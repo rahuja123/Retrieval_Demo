@@ -232,6 +232,9 @@ for i in range(3):
                 # p.stop()
 
 
+
+
+
 def parse_contents(contents):
     return html.Div([
         # HTML images accept base64 encoded strings in the same format
@@ -340,7 +343,7 @@ def update_output2(n_clicks, camera_dropdown_values, frame_rate, reid_model, rei
 
         final_output= html.Div(children=output_array)
 
-        return  final_output, hidden_divs
+        return  final_output, hidden_divs, [" "]
 
 
 
@@ -408,22 +411,13 @@ def update_floormaps(n_clicks):
         df_line_traces= line_traces
 
         trace_s1= go.Scatter(x= df_line_traces['S1']['x'], y= df_line_traces['S1']['y'], hovertext=df_line_traces['S1']['customdata'] ,name='S1', mode= 'lines+markers', line=dict(width=10), marker=dict(size=20, line=dict(
-                color='Black',
-                width=2
-            )))
+                color='Black',width=2)), showlegend=True)
         trace_s2= go.Scatter(x= df_line_traces['S2']['x'], y= df_line_traces['S2']['y'], hovertext=df_line_traces['S2']['customdata'] , name='S2', mode= 'lines+markers', line=dict(width=10),  marker=dict(size=20, line=dict(
-                color='Black',
-                width=2
-            )))
+                color='Black',width=2)), showlegend=True)
         trace_s21=go.Scatter(x= df_line_traces['S21']['x'], y= df_line_traces['S21']['y'], hovertext=df_line_traces['S21']['customdata'] , name='S2.1', mode= 'lines+markers', line=dict(width=10),  marker=dict(size=20,line=dict(
-                color='Black',
-                width=2
-            )), showlegend=True)
-
+                color='Black',width=2)), showlegend=True)
         trace_s22=go.Scatter(x= df_line_traces['S22']['x'], y= df_line_traces['S22']['y'], hovertext=df_line_traces['S22']['customdata'] , name='S2.2', mode= 'lines+markers', line=dict(width=10),  marker=dict(size=20,line=dict(
-                color='Black',
-                width=2
-            )), showlegend=True)
+                color='Black',width=2)), showlegend=True)
 
         final_trace= [trace_s1, trace_s2, trace_s21, trace_s22]
 
@@ -450,8 +444,8 @@ def update_experiments(hoverData):
     return html.Div(html.Img(src='static/output_number_cross.png?t='+str(datetime.now()), style={'max-width':'750px',
     'max-height':'750px'}), style={'textAlign':'center'})
 
-@app.callback(dash.dependencies.Output('console-out','srcDoc'),
-    [dash.dependencies.Input('interval', 'n_intervals')])
+@app.callback(Output('console-out','srcDoc'),
+    [Input('interval', 'n_intervals')])
 def update_console_output(n):
     data=''
     if os.path.exists('log.txt'):

@@ -16,34 +16,38 @@ from sqlalchemy import Column, Integer, String, Sequence, ForeignKey, DateTime
 from sqlalchemy.ext.declarative import declarative_base
 
 import warnings
-warnings.filterwarnings("ignore")
 
-engine = create_engine('sqlite:///database.db')
-Session = sessionmaker(bind=engine)
-session = Session()
-
-Base = declarative_base()
-
-
-class Feature(Base):
-    __tablename__ = 'features'
-    id = Column(Integer, Sequence('id'), primary_key=True)
-    cam_name = Column(String(50))
-    track_num = Column(Integer)
-    feature = Column(String(3000000))
-    bb_coord = Column(String(50))
-    current_time = Column(DateTime, nullable=False, default=datetime.now())
-    image_name = Column(String(100))
-
-    def __repr__(self):
-        return "< id='%s', cam_name='%s', track_num='%s', feature='%s', bb_coord='%s')>" % (self.id, self.track_num, self.cam_name, self.feature,self.bb_coord)
-
-Base.metadata.create_all(engine)
 
 if not os.path.exists(os.path.join('static','query')):
     os.makedirs(os.path.join('static','query'))
 
 def retrieval(query="static/query/query.png",cam_name_list=['S1-B4b-L-B'],rank=10, reid_model='ResNet50', reid_weight='ResNet50_Market.pth', reid_device='cpu'):
+
+    warnings.filterwarnings("ignore")
+
+    engine = create_engine('sqlite:///database.db')
+    Session = sessionmaker(bind=engine)
+    session = Session()
+
+    Base = declarative_base()
+
+
+    class Feature(Base):
+        __tablename__ = 'features'
+        id = Column(Integer, Sequence('id'), primary_key=True)
+        cam_name = Column(String(50))
+        track_num = Column(Integer)
+        feature = Column(String(3000000))
+        bb_coord = Column(String(50))
+        current_time = Column(DateTime, nullable=False, default=datetime.now())
+        image_name = Column(String(100))
+
+        def __repr__(self):
+            return "< id='%s', cam_name='%s', track_num='%s', feature='%s', bb_coord='%s')>" % (self.id, self.track_num, self.cam_name, self.feature,self.bb_coord)
+
+    Base.metadata.create_all(engine)
+
+
     print(rank)
     embed_npdtype = np.float32
     extractor = Extractor(reid_model,reid_weight,reid_device=reid_device)
