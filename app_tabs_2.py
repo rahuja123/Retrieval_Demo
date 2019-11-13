@@ -411,16 +411,18 @@ def update_experiments(hoverData):
 @app.callback(dash.dependencies.Output('console-out','srcDoc'),
     [dash.dependencies.Input('interval', 'n_intervals')])
 def update_console_output(n):
-    file = open('log.txt', 'r')
     data=''
-    lines = file.readlines()
-    if lines.__len__()<=20:
-        last_lines=lines
-    else:
-        last_lines = lines[-20:]
-    for line in last_lines:
-        data=data+line + '<BR>'
-    file.close()
+    if os.path.exists('log.txt'):
+        file = open('log.txt', 'r')
+        
+        lines = file.readlines()
+        if lines.__len__()<=20:
+            last_lines=lines
+        else:
+            last_lines = lines[-20:]
+        for line in last_lines:
+            data=data+line + '<BR>'
+        file.close()
     return data
 
 

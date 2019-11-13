@@ -53,13 +53,13 @@ class ipcamCapture:
         self.capture = cv2.VideoCapture(video_path)
 
     def start(self):
-        print('ipcam started!')
+        # print('ipcam started!')
         logger.info('ipcam started!')
         threading.Thread(target=self.queryframe, daemon=True, args=()).start()
 
     def stop(self):
         self.isstop = True
-        print('ipcam stopped!')
+        # print('ipcam stopped!')
         logger.info('ipcam stopped!')
 
     def getframe(self):
@@ -108,14 +108,14 @@ class Camera_Process(object):
 
     def start(self):
         logger.info("Starting the cameras")
-        print('started!')
+        # logger.info('started!')
         self.isstop = False
         threading.Thread(target=self.camera_run, daemon=True, args=()).start()
 
     def stop(self):
         self.isstop = True
-        print('ipcam stopped!')
-        logger.info('stopped the process!')
+        logger.info('ipcam stopped!')
+        # logger.info('stopped the process!')
 
     def camera_run(self):
 
@@ -165,7 +165,7 @@ class Camera_Process(object):
                                 y2 = min(int(y+h/2),self.im_height-1)
                                 cropped = frame[y1:y2,x1:x2]
 
-                                print("Detection {}, {}, {}, {}".format(x1,y1,x2,y2))
+                                # print("Detection {}, {}, {}, {}".format(x1,y1,x2,y2))
                                 logger.info("Detection {}, {}, {}, {}".format(x1,y1,x2,y2))
 
                                 cam_name = self.cam_list[cam_i]
