@@ -232,9 +232,6 @@ for i in range(3):
                 # p.stop()
 
 
-
-
-
 def parse_contents(contents):
     return html.Div([
         # HTML images accept base64 encoded strings in the same format
@@ -261,7 +258,7 @@ def update_output(images):
     for i, image_str in enumerate(images):
         image = image_str.split(',')[1]
         data = base64.decodestring(image.encode('ascii'))
-        with open(os.path.join(UPLOAD_DIRECTORY,f"query.png"), "wb") as f:
+        with open(os.path.join(UPLOAD_DIRECTORY,"query.png"), "wb") as f:
             f.write(data)
 
     children = [parse_contents(i) for i in images]
