@@ -42,10 +42,10 @@ app.layout= html.Div(
                         html.Div(
                             [
                                 html.Img(
-                                    src= app.get_asset_url("NTU_logo_white.png"), className="logo"
+                                    src= app.get_asset_url("NTU_logo_new.png"), className="logo"
                                 ),
                                 # html.Img(
-                                #     src= app.get_asset_url("rose_lab_logo.png"), className="rose-lab-logo"
+                                #     src= app.get_asset_url("rose_lab_logo.png"), className="logo"
                                 # )
                             ],className="logo_section"
                         ),
@@ -86,7 +86,6 @@ app.layout= html.Div(
                                     ]),
 
                             ]),
-
                             html.Iframe(id='console-out',className="console-out", srcDoc='Hello'),
                             dcc.Interval(id="interval", interval=500, n_intervals=0),
 
@@ -95,6 +94,7 @@ app.layout= html.Div(
                 html.Div(
                     [
                         html.Div(id='state_container', style={'display': 'none'}),
+                        html.Br(),
                         html.Div(id="camera_outputs", style={'margin-top':50,}),
                         html.Br(),
                         html.Div(id="floormaps_output", className='floormaps_output'),
