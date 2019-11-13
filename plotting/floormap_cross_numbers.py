@@ -23,9 +23,11 @@ def floormap_cross_numbers(img_path,camera_names, img_cord=(610,457)):
         img= cv2.drawMarker(img, current_cordinates, [7,12,145], markerType=cv2.MARKER_TILTED_CROSS , markerSize=20, thickness=3)
         font = cv2.FONT_HERSHEY_SIMPLEX
         if cluster_name in cluster_name_check:
-            img= cv2.putText(img,","+str(counter) , tuple(numpy.subtract(current_cordinates, (-5,-30))), font, 0.5, (145,87,2), 2, cv2.LINE_4)
+            img= cv2.putText(img,","+str(counter), tuple(numpy.subtract(current_cordinates, (-5,-30))), font, 0.5, (145,87,2), 2, cv2.LINE_4)
+            img= cv2.putText(img,","+camera.split('-')[1][:2], tuple(numpy.subtract(current_cordinates, (-5,-50))), font, 0.5, (145,87,2), 2, cv2.LINE_4)
         else:
-            img= cv2.putText(img,str(counter) , tuple(numpy.subtract(current_cordinates, (5,-30))), font, 0.5, (145,87,2), 2, cv2.LINE_4)
+            img= cv2.putText(img,str(counter), tuple(numpy.subtract(current_cordinates, (5,-30))), font, 0.5, (145,87,2), 2, cv2.LINE_4)
+            img= cv2.putText(img,camera.split('-')[1][:2], tuple(numpy.subtract(current_cordinates, (5,-50))), font, 0.5, (145,87,2), 2, cv2.LINE_4)
         counter+=1
         cluster_name_check.append(cluster_name)
 

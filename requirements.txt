@@ -4,3 +4,4 @@ sqlalchemy
 dash
 dash-daq
 flask
+h5py

@@ -24,11 +24,9 @@ app.scripts.config.serve_locally = True
 server = app.server
 
 
-
-
-global_camera_names= ["S1-B4b-L-B","S1-B4b-L-BR","S1-B4b-L-BL","S1-B4b-R-B","S1-B4b-R-BR","S1-B4b-R-BL"]
-cams_map_testing= ["S1-B4b-L-B","S1-B4b-L-BR","S1-B4b-L-BL","S1-B4b-R-B","S1-B4b-R-BR","S1-B4b-R-BL"]
-models_dict={'Net':['Net_Market.t7'],'ResNet50':['ResNet50_Market.pth'],'ResNet101':['ResNet101_Market.pth'],'SE_ResNet50':['SE_ResNet50_Market.pth'],'SE_ResNet101':['SE_ResNet101_Market.pth']}
+global_camera_names= ["S2-B4b-L-B","S2-B4b-L-BR","S1-B4b-L-BL","S1-B4b-R-B","S21-B4-T","S22-B4-T"]
+cams_map_testing= ["S2-B4b-L-B","S2-B4b-L-BR","S1-B4b-L-BL","S1-B4b-R-B","S21-B4-T","S22-B4-T"]
+models_dict={'ResNet50':['ResNet50_Market.pth'],'ResNet101':['ResNet101_Market.pth'],'SE_ResNet50':['SE_ResNet50_Market.pth'],'SE_ResNet101':['SE_ResNet101_Market.pth']}
 image_value_list=[]
 output_result=[]
 camera_dict= dict.fromkeys(global_camera_names)
@@ -44,10 +42,10 @@ app.layout= html.Div(
                         html.Div(
                             [
                                 html.Img(
-                                    src= app.get_asset_url("NTU_logo_white.png"), className="logo"
+                                    src= app.get_asset_url("NTU_logo_new.png"), className="logo"
                                 ),
                                 # html.Img(
-                                #     src= app.get_asset_url("rose_lab_logo.png"), className="rose-lab-logo"
+                                #     src= app.get_asset_url("rose_lab_logo.png"), className="logo"
                                 # )
                             ],className="logo_section"
                         ),
@@ -88,7 +86,6 @@ app.layout= html.Div(
                                     ]),
 
                             ]),
-
                             html.Iframe(id='console-out',className="console-out", srcDoc='Hello'),
                             dcc.Interval(id="interval", interval=500, n_intervals=0),
 
@@ -97,6 +94,7 @@ app.layout= html.Div(
                 html.Div(
                     [
                         html.Div(id='state_container', style={'display': 'none'}),
+                        html.Br(),
                         html.Div(id="camera_outputs", style={'margin-top':50,}),
                         html.Br(),
                         html.Div(id="floormaps_output", className='floormaps_output'),
@@ -154,7 +152,7 @@ def run_camera_run(n_clicks, reid_model, reid_weight,cam_name, reid_device):
             # from camera.camera_run import camera_run
             # camera_run(cam_name=cam_name, rtsp=False, skip_frame=10,reid_model=reid_model,reid_weight=reid_weight, reid_device=reid_device)
             # print("Done Donaaa Done")
-            return [html.P("Done!")]
+            # return [html.P("Done!")]
 
 
 @app.callback(
@@ -174,7 +172,7 @@ def stop_camera_run(n_clicks):
             # from camera.camera_run import camera_run
             # camera_run(cam_name=cam_name, rtsp=False, skip_frame=10,reid_model=reid_model,reid_weight=reid_weight, reid_device=reid_device)
             # print("Done Donaaa Done")
-            return [html.P("Stopped!")]
+            # return [html.P("Stopped!")]
 
 
 # for i in range(4):
@@ -324,7 +322,7 @@ for counter,name in enumerate(global_camera_names):
 
 
 def calculate_line_trace(camera_dict_list):
-    final_trace={'S1':{'x':[], 'y':[], 'customdata':[]}, 'S2':{'x':[], 'y':[], 'customdata':[]}, 'S21':{'x':[],'y':[], 'customdata':[]}}
+    final_trace={'S1':{'x':[], 'y':[], 'customdata':[]}, 'S2':{'x':[], 'y':[], 'customdata':[]}, 'S21':{'x':[],'y':[], 'customdata':[]}, 'S22':{'x':[],'y':[], 'customdata':[]}}
     # final_trace={}
     final_cameras_list=[]
     for tuple in camera_dict_list:
@@ -384,8 +382,13 @@ def update_floormaps(n_clicks):
                 color='Black',
                 width=2
             )), showlegend=True)
+        
+        trace_s22=go.Scatter(x= df_line_traces['S22']['x'], y= df_line_traces['S22']['y'], hovertext=df_line_traces['S22']['customdata'] , name='S2.2', mode= 'lines+markers', line=dict(width=10),  marker=dict(size=20,line=dict(
+                color='Black',
+                width=2
+            )), showlegend=True)
 
-        final_trace= [trace_s1, trace_s2, trace_s21]
+        final_trace= [trace_s1, trace_s2, trace_s21, trace_s22]
 
         GRAPH = dcc.Graph(
             id="floormaps_graph",
@@ -407,22 +410,24 @@ def update_floormaps(n_clicks):
 def update_experiments(hoverData):
     map_name= hoverData['points'][0]['hovertext']
     # image_1= random.choice(["marker_s2_B4_L.png","marker_s2_B4_R.png", "marker_s2.1_B4_R.png", "marker_s2.1_B4_T.png"])
-    return html.Div(html.Img(src='static/output_number_cross.png', style={'max-width':'750px',
+    return html.Div(html.Img(src='static/output_number_cross.png?t='+str(datetime.now()), style={'max-width':'750px',
     'max-height':'750px'}), style={'textAlign':'center'})
 
 @app.callback(dash.dependencies.Output('console-out','srcDoc'),
     [dash.dependencies.Input('interval', 'n_intervals')])
 def update_console_output(n):
-    file = open('log.txt', 'r')
     data=''
-    lines = file.readlines()
-    if lines.__len__()<=20:
-        last_lines=lines
-    else:
-        last_lines = lines[-20:]
-    for line in last_lines:
-        data=data+line + '<BR>'
-    file.close()
+    if os.path.exists('log.txt'):
+        file = open('log.txt', 'r')
+        
+        lines = file.readlines()
+        if lines.__len__()<=8:
+            last_lines=lines
+        else:
+            last_lines = lines[-8:]
+        for line in last_lines:
+            data=data+line + '<BR>'
+        file.close()
     return data
 
 
