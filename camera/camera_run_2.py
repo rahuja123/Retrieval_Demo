@@ -46,21 +46,22 @@ Base.metadata.create_all(engine)
 
 
 class ipcamCapture:
-    def __init__(self, video_path):
+    def __init__(self, cam_name, video_path):
         self.Frame = []
         self.status = False
         self.isstop = False
+        self.cam_name = cam_name
         self.capture = cv2.VideoCapture(video_path)
 
     def start(self):
         # print('ipcam started!')
-        logger.info('ipcam started!')
+        logger.info(self.cam_name+' started!')
         threading.Thread(target=self.queryframe, daemon=True, args=()).start()
 
     def stop(self):
         self.isstop = True
         # print('ipcam stopped!')
-        logger.info('ipcam stopped!')
+        logger.info(self.cam_name+' stopped!')
 
     def getframe(self):
         return self.Frame
@@ -121,26 +122,9 @@ class Camera_Process(object):
 
         ########################
 
-        if self.rtsp:
-            for i in range(self.num_cam):
-                globals()['ipcam_'+str(i)] = ipcamCapture(self.camera[self.cam_list[i]])
-                globals()['ipcam_'+str(i)].start()
-                time.sleep(1)
-        else:
-            ipcam_1 = ipcamCapture('./media/videos/'+self.cam_list[0]+'.mp4')
-            ipcam_1.start()
-            time.sleep(1)
-
-            ipcam_2 = ipcamCapture('./media/videos/'+self.cam_list[1]+'.mp4')
-            ipcam_2.start()
-            time.sleep(1)
-
-            ipcam_3 = ipcamCapture('./media/videos/'+self.cam_list[2]+'.mp4')
-            ipcam_3.start()
-            time.sleep(1)
-
-            ipcam_4 = ipcamCapture('./media/videos/'+self.cam_list[3]+'.mp4')
-            ipcam_4.start()
+        for i in range(self.num_cam):
+            globals()['ipcam_'+str(i)] = ipcamCapture(self.cam_list[i], self.camera[self.cam_list[i]])
+            globals()['ipcam_'+str(i)].start()
             time.sleep(1)
 
         xmin, ymin, xmax, ymax = self.area
