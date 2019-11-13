@@ -12,6 +12,7 @@ import cv2
 from plotting.floormap_cross_numbers import floormap_cross_numbers
 import base64
 import os
+from layout.feature_extractor_layout_sets import feature_extractor_layout_sets
 from layout.feature_extractor_layout_2 import feature_extractor_layout
 from layout.retrieval_run_layout import retrieval_run_layout
 
@@ -23,6 +24,10 @@ app.config.suppress_callback_exceptions = True
 app.scripts.config.serve_locally = True
 server = app.server
 
+SET1= ["S2-B4b-R-TR","S2-B4b-R-T","S2-B4b-L-T","S2-B4b-L-TL"]
+SET2=["S2-B3b-R-TR", "S2-B3b-R-T","S2-B3b-L-T","S2-B3b-L-TL"]
+SET3=["S2.1-B4-T" ,"S2.1-B4-R-T", "S2.1-B4-R-M" ,"S2.1-B4-R-B" , "S2.1-B3-T", "S2.1-B3-R-T","S2.1-B3-R-M","S2.1-B3-R-B"]
+global_camera_sets= [SET1, SET2, SET3]
 
 global_camera_names= ["S2-B4b-L-B","S2-B4b-L-BR","S1-B4b-L-BL","S1-B4b-R-B","S21-B4-T","S22-B4-T"]
 cams_map_testing= ["S2-B4b-L-B","S2-B4b-L-BR","S1-B4b-L-BL","S1-B4b-R-B","S21-B4-T","S22-B4-T"]
@@ -60,8 +65,21 @@ app.layout= html.Div(
                             parent_className='custom-tabs',
                             children=[
                                 dcc.Tab(
-                                    label='Feature Extractor',
+                                    label='camera_sets',
                                     value='tab1',
+                                    className='custom-tab',
+                                    selected_className='custom-tab--selected',
+                                    selected_style={'color':'#60b5ab'},
+                                    children=[
+                                        html.Div(
+                                            className="row",
+                                            children=feature_extractor_layout_sets(global_camera_sets, models_dict)
+                                        )
+                                    ]),
+
+                                dcc.Tab(
+                                    label='Feature Extractor',
+                                    value='tab2',
                                     className='custom-tab',
                                     selected_className='custom-tab--selected',
                                     selected_style={'color':'#60b5ab'},
@@ -74,7 +92,7 @@ app.layout= html.Div(
 
                                 dcc.Tab(
                                     label='Retrieval Run',
-                                    value='tab2',
+                                    value='tab3',
                                     className='custom-tab',
                                     selected_className='custom-tab--selected',
                                     selected_style={'color':'#60b5ab'},
@@ -119,12 +137,21 @@ app.layout= html.Div(
 def update_weight_dropdown(name):
     return [{'label': i, 'value': i} for i in models_dict[name]]
 
+@app.callback(
+    Output('network_weight_dropdown_sets', 'options'),
+    [Input('network_dropdown_sets', 'value')])
+def update_weight_dropdown(name):
+    return [{'label': i, 'value': i} for i in models_dict[name]]
+
 
 @app.callback(
     Output('network_weight_dropdown_reid', 'options'),
     [Input('network_dropdown_reid', 'value')])
 def update_weight_dropdown(name):
     return [{'label': i, 'value': i} for i in models_dict[name]]
+
+
+
 
 
 @app.callback(
@@ -155,6 +182,8 @@ def run_camera_run(n_clicks, reid_model, reid_weight,cam_name, reid_device):
             # return [html.P("Done!")]
 
 
+
+
 @app.callback(
     Output('camera_run_result_stop', 'children'),
     [Input('stop_button', 'n_clicks')],
@@ -166,33 +195,44 @@ def stop_camera_run(n_clicks):
         else:
             global p
             p.stop()
-            """
-            Make your changes here, Shan!
-            """
-            # from camera.camera_run import camera_run
-            # camera_run(cam_name=cam_name, rtsp=False, skip_frame=10,reid_model=reid_model,reid_weight=reid_weight, reid_device=reid_device)
+
+
+for i in range(3):
+    @app.callback(
+        Output('camera_run_result_{}_sets'.format(i+1), 'children'),
+        [Input('camera_run_{}_sets'.format(i+1), 'n_clicks')],
+        [State('network_dropdown_sets','value'),
+         State('network_weight_dropdown_sets', 'value'),
+         State('camera_name_dropdown_{}_sets'.format(i+1), 'value'),
+         State('devices_dropdown_{}_sets'.format(i+1),'value')]
+    )
+    def run_camera_run_sets(n_clicks, reid_model, reid_weight,cam_name, reid_device):
+
+        if n_clicks is None:
+            raise PreventUpdate
+        else:
+
+            print("Working")
+            # from camera.camera_run_1 import camera_run
+            # camera_run(cam_name, True, 10,reid_model,reid_weight, reid_device)
             # print("Done Donaaa Done")
-            # return [html.P("Stopped!")]
+            # return [html.P("Done!")]
+    @app.callback(
+        Output('camera_stop_result_{}_sets'.format(i+1), 'children'),
+        [Input('camera_stop_{}_sets'.format(i+1), 'n_clicks')],
+    )
+    def stop_camera_run_sets(n_clicks):
+
+            if n_clicks is None:
+                raise PreventUpdate
+            else:
+
+                print("stopped")
+                # global p
+                # p.stop()
 
 
-# for i in range(4):
-#     @app.callback(
-#         Output('camera_run_result_{}'.format(i+1), 'children'),
-#         [Input('camera_run_{}'.format(i+1), 'n_clicks')],
-#         [State('network_dropdown','value'),
-#          State('network_weight_dropdown', 'value'),
-#          State('camera_name_dropdown_{}'.format(i+1), 'value'),
-#          State('devices_dropdown_{}'.format(i+1),'value')]
-#     )
-#     def run_camera_run(n_clicks, reid_model, reid_weight,cam_name, reid_device):
-#
-#         if n_clicks is None:
-#             raise PreventUpdate
-#         else:
-#             from camera.camera_run import camera_run
-#             camera_run(cam_name=cam_name, rtsp=False, skip_frame=10,reid_model=reid_model,reid_weight=reid_weight, reid_device=reid_device)
-#             print("Done Donaaa Done")
-#             return [html.P("Done!")]
+
 
 
 def parse_contents(contents):
@@ -382,7 +422,7 @@ def update_floormaps(n_clicks):
                 color='Black',
                 width=2
             )), showlegend=True)
-        
+
         trace_s22=go.Scatter(x= df_line_traces['S22']['x'], y= df_line_traces['S22']['y'], hovertext=df_line_traces['S22']['customdata'] , name='S2.2', mode= 'lines+markers', line=dict(width=10),  marker=dict(size=20,line=dict(
                 color='Black',
                 width=2
@@ -419,7 +459,7 @@ def update_console_output(n):
     data=''
     if os.path.exists('log.txt'):
         file = open('log.txt', 'r')
-        
+
         lines = file.readlines()
         if lines.__len__()<=8:
             last_lines=lines

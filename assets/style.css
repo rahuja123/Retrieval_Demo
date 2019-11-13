@@ -127,7 +127,7 @@ a {
 
 .button_submit {
   height: 38px;
-  width: 100px;
+  width: 60px;
   padding: 0;
   color: Black;
   text-align: center;
@@ -143,7 +143,7 @@ a {
   border: 1px solid white;
   cursor: pointer;
   box-sizing: border-box;
-  margin-left: 35px;
+  margin-left: 15px;
   margin-right: 5px;
   margin-top: 20px;
   margin-bottom: 50px;
