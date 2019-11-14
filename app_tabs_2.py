@@ -429,8 +429,9 @@ def update_output2(n_clicks, camera_dropdown_values, frame_rate, reid_model, rei
         path= "ROSE LAB "
 
         for camera in camera_dropdown_values:
-            output_array.append(parse_gallery(folder_name, camera, int(frame_rate), reid_model, reid_weight, reid_device))
-            path = path + "<-- "+ str(camera)+" "
+            if len(os.listdir(os.path.join('static',camera))) > 0:
+                output_array.append(parse_gallery(folder_name, camera, int(frame_rate), reid_model, reid_weight, reid_device))
+                path = path + "<-- "+ str(camera)+" "
 
         hidden_divs=[]
         for counter, name in enumerate(global_camera_names):
