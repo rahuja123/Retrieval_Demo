@@ -466,7 +466,7 @@ def calculate_line_trace(camera_dict_list):
         camera_name= tuple[0]
         final_cameras_list.append(camera_name)
         building_name= camera_name.split('-')[0]
-        floor_name= camera_name.split('-')[1]
+        floor_name= camera_name.split('-')[1][:2]
         time= tuple[1]
 
         final_trace[building_name]['x'].append(time)
