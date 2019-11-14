@@ -353,6 +353,7 @@ def parse_gallery(folder_name, camera_name, frame_rate,reid_model, reid_weight, 
     children=[]
     cam_name_list=[camera_name]
     img_path= 'static/query/query.png'
+    print(cam_name_list)
     image_list = retrieval(img_path,cam_name_list,frame_rate,reid_model, reid_weight, reid_device )
     MIN_NUM= min(int(frame_rate),len(image_list))
     images_timestamp=[]
@@ -405,20 +406,23 @@ def update_output2(n_clicks, camera_dropdown_values, frame_rate, reid_model, rei
                     camera_dropdown_values.append(cam_name)
             camera_dropdown_values= list(set(camera_dropdown_values))
 
-        elif 'SET1' in camera_dropdown_values:
+        if 'SET1' in camera_dropdown_values:
             for cam_name in global_camera_sets[0]:
                 camera_dropdown_values.append(cam_name)
             camera_dropdown_values= list(set(camera_dropdown_values))
+            camera_dropdown_values.remove('SET1')
 
-        elif 'SET2' in camera_dropdown_values:
+        if 'SET2' in camera_dropdown_values:
             for cam_name in global_camera_sets[1]:
                 camera_dropdown_values.append(cam_name)
             camera_dropdown_values= list(set(camera_dropdown_values))
+            camera_dropdown_values.remove('SET2')
 
-        elif 'SET3' in camera_dropdown_values:
+        if 'SET3' in camera_dropdown_values:
             for cam_name in global_camera_sets[2]:
                 camera_dropdown_values.append(cam_name)
             camera_dropdown_values= list(set(camera_dropdown_values))
+            camera_dropdown_values.remove('SET3')
 
         folder_name= "demo"
         output_array=[]
@@ -435,7 +439,7 @@ def update_output2(n_clicks, camera_dropdown_values, frame_rate, reid_model, rei
 
         final_output= html.Div(children=output_array)
 
-        return  final_output, hidden_divs, [" "]
+        return  final_output, hidden_divs
 
 
 
@@ -481,6 +485,8 @@ def update_floormaps(n_clicks):
 
         global image_value_list
         image_value_list = list(filter(lambda a: a !='None', image_value_list))
+
+        print( "image_value_list",image_value_list)
         for name in image_value_list:
             name_split= name.split('_')
             time_stamp= name_split[1]
