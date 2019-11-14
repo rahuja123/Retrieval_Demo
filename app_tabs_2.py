@@ -26,7 +26,7 @@ server = app.server
 
 SET1= ["S2-B4b-R-TR","S2-B4b-R-T","S2-B4b-L-T","S2-B4b-L-TL"]
 SET2=["S2-B3b-R-TR", "S2-B3b-R-T","S2-B3b-L-T","S2-B3b-L-TL"]
-SET3=["S2.1-B4-T" ,"S2.1-B4-R-T", "S2.1-B4-R-M" ,"S2.1-B4-R-B" , "S2.1-B3-T", "S2.1-B3-R-T","S2.1-B3-R-M","S2.1-B3-R-B"]
+SET3=["S21-B4-T" ,"S21-B4-R-T", "S21-B4-R-M" ,"S21-B4-R-B" , "S21-B3-T", "S21-B3-R-T","S21-B3-R-M","S21-B3-R-B"]
 global_camera_sets= [SET1, SET2, SET3]
 
 global_camera_names= ["S2-B4b-L-B","S2-B4b-L-BR","S1-B4b-L-BL","S1-B4b-R-B","S21-B4-T","S22-B4-T"]
@@ -528,6 +528,7 @@ def update_floormaps(n_clicks):
         return GRAPH
 
 
+
 @app.callback(Output('experimental_section', 'children'),
                         [Input('floormaps_graph', 'hoverData')])
 def update_experiments(hoverData):
@@ -555,4 +556,4 @@ def update_console_output(n):
 
 
 if __name__ == '__main__':
-    app.run_server(debug=True, port=8052)
+    app.run_server(debug=True, port=8051)

@@ -23,8 +23,6 @@ warnings.filterwarnings("ignore")
 
 ### Create Dataset ##
 engine = create_engine('sqlite:///database.db')
-Session = sessionmaker(bind=engine)
-session = Session()
 logger = make_logger('feature_extractor','.','log')
 Base = declarative_base()
 
@@ -74,6 +72,10 @@ class ipcamCapture:
 ## Load Video ["S1-B4b-L_5","S21-B4-L-13","S21-B4-L-15","S21-B4-R-10"]
 class Camera_Process(object):
     def __init__(self, cam_list=["S1-B4b-L-B","S21-B4-T","S1-B3b-L-TL","S2-B4b-L-B"], rtsp=True, reid_model='ResNet50', reid_weight='ResNet50_Market.pth', reid_device='cpu'):
+
+        Session = sessionmaker(bind=engine)
+        self.session = Session()
+
         self.isstop = False
         self.num_cam = len(cam_list)
         reader = csv.reader(open('camera/camera.csv', 'r'))
@@ -150,7 +152,7 @@ class Camera_Process(object):
                                 cropped = frame[y1:y2,x1:x2]
 
                                 # print("Detection {}, {}, {}, {}".format(x1,y1,x2,y2))
-                                logger.info("Detection {}, {}, {}, {}".format(x1,y1,x2,y2))
+                                logger.info("Detection {}, {}, {}, {} on cam: {}".format(x1,y1,x2,y2,self.cam_list[cam_i]))
 
                                 cam_name = self.cam_list[cam_i]
                                 image_path = os.path.join('static',cam_name)
@@ -160,8 +162,8 @@ class Camera_Process(object):
                                 feature = self.extractor(pil_image)[0]
                                 embed = str(feature.tostring())
                                 record = Feature(cam_name=cam_name, track_num=i, feature=embed,bb_coord=str(box),current_time=current_time,image_name=image_name)
-                                session.add(record)
-                        session.commit()
+                                self.session.add(record)
+                        self.session.commit()
 
 if __name__=="__main__":
     fire.Fire(camera_run)
