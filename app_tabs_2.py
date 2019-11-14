@@ -99,7 +99,7 @@ app.layout= html.Div(
                                     children=[
                                         html.Div(
                                             className="row",
-                                            children=retrieval_run_layout(global_camera_names, models_dict)
+                                            children=retrieval_run_layout(global_camera_sets, models_dict)
                                         )
                                     ]),
 
@@ -399,8 +399,26 @@ def update_output2(n_clicks, camera_dropdown_values, frame_rate, reid_model, rei
     else:
 
         if 'ALL' in camera_dropdown_values:
-            camera_dropdown_values= global_camera_names
+            camera_dropdown_values=[]
+            for set_list in global_camera_sets:
+                for cam_name in set_list:
+                    camera_dropdown_values.append(cam_name)
+            camera_dropdown_values= list(set(camera_dropdown_values))
 
+        elif 'SET1' in camera_dropdown_values:
+            for cam_name in global_camera_sets[0]:
+                camera_dropdown_values.append(cam_name)
+            camera_dropdown_values= list(set(camera_dropdown_values))
+
+        elif 'SET2' in camera_dropdown_values:
+            for cam_name in global_camera_sets[1]:
+                camera_dropdown_values.append(cam_name)
+            camera_dropdown_values= list(set(camera_dropdown_values))
+
+        elif 'SET3' in camera_dropdown_values:
+            for cam_name in global_camera_sets[2]:
+                camera_dropdown_values.append(cam_name)
+            camera_dropdown_values= list(set(camera_dropdown_values))
 
         folder_name= "demo"
         output_array=[]
@@ -537,4 +555,4 @@ def update_console_output(n):
 
 
 if __name__ == '__main__':
-    app.run_server(debug=True, port=8051)
+    app.run_server(debug=True, port=8052)
