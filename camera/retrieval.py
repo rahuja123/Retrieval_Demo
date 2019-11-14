@@ -72,15 +72,17 @@ def retrieval(query="static/query/query.png",cam_name_list=['S1-B4b-L-B'],rank=1
     distmat.addmm_(1, -2, qf, gf.t())
     distmat = distmat.cpu().numpy()
     indices = np.argsort(distmat, axis=1)[0]
+    print('size:'+str(len(indices)))
 
     image_list=[]
     
-    if rank > len(indices):
+    if rank < len(indices):
         number = int(rank)
     else:
         number = len(indices)
         
     for i in range(number):
+        print(indices)
         index = int(indices[i])
         image_path = os.path.join('static',gf_image[index])
         image_list.append(image_path)
