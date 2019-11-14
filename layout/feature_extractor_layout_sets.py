@@ -6,7 +6,7 @@ import dash_html_components as html
 def populate_devices():
     options= [{'label':'CPU', 'value':'cpu'}]
     for i in range(8):
-        options.append({'label':'GPU cuda:{}'.format(i),'value':'cuda:{}'.format(i)})
+        options.append({'label':'GPU {}'.format(i),'value':'cuda:{}'.format(i)})
 
     return options
 
@@ -59,11 +59,12 @@ def feature_extractor_layout_sets(global_camera_sets,models_dict):
                         html.Div(
                             className='four columns',
                             children=[
-                                html.P("Camera:", className="p-dropdown"),
+                                html.P("Set 1:", className="p-dropdown"),
                                 dcc.Dropdown(
                                     id='camera_name_dropdown_1_sets',
                                     options=populate_camera_dropdown_menu(global_camera_sets[0]),
                                     placeholder="Camera...",
+                                    multi=True,
                                 )
                             ]
                         ),
@@ -109,11 +110,12 @@ def feature_extractor_layout_sets(global_camera_sets,models_dict):
                         html.Div(
                             className='four columns',
                             children=[
-                                html.P("Camera:", className="p-dropdown"),
+                                html.P("Set 2:", className="p-dropdown"),
                                 dcc.Dropdown(
                                     id='camera_name_dropdown_2_sets',
                                     options=populate_camera_dropdown_menu(global_camera_sets[1]),
                                     placeholder="Camera...",
+                                    multi=True,
                                 )
                             ]
                         ),
@@ -157,11 +159,12 @@ def feature_extractor_layout_sets(global_camera_sets,models_dict):
                         html.Div(
                             className='four columns',
                             children=[
-                                html.P("Camera:", className="p-dropdown"),
+                                html.P("Set 3:", className="p-dropdown"),
                                 dcc.Dropdown(
                                     id='camera_name_dropdown_3_sets',
                                     options=populate_camera_dropdown_menu(global_camera_sets[2]),
                                     placeholder="Camera...",
+                                    multi=True,
                                 )
                             ]
                         ),

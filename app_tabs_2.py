@@ -24,9 +24,9 @@ app.config.suppress_callback_exceptions = True
 app.scripts.config.serve_locally = True
 server = app.server
 
-SET1= ["S2-B4b-R-TR","S2-B4b-R-T","S2-B4b-L-T","S2-B4b-L-TL"]
-SET2=["S2-B3b-R-TR", "S2-B3b-R-T","S2-B3b-L-T","S2-B3b-L-TL"]
-SET3=["S21-B4-T" ,"S21-B4-R-T", "S21-B4-R-M" ,"S21-B4-R-B" , "S21-B3-T", "S21-B3-R-T","S21-B3-R-M","S21-B3-R-B"]
+SET1= ["S2-B4b-R-TR","S2-B4b-R-TL","S2-B4b-R-BR","S2-B4b-R-BL","S2-B4b-L-TR","S2-B4b-L-TL","S2-B4b-L-BR","S2-B4b-L-BL"]
+SET2= ["S21-B3-L-T", "S21-B3-R-B","S22-B3-L-T", "S22-B3-R-B", "S21-B4-L-T", "S21-B4-R-B","S22-B4-L-T", "S22-B4-R-B"]
+SET3= ["S1-B4b-L-BL","S1-B4b-L-BR", "S1-B4b-R-BL","S1-B4b-L-BR","S1-B3b-L-TL","S1-B3b-L-TR", "S1-B3b-R-TL","S1-B3b-L-TR"]
 global_camera_sets= [SET1, SET2, SET3]
 
 global_camera_names= ["S2-B4b-L-B","S2-B4b-L-BR","S1-B4b-L-BL","S1-B4b-R-B","S21-B4-T","S22-B4-T"]
@@ -65,7 +65,7 @@ app.layout= html.Div(
                             parent_className='custom-tabs',
                             children=[
                                 dcc.Tab(
-                                    label='camera_sets',
+                                    label='Extractor/Set',
                                     value='tab1',
                                     className='custom-tab',
                                     selected_className='custom-tab--selected',
@@ -78,7 +78,7 @@ app.layout= html.Div(
                                     ]),
 
                                 dcc.Tab(
-                                    label='Feature Extractor',
+                                    label='Extractor/Single',
                                     value='tab2',
                                     className='custom-tab',
                                     selected_className='custom-tab--selected',
@@ -91,7 +91,7 @@ app.layout= html.Div(
                                     ]),
 
                                 dcc.Tab(
-                                    label='Retrieval Run',
+                                    label='Retrieval',
                                     value='tab3',
                                     className='custom-tab',
                                     selected_className='custom-tab--selected',
@@ -352,14 +352,15 @@ def update_options(camera_name , frame_rate, images_timestamp):
 def parse_gallery(folder_name, camera_name, frame_rate,reid_model, reid_weight, reid_device):
     children=[]
     cam_name_list=[camera_name]
-    img_path= 'static/query/query.png'
+    img_path= os.path.join('static','query','query.png')
     image_list = retrieval(img_path,cam_name_list,frame_rate,reid_model, reid_weight, reid_device )
     MIN_NUM= min(int(frame_rate),len(image_list))
     images_timestamp=[]
     for i in range(int(MIN_NUM)):
         image_src= image_list[i]
         image_id= "{}".format(camera_name)+ " "+ "Rank {}".format(i+1)
-        time_stamp= image_src.split('/')[-1].split('.')[0].split('_')[0]
+        image_path_list = os.path.split(image_src)[1]
+        time_stamp= image_path_list.split('.')[0].split('_')[0]
         time_stamp= datetime.strptime(time_stamp, '%Y-%m-%d-%H-%M-%S-%f')
         images_timestamp.append(time_stamp)
 

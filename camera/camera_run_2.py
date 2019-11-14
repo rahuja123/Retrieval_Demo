@@ -144,7 +144,7 @@ class Camera_Process(object):
                     if bbox_xywh is not None:
                         for i,box in enumerate(bbox_xywh):
                             x,y,w,h = box
-                            if h/w > 2 and w > 30:
+                            if h/w > 2 and w > 60:
                                 x1 = max(int(x-w/2),0)
                                 x2 = min(int(x+w/2),self.im_width-1)
                                 y1 = max(int(y-h/2),0)
@@ -152,7 +152,7 @@ class Camera_Process(object):
                                 cropped = frame[y1:y2,x1:x2]
 
                                 # print("Detection {}, {}, {}, {}".format(x1,y1,x2,y2))
-                                logger.info("Detection {}, {}, {}, {} on cam: {}".format(x1,y1,x2,y2,self.cam_list[cam_i]))
+                                logger.info("{} : {}, {}, {}, {}".format(self.cam_list[cam_i],x1,y1,x2,y2))
 
                                 cam_name = self.cam_list[cam_i]
                                 image_path = os.path.join('static',cam_name)
