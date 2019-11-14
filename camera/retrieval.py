@@ -47,12 +47,9 @@ def retrieval(query="static/query/query.png",cam_name_list=['S1-B4b-L-B'],rank=1
 
     Base.metadata.create_all(engine)
 
-
-    print(rank)
     embed_npdtype = np.float32
     extractor = Extractor(reid_model,reid_weight,reid_device=reid_device)
     target_img = cv2.imread(query)[:,:,(2,1,0)]
-    # print(target_img)
     pil_image=cv2.cvtColor(target_img, cv2.COLOR_BGR2RGB)
     qf = torch.from_numpy(extractor(pil_image)).float().to(reid_device)
 
@@ -77,7 +74,12 @@ def retrieval(query="static/query/query.png",cam_name_list=['S1-B4b-L-B'],rank=1
     indices = np.argsort(distmat, axis=1)[0]
 
     image_list=[]
-    number = int(rank)
+    
+    if rank > len(indices):
+        number = int(rank)
+    else:
+        number = len(indices)
+        
     for i in range(number):
         index = int(indices[i])
         image_path = os.path.join('static',gf_image[index])

@@ -24,8 +24,6 @@ weight_list = {
     'ResNet101_Market.pth': '1k_uUDsaB9ztIaGx04GJofy4C6mDRuVQO',
     'SE_ResNet50_Market.pth': '1y5rD48J0AIk9rlwJUkhtwm0KF5dwGD-f',
     'SE_ResNet101_Market.pth': '1ik1b3SJMTiR5N4m_nojfgpLVMBmLXaRU',
-    '120_Paper_MGN.pth': '',
-    'resnet101.pth': '',
 }
 
 ##########################

@@ -6,7 +6,7 @@ import dash_html_components as html
 def populate_devices():
     options= [{'label':'CPU', 'value':'cpu'}]
     for i in range(8):
-        options.append({'label':'GPU cuda:{}'.format(i),'value':'cuda:{}'.format(i)})
+        options.append({'label':'GPU {}'.format(i),'value':'cuda:{}'.format(i)})
 
     return options
 
@@ -104,6 +104,8 @@ def retrieval_run_layout(global_camera_sets,models_dict):
                     id='frame_rate',
                     className="div-for-dropdown",
                     options=[
+                        {'label': '1', 'value': '1'},
+                        {'label': '3', 'value': '3'},
                         {'label': '5', 'value': '5'},
                         {'label': '10', 'value': '10'},
                     ],

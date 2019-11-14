@@ -6,7 +6,7 @@ import dash_html_components as html
 def populate_devices():
     options= [{'label':'CPU', 'value':'cpu'}]
     for i in range(8):
-        options.append({'label':'GPU cuda:{}'.format(i),'value':'cuda:{}'.format(i)})
+        options.append({'label':'GPU {}'.format(i),'value':'cuda:{}'.format(i)})
 
     return options
 
