@@ -197,39 +197,113 @@ def stop_camera_run(n_clicks):
             p.stop()
 
 
-for i in range(3):
-    @app.callback(
-        Output('camera_run_result_{}_sets'.format(i+1), 'children'),
-        [Input('camera_run_{}_sets'.format(i+1), 'n_clicks')],
-        [State('network_dropdown_sets','value'),
-         State('network_weight_dropdown_sets', 'value'),
-         State('camera_name_dropdown_{}_sets'.format(i+1), 'value'),
-         State('devices_dropdown_{}_sets'.format(i+1),'value')]
-    )
-    def run_camera_run_sets(n_clicks, reid_model, reid_weight,cam_name, reid_device):
+@app.callback(
+    Output('camera_run_result_1_sets', 'children'),
+    [Input('camera_run_1_sets', 'n_clicks')],
+    [State('network_dropdown_sets','value'),
+     State('network_weight_dropdown_sets', 'value'),
+     State('camera_name_dropdown_1_sets', 'value'),
+     State('devices_dropdown_1_sets','value')]
+)
+def run_camera_run_sets(n_clicks, reid_model, reid_weight,cam_name, reid_device):
+
+    if n_clicks is None:
+        raise PreventUpdate
+    else:
+        # print("working1")
+        if 'ALL' in cam_name:
+            cam_name= global_camera_sets[0]
+
+        from camera.camera_run_2 import Camera_Process
+        globals()['p1'] = Camera_Process(cam_list=cam_name, rtsp=True, reid_model=reid_model,reid_weight=reid_weight, reid_device=reid_device)
+        p1.start()
+
+
+@app.callback(
+    Output('camera_stop_result_1_sets', 'children'),
+    [Input('camera_stop_1_sets', 'n_clicks')],
+)
+def stop_camera_run_sets(n_clicks):
+
+        if n_clicks is None:
+            raise PreventUpdate
+        else:
+            print("stopped")
+            global p1
+            p1.stop()
+
+
+
+@app.callback(
+    Output('camera_run_result_2_sets', 'children'),
+    [Input('camera_run_2_sets', 'n_clicks')],
+    [State('network_dropdown_sets','value'),
+     State('network_weight_dropdown_sets', 'value'),
+     State('camera_name_dropdown_2_sets', 'value'),
+     State('devices_dropdown_2_sets','value')]
+)
+def run_camera_run_sets(n_clicks, reid_model, reid_weight,cam_name, reid_device):
+
+    if n_clicks is None:
+        raise PreventUpdate
+    else:
+        # print("working2")
+        if 'ALL' in cam_name:
+            cam_name= global_camera_sets[1]
+
+        from camera.camera_run_2 import Camera_Process
+        globals()['p2'] = Camera_Process(cam_list=cam_name, rtsp=True, reid_model=reid_model,reid_weight=reid_weight, reid_device=reid_device)
+        p2.start()
+
+@app.callback(
+    Output('camera_stop_result_2_sets', 'children'),
+    [Input('camera_stop_2_sets', 'n_clicks')],
+)
+def stop_camera_run_sets(n_clicks):
 
         if n_clicks is None:
             raise PreventUpdate
         else:
 
-            print("Working")
-            # from camera.camera_run_1 import camera_run
-            # camera_run(cam_name, True, 10,reid_model,reid_weight, reid_device)
-            # print("Done Donaaa Done")
-            # return [html.P("Done!")]
-    @app.callback(
-        Output('camera_stop_result_{}_sets'.format(i+1), 'children'),
-        [Input('camera_stop_{}_sets'.format(i+1), 'n_clicks')],
-    )
-    def stop_camera_run_sets(n_clicks):
+            print("stopped")
+            global p2
+            p2.stop()
 
-            if n_clicks is None:
-                raise PreventUpdate
-            else:
 
-                print("stopped")
-                # global p
-                # p.stop()
+@app.callback(
+    Output('camera_run_result_3_sets', 'children'),
+    [Input('camera_run_3_sets', 'n_clicks')],
+    [State('network_dropdown_sets','value'),
+     State('network_weight_dropdown_sets', 'value'),
+     State('camera_name_dropdown_3_sets', 'value'),
+     State('devices_dropdown_3_sets','value')]
+)
+def run_camera_run_sets(n_clicks, reid_model, reid_weight,cam_name, reid_device):
+
+    if n_clicks is None:
+        raise PreventUpdate
+    else:
+        # print("working3")
+        if 'ALL' in cam_name:
+            cam_name= global_camera_sets[2]
+
+        from camera.camera_run_2 import Camera_Process
+        globals()['p3'] = Camera_Process(cam_list=cam_name, rtsp=True, reid_model=reid_model,reid_weight=reid_weight, reid_device=reid_device)
+        p3.start()
+
+
+@app.callback(
+    Output('camera_stop_result_3_sets', 'children'),
+    [Input('camera_stop_3_sets', 'n_clicks')],
+)
+def stop_camera_run_sets(n_clicks):
+
+        if n_clicks is None:
+            raise PreventUpdate
+        else:
+            print("stopped")
+            global p3
+            p3.stop()
 
 
 
