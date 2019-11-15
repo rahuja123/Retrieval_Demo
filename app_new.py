@@ -321,7 +321,7 @@ for counter,name in enumerate(global_camera_names):
 
 
 def calculate_line_trace(camera_dict_list):
-    final_trace={'S1':{'x':[], 'y':[], 'customdata':[]}, 'S2':{'x':[], 'y':[], 'customdata':[]}, 'S21':{'x':[],'y':[], 'customdata':[]}}
+    final_trace={'S1':{'x':[], 'y':[], 'customdata':[]}, 'S2':{'x':[], 'y':[], 'customdata':[]}, 'S21':{'x':[],'y':[], 'customdata':[]}, 'S22':{'x':[],'y':[], 'customdata':[]}}
     # final_trace={}
     final_cameras_list=[]
     for tuple in camera_dict_list:
@@ -383,8 +383,13 @@ def update_floormaps(n_clicks):
                 color='Black',
                 width=2
             )), showlegend=True)
+        
+        trace_s22=go.Scatter(x= df_line_traces['S22']['x'], y= df_line_traces['S22']['y'], hovertext=df_line_traces['S22']['customdata'] , name='S2.2', mode= 'lines+markers', line=dict(width=10),  marker=dict(size=20,line=dict(
+                color='Black',
+                width=2
+            )), showlegend=True)
 
-        final_trace= [trace_s1, trace_s2, trace_s21]
+        final_trace= [trace_s1, trace_s2, trace_s21, trace_s22]
 
         GRAPH = dcc.Graph(
             id="floormaps_graph",

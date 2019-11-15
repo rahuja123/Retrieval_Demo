@@ -22,9 +22,6 @@ if not os.path.exists(os.path.join('static','query')):
     os.makedirs(os.path.join('static','query'))
 
 def retrieval(query="static/query/query.png",cam_name_list=['S1-B4b-L-B'],rank=10, reid_model='ResNet50', reid_weight='ResNet50_Market.pth', reid_device='cpu'):
-
-    warnings.filterwarnings("ignore")
-
     engine = create_engine('sqlite:///database.db')
     Session = sessionmaker(bind=engine)
     session = Session()
@@ -47,6 +44,7 @@ def retrieval(query="static/query/query.png",cam_name_list=['S1-B4b-L-B'],rank=1
 
     Base.metadata.create_all(engine)
 
+    print(rank)
     embed_npdtype = np.float32
     extractor = Extractor(reid_model,reid_weight,reid_device=reid_device)
     target_img = cv2.imread(query)[:,:,(2,1,0)]
