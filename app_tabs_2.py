@@ -12,6 +12,7 @@ import cv2
 from plotting.floormap_cross_numbers import floormap_cross_numbers
 import base64
 import os
+from layout.feature_extractor_layout_sets import feature_extractor_layout_sets
 from layout.feature_extractor_layout_2 import feature_extractor_layout
 from layout.retrieval_run_layout import retrieval_run_layout
 
@@ -23,10 +24,14 @@ app.config.suppress_callback_exceptions = True
 app.scripts.config.serve_locally = True
 server = app.server
 
+SET1= ["S2-B4b-R-TR","S2-B4b-R-TL","S2-B4b-R-BR","S2-B4b-R-BL","S2-B4b-L-TR","S2-B4b-L-TL","S2-B4b-L-BR","S2-B4b-L-BL"]
+SET2= ["S21-B3-L-T", "S21-B3-R-B","S22-B3-L-T", "S22-B3-R-B", "S21-B4-L-T", "S21-B4-R-B","S22-B4-L-T", "S22-B4-R-B"]
+SET3= ["S1-B4b-L-BL","S1-B4b-L-BR", "S1-B4b-R-BL","S1-B4b-L-BR","S1-B3b-L-TL","S1-B3b-L-TR", "S1-B3b-R-TL","S1-B3b-L-TR"]
+global_camera_sets= [SET1, SET2, SET3]
 
-global_camera_names= ["S1-B4b-L-B","S1-B4b-L-BR","S1-B4b-L-BL","S1-B4b-R-B","S1-B4b-R-BR","S1-B4b-R-BL"]
-cams_map_testing= ["S1-B4b-L-B","S1-B4b-L-BR","S1-B4b-L-BL","S1-B4b-R-B","S1-B4b-R-BR","S1-B4b-R-BL"]
-models_dict={'Net':['Net_Market.t7'],'ResNet50':['ResNet50_Market.pth'],'ResNet101':['ResNet101_Market.pth'],'SE_ResNet50':['SE_ResNet50_Market.pth'],'SE_ResNet101':['SE_ResNet101_Market.pth']}
+global_camera_names= ["S2-B4b-L-B","S2-B4b-L-BR","S1-B4b-L-BL","S1-B4b-R-B","S21-B4-T","S22-B4-T"]
+cams_map_testing= ["S2-B4b-L-B","S2-B4b-L-BR","S1-B4b-L-BL","S1-B4b-R-B","S21-B4-T","S22-B4-T"]
+models_dict={'ResNet50':['ResNet50_Market.pth'],'ResNet101':['ResNet101_Market.pth'],'SE_ResNet50':['SE_ResNet50_Market.pth'],'SE_ResNet101':['SE_ResNet101_Market.pth']}
 image_value_list=[]
 output_result=[]
 camera_dict= dict.fromkeys(global_camera_names)
@@ -42,10 +47,10 @@ app.layout= html.Div(
                         html.Div(
                             [
                                 html.Img(
-                                    src= app.get_asset_url("NTU_logo_white.png"), className="logo"
+                                    src= app.get_asset_url("NTU_logo_new.png"), className="logo"
                                 ),
                                 # html.Img(
-                                #     src= app.get_asset_url("rose_lab_logo.png"), className="rose-lab-logo"
+                                #     src= app.get_asset_url("rose_lab_logo.png"), className="logo"
                                 # )
                             ],className="logo_section"
                         ),
@@ -60,8 +65,21 @@ app.layout= html.Div(
                             parent_className='custom-tabs',
                             children=[
                                 dcc.Tab(
-                                    label='Feature Extractor',
+                                    label='Extractor/Set',
                                     value='tab1',
+                                    className='custom-tab',
+                                    selected_className='custom-tab--selected',
+                                    selected_style={'color':'#60b5ab'},
+                                    children=[
+                                        html.Div(
+                                            className="row",
+                                            children=feature_extractor_layout_sets(global_camera_sets, models_dict)
+                                        )
+                                    ]),
+
+                                dcc.Tab(
+                                    label='Extractor/Single',
+                                    value='tab2',
                                     className='custom-tab',
                                     selected_className='custom-tab--selected',
                                     selected_style={'color':'#60b5ab'},
@@ -73,25 +91,28 @@ app.layout= html.Div(
                                     ]),
 
                                 dcc.Tab(
-                                    label='Retrieval Run',
-                                    value='tab2',
+                                    label='Retrieval',
+                                    value='tab3',
                                     className='custom-tab',
                                     selected_className='custom-tab--selected',
                                     selected_style={'color':'#60b5ab'},
                                     children=[
                                         html.Div(
                                             className="row",
-                                            children=retrieval_run_layout(global_camera_names, models_dict)
+                                            children=retrieval_run_layout(global_camera_sets, models_dict)
                                         )
                                     ]),
 
                             ]),
+                            html.Iframe(id='console-out',className="console-out", srcDoc='Hello'),
+                            dcc.Interval(id="interval", interval=500, n_intervals=0),
 
-                    ], className="three columns div-user-controls"
+                    ], className="four columns div-user-controls"
                 ),
                 html.Div(
                     [
                         html.Div(id='state_container', style={'display': 'none'}),
+                        html.Br(),
                         html.Div(id="camera_outputs", style={'margin-top':50,}),
                         html.Br(),
                         html.Div(id="floormaps_output", className='floormaps_output'),
@@ -99,7 +120,7 @@ app.layout= html.Div(
                         html.Br(),
                         html.Div(id="experimental_section"),
 
-                    ], className="nine columns div-for-charts bg-grey"
+                    ], className="eight columns div-for-charts bg-grey"
                 )
 
             ]
@@ -116,12 +137,21 @@ app.layout= html.Div(
 def update_weight_dropdown(name):
     return [{'label': i, 'value': i} for i in models_dict[name]]
 
+@app.callback(
+    Output('network_weight_dropdown_sets', 'options'),
+    [Input('network_dropdown_sets', 'value')])
+def update_weight_dropdown(name):
+    return [{'label': i, 'value': i} for i in models_dict[name]]
+
 
 @app.callback(
     Output('network_weight_dropdown_reid', 'options'),
     [Input('network_dropdown_reid', 'value')])
 def update_weight_dropdown(name):
     return [{'label': i, 'value': i} for i in models_dict[name]]
+
+
+
 
 
 @app.callback(
@@ -139,17 +169,19 @@ def run_camera_run(n_clicks, reid_model, reid_weight,cam_name, reid_device):
         else:
             if 'ALL' in cam_name:
                 cam_name= global_camera_names
-                
+
             from camera.camera_run_2 import Camera_Process
             globals()['p'] = Camera_Process(cam_list=cam_name, rtsp=True, reid_model=reid_model,reid_weight=reid_weight, reid_device=reid_device)
             p.start()
-            
+
             # camera_run(cam_name=cam_name, rtsp=False, skip_frame=10,reid_model=reid_model,reid_weight=reid_weight, reid_device=reid_device)
             # print("Done Donaaa Done")
             # from camera.camera_run import camera_run
             # camera_run(cam_name=cam_name, rtsp=False, skip_frame=10,reid_model=reid_model,reid_weight=reid_weight, reid_device=reid_device)
             # print("Done Donaaa Done")
-            return [html.P("Done!")]
+            # return [html.P("Done!")]
+
+
 
 
 @app.callback(
@@ -161,38 +193,120 @@ def stop_camera_run(n_clicks):
         if n_clicks is None:
             raise PreventUpdate
         else:
-            # try:
             global p
             p.stop()
-            # except:
-            #     pass
-            """
-            Make your changes here, Shan!
-            """
-            # from camera.camera_run import camera_run
-            # camera_run(cam_name=cam_name, rtsp=False, skip_frame=10,reid_model=reid_model,reid_weight=reid_weight, reid_device=reid_device)
-            # print("Done Donaaa Done")
-            return [html.P("Stopped!")]
 
 
-# for i in range(4):
-#     @app.callback(
-#         Output('camera_run_result_{}'.format(i+1), 'children'),
-#         [Input('camera_run_{}'.format(i+1), 'n_clicks')],
-#         [State('network_dropdown','value'),
-#          State('network_weight_dropdown', 'value'),
-#          State('camera_name_dropdown_{}'.format(i+1), 'value'),
-#          State('devices_dropdown_{}'.format(i+1),'value')]
-#     )
-#     def run_camera_run(n_clicks, reid_model, reid_weight,cam_name, reid_device):
-#
-#         if n_clicks is None:
-#             raise PreventUpdate
-#         else:
-#             from camera.camera_run import camera_run
-#             camera_run(cam_name=cam_name, rtsp=False, skip_frame=10,reid_model=reid_model,reid_weight=reid_weight, reid_device=reid_device)
-#             print("Done Donaaa Done")
-#             return [html.P("Done!")]
+@app.callback(
+    Output('camera_run_result_1_sets', 'children'),
+    [Input('camera_run_1_sets', 'n_clicks')],
+    [State('network_dropdown_sets','value'),
+     State('network_weight_dropdown_sets', 'value'),
+     State('camera_name_dropdown_1_sets', 'value'),
+     State('devices_dropdown_1_sets','value')]
+)
+def run_camera_run_sets(n_clicks, reid_model, reid_weight,cam_name, reid_device):
+
+    if n_clicks is None:
+        raise PreventUpdate
+    else:
+        # print("working1")
+        if 'ALL' in cam_name:
+            cam_name= global_camera_sets[0]
+
+        from camera.camera_run_2 import Camera_Process
+        globals()['p1'] = Camera_Process(cam_list=cam_name, rtsp=True, reid_model=reid_model,reid_weight=reid_weight, reid_device=reid_device)
+        p1.start()
+
+
+@app.callback(
+    Output('camera_stop_result_1_sets', 'children'),
+    [Input('camera_stop_1_sets', 'n_clicks')],
+)
+def stop_camera_run_sets(n_clicks):
+
+        if n_clicks is None:
+            raise PreventUpdate
+        else:
+            print("stopped")
+            global p1
+            p1.stop()
+
+
+
+@app.callback(
+    Output('camera_run_result_2_sets', 'children'),
+    [Input('camera_run_2_sets', 'n_clicks')],
+    [State('network_dropdown_sets','value'),
+     State('network_weight_dropdown_sets', 'value'),
+     State('camera_name_dropdown_2_sets', 'value'),
+     State('devices_dropdown_2_sets','value')]
+)
+def run_camera_run_sets(n_clicks, reid_model, reid_weight,cam_name, reid_device):
+
+    if n_clicks is None:
+        raise PreventUpdate
+    else:
+        # print("working2")
+        if 'ALL' in cam_name:
+            cam_name= global_camera_sets[1]
+
+        from camera.camera_run_2 import Camera_Process
+        globals()['p2'] = Camera_Process(cam_list=cam_name, rtsp=True, reid_model=reid_model,reid_weight=reid_weight, reid_device=reid_device)
+        p2.start()
+
+@app.callback(
+    Output('camera_stop_result_2_sets', 'children'),
+    [Input('camera_stop_2_sets', 'n_clicks')],
+)
+def stop_camera_run_sets(n_clicks):
+
+        if n_clicks is None:
+            raise PreventUpdate
+        else:
+
+            print("stopped")
+            global p2
+            p2.stop()
+
+
+@app.callback(
+    Output('camera_run_result_3_sets', 'children'),
+    [Input('camera_run_3_sets', 'n_clicks')],
+    [State('network_dropdown_sets','value'),
+     State('network_weight_dropdown_sets', 'value'),
+     State('camera_name_dropdown_3_sets', 'value'),
+     State('devices_dropdown_3_sets','value')]
+)
+def run_camera_run_sets(n_clicks, reid_model, reid_weight,cam_name, reid_device):
+
+    if n_clicks is None:
+        raise PreventUpdate
+    else:
+        # print("working3")
+        if 'ALL' in cam_name:
+            cam_name= global_camera_sets[2]
+
+        from camera.camera_run_2 import Camera_Process
+        globals()['p3'] = Camera_Process(cam_list=cam_name, rtsp=True, reid_model=reid_model,reid_weight=reid_weight, reid_device=reid_device)
+        p3.start()
+
+
+@app.callback(
+    Output('camera_stop_result_3_sets', 'children'),
+    [Input('camera_stop_3_sets', 'n_clicks')],
+)
+def stop_camera_run_sets(n_clicks):
+
+        if n_clicks is None:
+            raise PreventUpdate
+        else:
+            print("stopped")
+            global p3
+            p3.stop()
+
+
+
 
 
 def parse_contents(contents):
@@ -221,7 +335,7 @@ def update_output(images):
     for i, image_str in enumerate(images):
         image = image_str.split(',')[1]
         data = base64.decodestring(image.encode('ascii'))
-        with open(os.path.join(UPLOAD_DIRECTORY,f"query.png"), "wb") as f:
+        with open(os.path.join(UPLOAD_DIRECTORY,"query.png"), "wb") as f:
             f.write(data)
 
     children = [parse_contents(i) for i in images]
@@ -238,14 +352,15 @@ def update_options(camera_name , frame_rate, images_timestamp):
 def parse_gallery(folder_name, camera_name, frame_rate,reid_model, reid_weight, reid_device):
     children=[]
     cam_name_list=[camera_name]
-    img_path= 'static/query/query.png'
+    img_path= os.path.join('static','query','query.png')
     image_list = retrieval(img_path,cam_name_list,frame_rate,reid_model, reid_weight, reid_device )
     MIN_NUM= min(int(frame_rate),len(image_list))
     images_timestamp=[]
     for i in range(int(MIN_NUM)):
         image_src= image_list[i]
         image_id= "{}".format(camera_name)+ " "+ "Rank {}".format(i+1)
-        time_stamp= image_src.split('/')[-1].split('.')[0].split('_')[0]
+        image_path_list = os.path.split(image_src)[1]
+        time_stamp= image_path_list.split('.')[0].split('_')[0]
         time_stamp= datetime.strptime(time_stamp, '%Y-%m-%d-%H-%M-%S-%f')
         images_timestamp.append(time_stamp)
 
@@ -285,17 +400,38 @@ def update_output2(n_clicks, camera_dropdown_values, frame_rate, reid_model, rei
     else:
 
         if 'ALL' in camera_dropdown_values:
-            camera_dropdown_values= global_camera_names
+            camera_dropdown_values=[]
+            for set_list in global_camera_sets:
+                for cam_name in set_list:
+                    camera_dropdown_values.append(cam_name)
+            camera_dropdown_values= list(set(camera_dropdown_values))
 
+        if 'SET1' in camera_dropdown_values:
+            for cam_name in global_camera_sets[0]:
+                camera_dropdown_values.append(cam_name)
+            camera_dropdown_values= list(set(camera_dropdown_values))
+            camera_dropdown_values.remove('SET1')
+
+        if 'SET2' in camera_dropdown_values:
+            for cam_name in global_camera_sets[1]:
+                camera_dropdown_values.append(cam_name)
+            camera_dropdown_values= list(set(camera_dropdown_values))
+            camera_dropdown_values.remove('SET2')
+
+        if 'SET3' in camera_dropdown_values:
+            for cam_name in global_camera_sets[2]:
+                camera_dropdown_values.append(cam_name)
+            camera_dropdown_values= list(set(camera_dropdown_values))
+            camera_dropdown_values.remove('SET3')
 
         folder_name= "demo"
         output_array=[]
         path= "ROSE LAB "
 
         for camera in camera_dropdown_values:
-            print("came here for 5 times")
-            output_array.append(parse_gallery(folder_name, camera, int(frame_rate), reid_model, reid_weight, reid_device))
-            path = path + "<-- "+ str(camera)+" "
+            if len(os.listdir(os.path.join('static',camera))) > 0:
+                output_array.append(parse_gallery(folder_name, camera, int(frame_rate), reid_model, reid_weight, reid_device))
+                path = path + "<-- "+ str(camera)+" "
 
         hidden_divs=[]
         for counter, name in enumerate(global_camera_names):
@@ -303,7 +439,6 @@ def update_output2(n_clicks, camera_dropdown_values, frame_rate, reid_model, rei
 
 
         final_output= html.Div(children=output_array)
-        print(final_output)
 
         return  final_output, hidden_divs
 
@@ -324,14 +459,14 @@ for counter,name in enumerate(global_camera_names):
 
 
 def calculate_line_trace(camera_dict_list):
-    final_trace={'S1':{'x':[], 'y':[], 'customdata':[]}, 'S2':{'x':[], 'y':[], 'customdata':[]}, 'S21':{'x':[],'y':[], 'customdata':[]}}
+    final_trace={'S1':{'x':[], 'y':[], 'customdata':[]}, 'S2':{'x':[], 'y':[], 'customdata':[]}, 'S21':{'x':[],'y':[], 'customdata':[]}, 'S22':{'x':[],'y':[], 'customdata':[]}}
     # final_trace={}
     final_cameras_list=[]
     for tuple in camera_dict_list:
         camera_name= tuple[0]
         final_cameras_list.append(camera_name)
         building_name= camera_name.split('-')[0]
-        floor_name= camera_name.split('-')[1]
+        floor_name= camera_name.split('-')[1][:2]
         time= tuple[1]
 
         final_trace[building_name]['x'].append(time)
@@ -351,6 +486,8 @@ def update_floormaps(n_clicks):
 
         global image_value_list
         image_value_list = list(filter(lambda a: a !='None', image_value_list))
+
+        print( "image_value_list",image_value_list)
         for name in image_value_list:
             name_split= name.split('_')
             time_stamp= name_split[1]
@@ -364,8 +501,6 @@ def update_floormaps(n_clicks):
 
         camera_sorted_list,x = zip(*camera_dict_list)
 
-        print(camera_dict_list)
-        print(camera_sorted_list)
 
         line_traces, final_camera_list= calculate_line_trace(camera_dict_list)
 
@@ -375,19 +510,15 @@ def update_floormaps(n_clicks):
         df_line_traces= line_traces
 
         trace_s1= go.Scatter(x= df_line_traces['S1']['x'], y= df_line_traces['S1']['y'], hovertext=df_line_traces['S1']['customdata'] ,name='S1', mode= 'lines+markers', line=dict(width=10), marker=dict(size=20, line=dict(
-                color='Black',
-                width=2
-            )))
+                color='Black',width=2)), showlegend=True)
         trace_s2= go.Scatter(x= df_line_traces['S2']['x'], y= df_line_traces['S2']['y'], hovertext=df_line_traces['S2']['customdata'] , name='S2', mode= 'lines+markers', line=dict(width=10),  marker=dict(size=20, line=dict(
-                color='Black',
-                width=2
-            )))
+                color='Black',width=2)), showlegend=True)
         trace_s21=go.Scatter(x= df_line_traces['S21']['x'], y= df_line_traces['S21']['y'], hovertext=df_line_traces['S21']['customdata'] , name='S2.1', mode= 'lines+markers', line=dict(width=10),  marker=dict(size=20,line=dict(
-                color='Black',
-                width=2
-            )), showlegend=True)
+                color='Black',width=2)), showlegend=True)
+        trace_s22=go.Scatter(x= df_line_traces['S22']['x'], y= df_line_traces['S22']['y'], hovertext=df_line_traces['S22']['customdata'] , name='S2.2', mode= 'lines+markers', line=dict(width=10),  marker=dict(size=20,line=dict(
+                color='Black',width=2)), showlegend=True)
 
-        final_trace= [trace_s1, trace_s2, trace_s21]
+        final_trace= [trace_s1, trace_s2, trace_s21, trace_s22]
 
         GRAPH = dcc.Graph(
             id="floormaps_graph",
@@ -404,13 +535,32 @@ def update_floormaps(n_clicks):
         return GRAPH
 
 
+
 @app.callback(Output('experimental_section', 'children'),
                         [Input('floormaps_graph', 'hoverData')])
 def update_experiments(hoverData):
     map_name= hoverData['points'][0]['hovertext']
     # image_1= random.choice(["marker_s2_B4_L.png","marker_s2_B4_R.png", "marker_s2.1_B4_R.png", "marker_s2.1_B4_T.png"])
-    return html.Div(html.Img(src='static/output_number_cross.png', style={'max-width':'750px',
+    return html.Div(html.Img(src='static/output_number_cross.png?t='+str(datetime.now()), style={'max-width':'750px',
     'max-height':'750px'}), style={'textAlign':'center'})
+
+@app.callback(Output('console-out','srcDoc'),
+    [Input('interval', 'n_intervals')])
+def update_console_output(n):
+    data=''
+    if os.path.exists('log.txt'):
+        file = open('log.txt', 'r')
+
+        lines = file.readlines()
+        if lines.__len__()<=8:
+            last_lines=lines
+        else:
+            last_lines = lines[-8:]
+        for line in last_lines:
+            data=data+line + '<BR>'
+        file.close()
+    return data
+
 
 if __name__ == '__main__':
     app.run_server(debug=True, port=8051)

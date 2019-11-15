@@ -12,10 +12,9 @@ import cv2
 from plotting.floormap_cross_numbers import floormap_cross_numbers
 import base64
 import os
-from layout.feature_extractor_layout_1 import feature_extractor_layout
+from layout.feature_extractor_layout_2 import feature_extractor_layout
 from layout.retrieval_run_layout import retrieval_run_layout
-import threading
-
+from layout.header_layout import header_layout
 
 #path to save the image that you upload on the server.
 UPLOAD_DIRECTORY = "static/query"
@@ -26,91 +25,87 @@ app.scripts.config.serve_locally = True
 server = app.server
 
 
-global_camera_names= ["S1-B4b-L-B","S21-B4-T","S1-B3b-L-TL","S2-B4b-L-B"]
-cams_map_testing= ["S2.1-B4-L-B", "S2.1-B4-L-T", "S2.1-B4-R-B"]
-models_dict={'ResNet50':['ResNet50_Market.pth', 'ResNet101_Market.pth'], 'Net':['Net_Market.t7'], 'SE_ResNet':['SE_ResNet50_Market.pth', 'SE_ResNet101_Market.pth']}
+global_camera_names= ["S1-B4b-L-B","S1-B4b-L-BR","S1-B4b-L-BL","S1-B4b-R-B","S1-B4b-R-BR","S1-B4b-R-BL"]
+models_dict={'Net':['Net_Market.t7'],'ResNet50':['ResNet50_Market.pth'],'ResNet101':['ResNet101_Market.pth'],'SE_ResNet50':['SE_ResNet50_Market.pth'],'SE_ResNet101':['SE_ResNet101_Market.pth']}
 image_value_list=[]
 output_result=[]
 camera_dict= dict.fromkeys(global_camera_names)
 count=0
 
+port="8052"
+
 app.layout= html.Div(
-    children=[
-        html.Div(
-            className="row",
-            children=[
-                html.Div(
-                    [
-                        html.Div(
-                            [
-                                html.Img(
-                                    src= app.get_asset_url("NTU_logo_white.png"), className="logo"
-                                ),
-                                # html.Img(
-                                #     src= app.get_asset_url("rose_lab_logo.png"), className="rose-lab-logo"
-                                # )
-                            ],className="logo_section"
-                        ),
+        id='main_page',
+        children=[
+            html.Div(
+                id='app-page-header',
+                children=header_layout(port="8052"),
+            ),
+            html.Div(
+                id='app-page-content',
+                children=[
+                    html.Div(
+                        id='mol3d-body',
+                        className='app-body',
+                        children=[
+                            html.Div(
+                                id='mol3d-control-tabs',
+                                className='control-tabs',
+                                children=[
+                                    dcc.Tabs(id='mol3d-tabs', value='what-is', children=[
+                                        dcc.Tab(
+                                            label='Feature Extractor',
+                                            value='tab1',
+                                            # className='custom-tab',
+                                            # selected_className='custom-tab--selected',
+                                            # selected_style={'color':'#60b5ab'},
+                                            children=[
+                                                html.Div(
+                                                    # className="row",
+                                                    children=feature_extractor_layout(global_camera_names, models_dict)
+                                                )
+                                            ]),
 
-                        html.H1(children=["NTU ReID Demo"]),
-                        html.P(
-                            """Select feature extractor to run detection code and Retreival run to find the person from a query. """
-                        ),
-
-                        dcc.Tabs(id="tabs",
-                            className="custom-tabs-container",
-                            parent_className='custom-tabs',
-                            children=[
-                                dcc.Tab(
-                                    label='Feature Extractor',
-                                    value='tab1',
-                                    className='custom-tab',
-                                    selected_className='custom-tab--selected',
-                                    selected_style={'color':'#60b5ab'},
-                                    children=[
-                                        html.Div(
-                                            className="row",
-                                            children=feature_extractor_layout(global_camera_names, models_dict)
-                                        )
+                                        dcc.Tab(
+                                            label='Retrieval Run',
+                                            value='tab2',
+                                            # className='custom-tab',
+                                            # selected_className='custom-tab--selected',
+                                            # selected_style={'color':'#60b5ab'},
+                                            children=[
+                                                html.Div(
+                                                    # className="row",
+                                                    children=retrieval_run_layout(global_camera_names, models_dict)
+                                                )
+                                            ])
                                     ]),
+                                ]),
 
-                                dcc.Tab(
-                                    label='Retrieval Run',
-                                    value='tab2',
-                                    className='custom-tab',
-                                    selected_className='custom-tab--selected',
-                                    selected_style={'color':'#60b5ab'},
-                                    children=[
-                                        html.Div(
-                                            className="row",
-                                            children=retrieval_run_layout(global_camera_names, models_dict)
-                                        )
-                                    ]),
+                            dcc.Loading(html.Div(
+                                id='mol3d-biomolecule-viewer',
+                                children=[
+                                    html.Div(id='state_container', style={'display': 'none'}),
+                                    html.Div(id="camera_outputs", style={'margin-top':50,}),
+                                    html.Br(),
+                                    html.Div(id="floormaps_output", className='floormaps_output'),
+                                    html.Br(),
+                                    html.Br(),
+                                    html.Div(id="experimental_section"),
+                                ]
+                            )),
 
-                            ]),
-
-                    ], className="four columns div-user-controls"
-                ),
-                html.Div(
-                    [
-                        html.Div(id='state_container', style={'display': 'none'}),
-                        html.Div(id="camera_outputs", style={'margin-top':50,}),
-                        html.Br(),
-                        html.Div(id="floormaps_output", className='floormaps_output'),
-                        html.Br(),
-                        html.Br(),
-                        html.Div(id="experimental_section"),
-
-                    ], className="eight columns div-for-charts bg-grey"
-                )
-
-            ]
-
-        )
+                            dcc.Store(
+                                id='mol3d-color-storage',
+                                data={}
+                            ),
+                        ]
+                    ),
+                ]
+            ),
+        ]
+    )
 
 
-    ]
-)
 
 @app.callback(
     Output('network_weight_dropdown', 'options'),
@@ -125,24 +120,76 @@ def update_weight_dropdown(name):
 def update_weight_dropdown(name):
     return [{'label': i, 'value': i} for i in models_dict[name]]
 
-for i in range(4):
-    @app.callback(
-        Output('camera_run_result_{}'.format(i+1), 'children'),
-        [Input('camera_run_{}'.format(i+1), 'n_clicks')],
-        [State('network_dropdown','value'),
-         State('network_weight_dropdown', 'value'),
-         State('camera_name_dropdown_{}'.format(i+1), 'value'),
-         State('devices_dropdown_{}'.format(i+1),'value')]
-    )
-    def run_camera_run(n_clicks, reid_model, reid_weight,cam_name, reid_device):
+
+@app.callback(
+    Output('camera_run_result_run', 'children'),
+    [Input('run_button', 'n_clicks')],
+    [State('network_dropdown','value'),
+     State('network_weight_dropdown', 'value'),
+     State('camera_name_dropdown_1', 'value'),
+     State('devices_dropdown_1','value')]
+)
+def run_camera_run(n_clicks, reid_model, reid_weight,cam_name, reid_device):
 
         if n_clicks is None:
             raise PreventUpdate
         else:
-            from camera.camera_run_1 import camera_run
-            camera_run(cam_name, True, 10,reid_model,reid_weight, reid_device)
-            print("Done Donaaa Done")
+            if 'ALL' in cam_name:
+                cam_name= global_camera_names
+
+            from camera.camera_run_2 import Camera_Process
+            globals()['p'] = Camera_Process(cam_list=cam_name, rtsp=True, reid_model=reid_model,reid_weight=reid_weight, reid_device=reid_device)
+            p.start()
+
+            # camera_run(cam_name=cam_name, rtsp=False, skip_frame=10,reid_model=reid_model,reid_weight=reid_weight, reid_device=reid_device)
+            # print("Done Donaaa Done")
+            # from camera.camera_run import camera_run
+            # camera_run(cam_name=cam_name, rtsp=False, skip_frame=10,reid_model=reid_model,reid_weight=reid_weight, reid_device=reid_device)
+            # print("Done Donaaa Done")
             return [html.P("Done!")]
+
+
+@app.callback(
+    Output('camera_run_result_stop', 'children'),
+    [Input('stop_button', 'n_clicks')],
+)
+def stop_camera_run(n_clicks):
+
+        if n_clicks is None:
+            raise PreventUpdate
+        else:
+            # try:
+            global p
+            p.stop()
+            # except:
+            #     pass
+            """
+            Make your changes here, Shan!
+            """
+            # from camera.camera_run import camera_run
+            # camera_run(cam_name=cam_name, rtsp=False, skip_frame=10,reid_model=reid_model,reid_weight=reid_weight, reid_device=reid_device)
+            # print("Done Donaaa Done")
+            return [html.P("Stopped!")]
+
+
+# for i in range(4):
+#     @app.callback(
+#         Output('camera_run_result_{}'.format(i+1), 'children'),
+#         [Input('camera_run_{}'.format(i+1), 'n_clicks')],
+#         [State('network_dropdown','value'),
+#          State('network_weight_dropdown', 'value'),
+#          State('camera_name_dropdown_{}'.format(i+1), 'value'),
+#          State('devices_dropdown_{}'.format(i+1),'value')]
+#     )
+#     def run_camera_run(n_clicks, reid_model, reid_weight,cam_name, reid_device):
+#
+#         if n_clicks is None:
+#             raise PreventUpdate
+#         else:
+#             from camera.camera_run import camera_run
+#             camera_run(cam_name=cam_name, rtsp=False, skip_frame=10,reid_model=reid_model,reid_weight=reid_weight, reid_device=reid_device)
+#             print("Done Donaaa Done")
+#             return [html.P("Done!")]
 
 
 def parse_contents(contents):
@@ -171,7 +218,7 @@ def update_output(images):
     for i, image_str in enumerate(images):
         image = image_str.split(',')[1]
         data = base64.decodestring(image.encode('ascii'))
-        with open(os.path.join(UPLOAD_DIRECTORY,"query.png"), "wb") as f:
+        with open(os.path.join(UPLOAD_DIRECTORY,f"query.png"), "wb") as f:
             f.write(data)
 
     children = [parse_contents(i) for i in images]
@@ -194,7 +241,6 @@ def parse_gallery(folder_name, camera_name, frame_rate,reid_model, reid_weight, 
     images_timestamp=[]
     for i in range(int(MIN_NUM)):
         image_src= image_list[i]
-        print(image_src)
         image_id= "{}".format(camera_name)+ " "+ "Rank {}".format(i+1)
         time_stamp= image_src.split('/')[-1].split('.')[0].split('_')[0]
         time_stamp= datetime.strptime(time_stamp, '%Y-%m-%d-%H-%M-%S-%f')
@@ -245,7 +291,7 @@ def update_output2(n_clicks, camera_dropdown_values, frame_rate, reid_model, rei
 
         for camera in camera_dropdown_values:
             print("came here for 5 times")
-            output_array.append(parse_gallery(folder_name, camera, frame_rate, reid_model, reid_weight, reid_device))
+            output_array.append(parse_gallery(folder_name, camera, int(frame_rate), reid_model, reid_weight, reid_device))
             path = path + "<-- "+ str(camera)+" "
 
         hidden_divs=[]
@@ -277,8 +323,10 @@ for counter,name in enumerate(global_camera_names):
 def calculate_line_trace(camera_dict_list):
     final_trace={'S1':{'x':[], 'y':[], 'customdata':[]}, 'S2':{'x':[], 'y':[], 'customdata':[]}, 'S21':{'x':[],'y':[], 'customdata':[]}}
     # final_trace={}
+    final_cameras_list=[]
     for tuple in camera_dict_list:
         camera_name= tuple[0]
+        final_cameras_list.append(camera_name)
         building_name= camera_name.split('-')[0]
         floor_name= camera_name.split('-')[1]
         time= tuple[1]
@@ -287,7 +335,8 @@ def calculate_line_trace(camera_dict_list):
         final_trace[building_name]['y'].append(floor_name)
         final_trace[building_name]['customdata'].append(camera_name)
 
-    return final_trace
+    return final_trace, final_cameras_list
+
 
 
 @app.callback(Output('floormaps_output', 'children'),
@@ -315,10 +364,10 @@ def update_floormaps(n_clicks):
         print(camera_dict_list)
         print(camera_sorted_list)
 
-        img_path= "./assets/images/overview_B3_cluster_1.png"
-        floormap_cross_numbers(img_path, cams_map_testing)
+        line_traces, final_camera_list= calculate_line_trace(camera_dict_list)
 
-        line_traces= calculate_line_trace(camera_dict_list)
+        img_path= "./assets/images/overview_B3_cluster_1.png"
+        floormap_cross_numbers(img_path, final_camera_list)
 
         df_line_traces= line_traces
 
@@ -361,4 +410,4 @@ def update_experiments(hoverData):
     'max-height':'750px'}), style={'textAlign':'center'})
 
 if __name__ == '__main__':
-    app.run_server(debug=True, port=8051)
+    app.run_server(debug=True, port=8052)

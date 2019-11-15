@@ -6,7 +6,7 @@ import dash_html_components as html
 def populate_devices():
     options= [{'label':'CPU', 'value':'cpu'}]
     for i in range(8):
-        options.append({'label':'GPU cuda:{}'.format(i),'value':'cuda:{}'.format(i)})
+        options.append({'label':'GPU {}'.format(i),'value':'cuda:{}'.format(i)})
 
     return options
 
@@ -17,8 +17,15 @@ def populate_camera_dropdown_menu(global_camera_names):
 
     return values
 
+def populate_camera_dropdown_menu_sets(global_camera_sets):
+    values=[{'label':'ALL', 'value':'ALL'},{'label':'SET1', 'value':'SET1'},{'label':'SET2', 'value':'SET2'}, {'label':'SET3', 'value':'SET3'}]
+    for c in global_camera_sets:
+        for cam in c:
+            values.append({'label':cam, 'value':cam})
+    return values
 
-def retrieval_run_layout(global_camera_names,models_dict):
+
+def retrieval_run_layout(global_camera_sets,models_dict):
     children=[
 
         html.Div(
@@ -43,7 +50,7 @@ def retrieval_run_layout(global_camera_names,models_dict):
                     id='network_dropdown_reid',
                     className="div-for-dropdown",
                     options=[{'label': model, 'value': model} for model in list(models_dict.keys())],
-                    value= list(models_dict.keys())[1],
+                    value= list(models_dict.keys())[0],
                     placeholder="Select a Network...",
                     clearable=False,
                 )
@@ -83,7 +90,7 @@ def retrieval_run_layout(global_camera_names,models_dict):
                 dcc.Dropdown(
                     id='camera_name_dropdown_reid',
                     className="div-for-dropdown",
-                    options=populate_camera_dropdown_menu(global_camera_names),
+                    options=populate_camera_dropdown_menu_sets(global_camera_sets),
                     placeholder="Choose the camera set...",
                     multi=True,
                 )
@@ -97,6 +104,8 @@ def retrieval_run_layout(global_camera_names,models_dict):
                     id='frame_rate',
                     className="div-for-dropdown",
                     options=[
+                        {'label': '1', 'value': '1'},
+                        {'label': '3', 'value': '3'},
                         {'label': '5', 'value': '5'},
                         {'label': '10', 'value': '10'},
                     ],

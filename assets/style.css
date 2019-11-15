@@ -4,8 +4,8 @@
 
 /* Main Layout ––––––––––––––––––––––––––––––––––––––––––––––––––*/
 body {
-  background-color: #1E1E1E;
-  color: #d8d8d8;
+  background-color: #FFFFFF;
+  /* color: #d8d8d8; */
   margin: 0;
   padding: 0;
 }
@@ -31,6 +31,14 @@ p {
   margin-top: 20px;
 }
 
+/* style={'width':'100%','height':200, 'border':'none', 'color':'white'} */
+.console-out{
+  width:100%;
+  height: 300;
+  /* border: none; */
+  color: #ffffff;
+
+}
 .img_style {
   height: 225px;
   width: 105px;
@@ -49,11 +57,14 @@ a {
   text-decoration: none;
 }
 .bg-grey{
-  background-color: #31302F;
+  background-color: #FFFFFF;
 }
 .text-padding{
   padding: 5px;
 }
+
+
+
 /*
 @media (max-width: 950px) {
   .button_submit_1,
@@ -111,12 +122,12 @@ a {
   margin-left: 35px;
   margin-right: 5px;
   margin-top: 20px;
-  margin-bottom: -50px;
+  margin-bottom: 50px;
 }
 
 .button_submit {
   height: 38px;
-  width: 100px;
+  width: 60px;
   padding: 0;
   color: Black;
   text-align: center;
@@ -132,10 +143,10 @@ a {
   border: 1px solid white;
   cursor: pointer;
   box-sizing: border-box;
-  margin-left: 35px;
+  margin-left: 15px;
   margin-right: 5px;
   margin-top: 20px;
-  margin-bottom: -50px;
+  margin-bottom: 50px;
 }
 
 /* } */
@@ -143,7 +154,7 @@ a {
 .div-for-charts{
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  height: 150vh;
   width: 100%;
   overflow-y: scroll;
 }
@@ -160,8 +171,19 @@ a {
 .div-user-controls {
   padding-left: 55px;
   padding-top: 64px;
-
+  /* overflow: auto; */
 }
+/*
+.div-user-control {
+  background-color:#01183A;
+  margin: 0px;
+  padding: 0px;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100%;
+  overflow: auto;
+} */
 .div-for-dropdown {
   padding-top: 12px;
   padding-bottom: 12px;
@@ -177,8 +199,8 @@ a {
   margin-left: 8px;
 }
 .Select-control, .Select-menu-outer, .Select-multi-value-wrapper, .select-up, .is-open .Select-control {
-  background-color: #1E1E1E;
-  color: white;
+  background-color: #FFFFFF;
+  color: black;
 
 }
 
@@ -189,11 +211,11 @@ a {
 }
 
 .Select-control{
-  border: 0.5px solid #dbdbdb44;
+  border: 0.5px solid black;
 }
 
 .has-value.Select--single>.Select-control .Select-value .Select-value-label, .has-value.is-pseudo-focused.Select--single>.Select-control .Select-value .Select-value-label {
-  color: white;
+  color: black;
 }
 ._dash-app-content {
   overflow-x: hidden;
@@ -201,7 +223,7 @@ a {
   position: relative;
 }
 .has-value.Select--single>.Select-control .Select-value .Select-value-label, .has-value.is-pseudo-focused.Select--single>.Select-control .Select-value .Select-value-label{
-  color: #d8d8d8;
+  color: black;
   font-weight: 400;
   font-size: 14px;
 }
@@ -236,8 +258,8 @@ a {
 .SingleDatePickerInput__withBorder {
   border-radius: 3px;
   color: #dbdbdb;
-  background: #1e1e1e;
-  background-color: #1e1e1e;
+  background: #FFFFFF;
+  background-color: #FFFFFF;
 }
 .SingleDatePickerInput.SingleDatePickerInput_1.SingleDatePickerInput__withBorder.SingleDatePickerInput__withBorder_2 {
   border: 0.0px solid #dbdbdb;
@@ -257,6 +279,9 @@ a {
 @media only screen and (max-width: 768px) {
   .four, .eight {
       min-width: 100%;
+      /* min-height: 100%;
+      max-height: 100%; */
+
  }
   h1, h2, h3, p {
       text-align: center;
@@ -272,8 +297,8 @@ a {
       text-align: center;
  }
 
- .div-user-controls {
-    padding: 32px;
+  .div-user-controls {
+    padding: 20px;
  }
 
  .side-by-side{
@@ -298,23 +323,25 @@ a {
     margin-left: 2%;
     margin-top:2%;
     margin-bottom:8%;
+    overflow-y: auto;
 }
 
 
 .custom-tab {
-    color: #f9f9f9;
+    color: black;
     border-top-left-radius: 3px;
     border-top-right-radius: 3px;
     border-top: 3px white !important;
     border-left: 0px white!important;
     border-right: 0px white!important;
     border-bottom: 0px white!important;
-    background-color: black !important;
+    background-color:#d8d8d8 !important;
     padding: 12px !important;
     font-family: "system-ui";
     display: flex !important;
     align-items: center;
     justify-content: center;
+    overflow-y: auto;
 }
 
 .custom-tab--selected {
@@ -323,6 +350,7 @@ a {
     border-right: 1px solid #60b5ab !important;
     border-top: 3px solid #60b5ab !important;
     border-bottom: 3px solid #60b5ab !important;
+    overflow-y: auto;
 }
 
 
@@ -334,7 +362,7 @@ a {
 
 /* Track */
 ::-webkit-scrollbar-track {
-  background: #1e1e1e !important;
+  background: #FFFFFF !important;
   border-radius: 10px !important;
   display: block !important;
 }

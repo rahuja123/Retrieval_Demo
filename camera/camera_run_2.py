@@ -17,15 +17,13 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import Column, Integer, String, Sequence, ForeignKey, DateTime
 from sqlalchemy.ext.declarative import declarative_base
-
+from logger import make_logger
 import warnings
 warnings.filterwarnings("ignore")
 
 ### Create Dataset ##
 engine = create_engine('sqlite:///database.db')
-Session = sessionmaker(bind=engine)
-session = Session()
-
+logger = make_logger('feature_extractor','.','log')
 Base = declarative_base()
 
 class Feature(Base):
@@ -46,19 +44,22 @@ Base.metadata.create_all(engine)
 
 
 class ipcamCapture:
-    def __init__(self, video_path):
+    def __init__(self, cam_name, video_path):
         self.Frame = []
         self.status = False
         self.isstop = False
+        self.cam_name = cam_name
         self.capture = cv2.VideoCapture(video_path)
 
     def start(self):
-        print('ipcam started!')
+        # print('ipcam started!')
+        logger.info(self.cam_name+' started!')
         threading.Thread(target=self.queryframe, daemon=True, args=()).start()
 
     def stop(self):
         self.isstop = True
-        print('ipcam stopped!')
+        # print('ipcam stopped!')
+        logger.info(self.cam_name+' stopped!')
 
     def getframe(self):
         return self.Frame
@@ -71,6 +72,10 @@ class ipcamCapture:
 ## Load Video ["S1-B4b-L_5","S21-B4-L-13","S21-B4-L-15","S21-B4-R-10"]
 class Camera_Process(object):
     def __init__(self, cam_list=["S1-B4b-L-B","S21-B4-T","S1-B3b-L-TL","S2-B4b-L-B"], rtsp=True, reid_model='ResNet50', reid_weight='ResNet50_Market.pth', reid_device='cpu'):
+
+        Session = sessionmaker(bind=engine)
+        self.session = Session()
+
         self.isstop = False
         self.num_cam = len(cam_list)
         reader = csv.reader(open('camera/camera.csv', 'r'))
@@ -97,6 +102,7 @@ class Camera_Process(object):
 
         self.cam_list=cam_list
         self.rtsp=rtsp
+        logger.info("Initialised feature extractor function")
 
         yolov3_weights_downloader('./yolo3/')
         self.yolo3 = YOLO3('yolo3/yolo_v3.cfg','yolo3/yolov3.weights','yolo3/coco.names', yolo_device=reid_device, is_xywh=True)
@@ -104,38 +110,23 @@ class Camera_Process(object):
         self.extractor = Extractor(reid_model,reid_weight,reid_device=reid_device)
 
     def start(self):
-        print('started!')
+        logger.info("Starting the cameras")
+        # logger.info('started!')
         self.isstop = False
         threading.Thread(target=self.camera_run, daemon=True, args=()).start()
 
     def stop(self):
         self.isstop = True
-        print('ipcam stopped!')
+        logger.info('ipcam stopped!')
+        # logger.info('stopped the process!')
 
     def camera_run(self):
 
         ########################
 
-        if self.rtsp:
-            for i in range(self.num_cam):
-                globals()['ipcam_'+str(i)] = ipcamCapture(self.camera[self.cam_list[i]])
-                globals()['ipcam_'+str(i)].start()
-                time.sleep(1)
-        else:
-            ipcam_1 = ipcamCapture('./media/videos/'+self.cam_list[0]+'.mp4')
-            ipcam_1.start()
-            time.sleep(1)
-
-            ipcam_2 = ipcamCapture('./media/videos/'+self.cam_list[1]+'.mp4')
-            ipcam_2.start()
-            time.sleep(1)
-
-            ipcam_3 = ipcamCapture('./media/videos/'+self.cam_list[2]+'.mp4')
-            ipcam_3.start()
-            time.sleep(1)
-
-            ipcam_4 = ipcamCapture('./media/videos/'+self.cam_list[3]+'.mp4')
-            ipcam_4.start()
+        for i in range(self.num_cam):
+            globals()['ipcam_'+str(i)] = ipcamCapture(self.cam_list[i], self.camera[self.cam_list[i]])
+            globals()['ipcam_'+str(i)].start()
             time.sleep(1)
 
         xmin, ymin, xmax, ymax = self.area
@@ -153,13 +144,16 @@ class Camera_Process(object):
                     if bbox_xywh is not None:
                         for i,box in enumerate(bbox_xywh):
                             x,y,w,h = box
-                            if h/w > 2 and w > 30:
+                            if h/w > 2 and w > 60:
                                 x1 = max(int(x-w/2),0)
                                 x2 = min(int(x+w/2),self.im_width-1)
                                 y1 = max(int(y-h/2),0)
                                 y2 = min(int(y+h/2),self.im_height-1)
                                 cropped = frame[y1:y2,x1:x2]
-                                print(x1,y1,x2,y2)
+
+                                # print("Detection {}, {}, {}, {}".format(x1,y1,x2,y2))
+                                logger.info("{} : {}, {}, {}, {}".format(self.cam_list[cam_i],x1,y1,x2,y2))
+
                                 cam_name = self.cam_list[cam_i]
                                 image_path = os.path.join('static',cam_name)
                                 image_name = str(current_time.strftime('%Y-%m-%d-%H-%M-%S-%f'))+'_'+str(i)+'.jpg'
@@ -168,8 +162,8 @@ class Camera_Process(object):
                                 feature = self.extractor(pil_image)[0]
                                 embed = str(feature.tostring())
                                 record = Feature(cam_name=cam_name, track_num=i, feature=embed,bb_coord=str(box),current_time=current_time,image_name=image_name)
-                                session.add(record)
-                        session.commit()
-        
+                                self.session.add(record)
+                        self.session.commit()
+
 if __name__=="__main__":
     fire.Fire(camera_run)
