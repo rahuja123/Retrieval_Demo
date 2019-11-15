@@ -137,6 +137,7 @@ class Camera_Process(object):
 
             for cam_i in range(self.num_cam):
                 frame = globals()['frame_'+str(cam_i)]
+                frame= np.array(frame)
                 if frame is not None:
                     im = frame[ymin:ymax, xmin:xmax, (2,1,0)]
                     bbox_xywh, cls_conf, cls_ids = self.yolo3(im)
