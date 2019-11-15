@@ -139,7 +139,8 @@ class Camera_Process(object):
                 frame = globals()['frame_'+str(cam_i)]
                 frame= np.array(frame)
                 if frame is not None:
-                    im = frame[ymin:ymax, xmin:xmax, (2,1,0)]
+                    # im = frame[ymin:ymax, xmin:xmax]
+                    im = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
                     bbox_xywh, cls_conf, cls_ids = self.yolo3(im)
                     current_time = datetime.now()
                     if bbox_xywh is not None:
