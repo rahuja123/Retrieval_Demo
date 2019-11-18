@@ -131,12 +131,14 @@ class Camera_Process(object):
 
         xmin, ymin, xmax, ymax = self.area
 
+
         while not self.isstop:
+            frame_list = []
             for i in range(self.num_cam):
-                globals()['frame_'+str(i)] = globals()['ipcam_'+str(i)].getframe()
+                frame_list.append(globals()['ipcam_'+str(i)].getframe())
 
             for cam_i in range(self.num_cam):
-                frame = globals()['frame_'+str(cam_i)]
+                frame = frame_list[cam_i]
                 frame= np.array(frame)
                 if frame is not None:
                     # im = frame[ymin:ymax, xmin:xmax]
