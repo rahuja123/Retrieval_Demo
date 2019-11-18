@@ -17,7 +17,7 @@ from os import makedirs
 from os.path import dirname
 from os.path import exists
 
-weight_token = '1COpYUrl9QTRnrtShEy68_we39eTa6A_z'
+weight_token = '1PYrxwWCNv6fh6-3e9bq5Evuv3RAQVAc7'
 
 ##########################
 # Google Drive Downloader#
@@ -97,6 +97,7 @@ class GoogleDriveDownloader:
                 return '{:.1f} {}{}'.format(num, unit, suffix)
             num /= 1024.0
         return '{:.1f} {}{}'.format(num, 'Yi', suffix)
+
 
 
 ###########################

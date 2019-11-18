@@ -14,9 +14,7 @@ class Extractor(object):
         # else:
         #     pooling = 'AVG'
         #     last_stride = 1
-        pooling = 'MAX'
-        last_stride = 2
-        self.model = getattr(reid.models, model_name)(751, last_stride)
+        self.model = getattr(reid.models, model_name)(751)
         print("Network "+model_name+" loaded!")
         self.model_path = os.path.join('./reid/weights/',model_weight)
         reid_weights_downloader(model_weight)

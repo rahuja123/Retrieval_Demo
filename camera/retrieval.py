@@ -16,50 +16,45 @@ from sqlalchemy import Column, Integer, String, Sequence, ForeignKey, DateTime
 from sqlalchemy.ext.declarative import declarative_base
 
 import warnings
-warnings.filterwarnings("ignore")
 
-engine = create_engine('sqlite:///database.db')
-Session = sessionmaker(bind=engine)
-session = Session()
 
-Base = declarative_base()
+if not os.path.exists(os.path.join('static','query')):
+    os.makedirs(os.path.join('static','query'))
 
-class Feature(Base):
-    __tablename__ = 'features'
-    id = Column(Integer, Sequence('id'), primary_key=True)
-    cam_name = Column(String(50))
-    track_num = Column(Integer)
-    feature = Column(String(3000000))
-    bb_coord = Column(String(50))
-    time = Column(DateTime, nullable=False, default=datetime.now())
-    image_name = Column(String(100))
+def retrieval(query="static/query/query.png",cam_name_list=['S1-B4b-L-B'],rank=10, reid_model='ResNet50', reid_weight='ResNet50_Market.pth', reid_device='cpu'):
+    engine = create_engine('sqlite:///database.db')
+    Session = sessionmaker(bind=engine)
+    session = Session()
 
-    def __repr__(self):
-        return "< id='%s', cam_name='%s', track_num='%s', feature='%s', bb_coord='%s')>" % (self.id, self.track_num, self.cam_name, self.feature,self.bb_coord)
+    Base = declarative_base()
 
-Base.metadata.create_all(engine)
 
-cam_name = ['S21-B4-L-13']
+    class Feature(Base):
+        __tablename__ = 'features'
+        id = Column(Integer, Sequence('id'), primary_key=True)
+        cam_name = Column(String(50))
+        track_num = Column(Integer)
+        feature = Column(String(3000000))
+        bb_coord = Column(String(50))
+        current_time = Column(DateTime, nullable=False, default=datetime.now())
+        image_name = Column(String(100))
 
-def retrieval(query="media/images/yihang.jpg",cam_name_list=['S21-B4-R-10'],rank=10, reid_model='Net', reid_weight='Net_Market.t7', reid_device='cpu'):
+        def __repr__(self):
+            return "< id='%s', cam_name='%s', track_num='%s', feature='%s', bb_coord='%s')>" % (self.id, self.track_num, self.cam_name, self.feature,self.bb_coord)
 
-    if query:
-        print("true query")
-    print(cam_name_list)
+    Base.metadata.create_all(engine)
+
     print(rank)
-    print(reid_model)
-    print(reid_weight)
-    print(reid_device)
     embed_npdtype = np.float32
     extractor = Extractor(reid_model,reid_weight,reid_device=reid_device)
     target_img = cv2.imread(query)[:,:,(2,1,0)]
-    # print(target_img)
     pil_image=cv2.cvtColor(target_img, cv2.COLOR_BGR2RGB)
     qf = torch.from_numpy(extractor(pil_image)).float().to(reid_device)
 
     gf = []
     gf_image = []
     for cam_name in cam_name_list:
+        print(cam_name)
         query_result = session.query(Feature).filter(Feature.cam_name == cam_name).all()
         for result in query_result:
             feat = result.feature
@@ -77,7 +72,12 @@ def retrieval(query="media/images/yihang.jpg",cam_name_list=['S21-B4-R-10'],rank
     indices = np.argsort(distmat, axis=1)[0]
 
     image_list=[]
-    number = 10
+    
+    if rank < len(indices):
+        number = int(rank)
+    else:
+        number = len(indices)
+        
     for i in range(number):
         index = int(indices[i])
         image_path = os.path.join('static',gf_image[index])

@@ -14,16 +14,22 @@ def floormap_cross_numbers(img_path,camera_names, img_cord=(610,457)):
     counter=1
     for camera in camera_names:
         cluster_name= get_cluster(camera)
-        if cluster_name in cluster_name_check:
-            continue
-
-        cluster_name_check.append(cluster_name)
         current_cordinates= get_cluster_position(cluster_name)
         current_cordinates= tuple(int(s) for s in current_cordinates)
+        if prev_cordinates==current_cordinates:
+            continue
+
+
         img= cv2.drawMarker(img, current_cordinates, [7,12,145], markerType=cv2.MARKER_TILTED_CROSS , markerSize=20, thickness=3)
         font = cv2.FONT_HERSHEY_SIMPLEX
-        img= cv2.putText(img,str(counter) , tuple(numpy.subtract(current_cordinates, (5,-30))), font, 0.5, (145,87,2), 2, cv2.LINE_4)
+        if cluster_name in cluster_name_check:
+            img= cv2.putText(img,","+str(counter), tuple(numpy.subtract(current_cordinates, (-5,-30))), font, 0.5, (145,87,2), 2, cv2.LINE_4)
+            img= cv2.putText(img,","+camera.split('-')[1][:2], tuple(numpy.subtract(current_cordinates, (-5,-50))), font, 0.5, (145,87,2), 2, cv2.LINE_4)
+        else:
+            img= cv2.putText(img,str(counter), tuple(numpy.subtract(current_cordinates, (5,-30))), font, 0.5, (145,87,2), 2, cv2.LINE_4)
+            img= cv2.putText(img,camera.split('-')[1][:2], tuple(numpy.subtract(current_cordinates, (5,-50))), font, 0.5, (145,87,2), 2, cv2.LINE_4)
         counter+=1
+        cluster_name_check.append(cluster_name)
 
 
         # if prev_cordinates:
@@ -31,14 +37,14 @@ def floormap_cross_numbers(img_path,camera_names, img_cord=(610,457)):
 
         prev_cordinates= current_cordinates
 
-
+    # cv2.imwrite('output_number_cross.png', img)
     cv2.imwrite('static/output_number_cross.png', img)
 
 
 
 if __name__ == '__main__':
-    img_path = "/Users/rahul_mac/Desktop/NTU/NTU_Indoor_Demo_GUI/static/overview_B3_cluster_1.png"
-    floormap_cross(img_path, camera_names=["S2.1-B4-L-B", "S2.1-B4-L-T", "S2.1-B4-R-B", "S1-B4c-T", "S1-B4c-B","S1-B4a-T","S1-B4a-B" ,"S1-B4b-R-TR" ,"S1-B4b-R-TR", "S1-B4b-R-TR" ])
+    img_path = "/Users/rahul_mac/projects/Retrieval_Demo/assets/images/overview_B3_cluster_1.png"
+    floormap_cross_numbers(img_path, camera_names=["S2.1-B4-L-B", "S2.1-B4-R-B", "S1-B4c-T", "S1-B4c-B","S1-B4a-T","S1-B4a-B" ,"S1-B4b-R-TR" ,"S1-B4b-R-TR", "S1-B4b-R-TR", "S2.1-B4-L-T" ])
 
 
 
