@@ -354,11 +354,8 @@ def update_options(camera_name , frame_rate, images_timestamp):
 
     return option
 
-def parse_gallery(folder_name, camera_name, frame_rate,reid_model, reid_weight, reid_device):
+def parse_gallery(camera_name, frame_rate, image_list):
     children=[]
-    cam_name_list=[camera_name]
-    img_path= os.path.join('static','query','query.png')
-    image_list = retrieval(img_path,cam_name_list,frame_rate,reid_model, reid_weight, reid_device)
     MIN_NUM= min(int(frame_rate),len(image_list))
     images_timestamp=[]
     for i in range(int(MIN_NUM)):
@@ -428,15 +425,21 @@ def update_output2(n_clicks, camera_dropdown_values, frame_rate, reid_model, rei
             camera_dropdown_values= set(camera_dropdown_values)
             camera_dropdown_values.remove('SET3')
 
-        folder_name= "demo"
         output_array=[]
         path= "ROSE LAB "
 
+        cam_name_list = []
         for camera in camera_dropdown_values:
             if os.path.exists(os.path.join('static',camera)):
                 if len(os.listdir(os.path.join('static',camera))) > 0:
-                    output_array.append(parse_gallery(folder_name, camera, int(frame_rate), reid_model, reid_weight, reid_device))
-                    path = path + "<-- "+ str(camera)+" "
+                    cam_name_list.append(camera)
+
+        img_path= os.path.join('static','query','query.png')
+        image_dict = retrieval(img_path,cam_name_list,int(frame_rate),reid_model, reid_weight, reid_device )
+
+        for camera in image_dict:
+            output_array.append(parse_gallery(camera, int(frame_rate), image_dict[camera]))
+            path = path + "<-- "+ str(camera)+" "
 
         hidden_divs=[]
         for counter, name in enumerate(camera_dropdown_values):
