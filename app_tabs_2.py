@@ -47,7 +47,7 @@ app.layout= html.Div(
                         html.Div(
                             [
                                 html.Img(
-                                    src= app.get_asset_url("NTU_logo_new.png"), className="logo"
+                                    src= app.get_asset_url("NTU_Logo.png"), className="logo"
                                 ),
                                 # html.Img(
                                 #     src= app.get_asset_url("rose_lab_logo.png"), className="logo"
@@ -104,14 +104,19 @@ app.layout= html.Div(
                                     ]),
 
                             ]),
-                            html.Iframe(id='console-out',className="console-out", srcDoc='Hello'),
-                            dcc.Interval(id="interval", interval=500, n_intervals=0),
+
 
                     ], className="four columns div-user-controls"
                 ),
                 html.Div(
                     [
-                        html.Div(id='state_container', style={'display': 'none'}),
+                        html.Div(
+                            id='state_container',
+                            style={'display': 'none'},
+                            children=[
+                                html.Div(id='state_container_{}'.format(x)) for set in global_camera_sets for x in set
+                                ]
+                        ),
                         html.Br(),
                         html.Div(id="camera_outputs", style={'margin-top':50,}),
                         html.Br(),
@@ -353,7 +358,7 @@ def parse_gallery(folder_name, camera_name, frame_rate,reid_model, reid_weight, 
     children=[]
     cam_name_list=[camera_name]
     img_path= os.path.join('static','query','query.png')
-    image_list = retrieval(img_path,cam_name_list,frame_rate,reid_model, reid_weight, reid_device )
+    image_list = retrieval(img_path,cam_name_list,frame_rate,reid_model, reid_weight, reid_device)
     MIN_NUM= min(int(frame_rate),len(image_list))
     images_timestamp=[]
     for i in range(int(MIN_NUM)):
@@ -389,8 +394,7 @@ def parse_gallery(folder_name, camera_name, frame_rate,reid_model, reid_weight, 
         ],className="row", style={'margin-top':50})
 
 
-@app.callback([Output('camera_outputs', 'children'),
-                Output('state_container','children')],
+@app.callback(Output('camera_outputs', 'children'),
               [Input('show_results', 'n_clicks')],
               [State('camera_name_dropdown_reid', 'value'), State('frame_rate','value'),State('network_dropdown_reid','value'), State('network_weight_dropdown_reid', 'value'), State('devices_dropdown_reid','value')])
 
@@ -441,8 +445,7 @@ def update_output2(n_clicks, camera_dropdown_values, frame_rate, reid_model, rei
 
         final_output= html.Div(children=output_array)
 
-        return  final_output, hidden_divs
-
+        return  final_output
 
 
 def update_state_container(camera_value):
