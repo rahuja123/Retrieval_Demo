@@ -327,6 +327,11 @@ a {
     margin-top:2%;
     margin-bottom:8%;
     overflow-y: auto;
+    border-top: 1px #2a3f5f !important;
+    border-left: 2px #2a3f5f !important;
+    border-right: 2px #2a3f5f !important;
+    border-bottom: 2px #2a3f5f !important;
+
 }
 
 
@@ -335,9 +340,9 @@ a {
     border-top-left-radius: 3px;
     border-top-right-radius: 3px;
     border-top: 1px #2a3f5f !important;
-    border-left: 1px #2a3f5f!important;
-    border-right: 1px #2a3f5f!important;
-    border-bottom: 1px #2a3f5f!important;
+    border-left: 2px #2a3f5f !important;
+    border-right: 2px #2a3f5f !important;
+    border-bottom: 2px #2a3f5f !important;
     background-color:#f3f6fa !important;
     padding: 12px !important;
     font-family: "system-ui";
