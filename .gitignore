@@ -12,3 +12,5 @@ yolo3/yolov3.weights
 
 .vscode/
 log.txt
+
+core.*

@@ -26,15 +26,15 @@ server = app.server
 
 SET1= ["S2-B4b-R-TR","S2-B4b-R-TL","S2-B4b-R-BR","S2-B4b-R-BL","S2-B4b-L-TR","S2-B4b-L-TL","S2-B4b-L-BR","S2-B4b-L-BL"]
 SET2= ["S21-B3-L-T", "S21-B3-R-B","S22-B3-L-T", "S22-B3-R-B", "S21-B4-L-T", "S21-B4-R-B","S22-B4-L-T", "S22-B4-R-B"]
-SET3= ["S1-B4b-L-BL","S1-B4b-L-BR", "S1-B4b-R-BL","S1-B4b-L-BR","S1-B3b-L-TL","S1-B3b-L-TR", "S1-B3b-R-TL","S1-B3b-L-TR"]
+SET3= ["S1-B4b-L-BL","S1-B4b-L-BR", "S1-B4b-R-BL","S1-B4b-R-BR","S1-B3b-L-TL","S1-B3b-L-TR", "S1-B3b-R-TL","S1-B3b--TR"]
 global_camera_sets= [SET1, SET2, SET3]
 
-global_camera_names= ["S2-B4b-L-B","S2-B4b-L-BR","S1-B4b-L-BL","S1-B4b-R-B","S21-B4-T","S22-B4-T","S1-B3b-L-TL","S1-B3b-L-T","S1-B3b-R-TR","S1-B3b-R-T"]
+global_camera_names= ["S2-B4b-L-B","S2-B4b-L-BR","S1-B4b-L-BL","S1-B4b-R-B","S21-B4-T","S22-B4-T"]
 cams_map_testing= ["S2-B4b-L-B","S2-B4b-L-BR","S1-B4b-L-BL","S1-B4b-R-B","S21-B4-T","S22-B4-T"]
 models_dict={'ResNet50':['ResNet50_Market.pth'],'ResNet101':['ResNet101_Market.pth'],'SE_ResNet50':['SE_ResNet50_Market.pth'],'SE_ResNet101':['SE_ResNet101_Market.pth']}
 image_value_list=[]
 output_result=[]
-camera_dict= dict.fromkeys(global_camera_names)
+camera_dict= dict.fromkeys(x for set in global_camera_sets for x in set)
 count=0
 
 app.layout= html.Div(
@@ -47,7 +47,7 @@ app.layout= html.Div(
                         html.Div(
                             [
                                 html.Img(
-                                    src= app.get_asset_url("NTU_logo_new.png"), className="logo"
+                                    src= app.get_asset_url("NTU_Logo.png"), className="logo"
                                 ),
                                 # html.Img(
                                 #     src= app.get_asset_url("rose_lab_logo.png"), className="logo"
@@ -104,14 +104,19 @@ app.layout= html.Div(
                                     ]),
 
                             ]),
-                            html.Iframe(id='console-out',className="console-out", srcDoc='Hello'),
-                            dcc.Interval(id="interval", interval=500, n_intervals=0),
+
 
                     ], className="four columns div-user-controls"
                 ),
                 html.Div(
                     [
-                        html.Div(id='state_container', style={'display': 'none'}),
+                        html.Div(
+                            id='state_container',
+                            style={'display': 'none'},
+                            children=[
+                                html.Div(id='state_container_{}'.format(x)) for set in global_camera_sets for x in set
+                                ]
+                        ),
                         html.Br(),
                         html.Div(id="camera_outputs", style={'margin-top':50,}),
                         html.Br(),
@@ -349,11 +354,8 @@ def update_options(camera_name , frame_rate, images_timestamp):
 
     return option
 
-def parse_gallery(folder_name, camera_name, frame_rate,reid_model, reid_weight, reid_device):
+def parse_gallery(camera_name, frame_rate, image_list):
     children=[]
-    cam_name_list=[camera_name]
-    img_path= os.path.join('static','query','query.png')
-    image_list = retrieval(img_path,cam_name_list,frame_rate,reid_model, reid_weight, reid_device )
     MIN_NUM= min(int(frame_rate),len(image_list))
     images_timestamp=[]
     for i in range(int(MIN_NUM)):
@@ -389,8 +391,7 @@ def parse_gallery(folder_name, camera_name, frame_rate,reid_model, reid_weight, 
         ],className="row", style={'margin-top':50})
 
 
-@app.callback([Output('camera_outputs', 'children'),
-                Output('state_container','children')],
+@app.callback(Output('camera_outputs', 'children'),
               [Input('show_results', 'n_clicks')],
               [State('camera_name_dropdown_reid', 'value'), State('frame_rate','value'),State('network_dropdown_reid','value'), State('network_weight_dropdown_reid', 'value'), State('devices_dropdown_reid','value')])
 
@@ -404,57 +405,63 @@ def update_output2(n_clicks, camera_dropdown_values, frame_rate, reid_model, rei
             for set_list in global_camera_sets:
                 for cam_name in set_list:
                     camera_dropdown_values.append(cam_name)
-            camera_dropdown_values= list(set(camera_dropdown_values))
+            camera_dropdown_values= set(camera_dropdown_values)
 
         if 'SET1' in camera_dropdown_values:
             for cam_name in global_camera_sets[0]:
                 camera_dropdown_values.append(cam_name)
-            camera_dropdown_values= list(set(camera_dropdown_values))
+            camera_dropdown_values= set(camera_dropdown_values)
             camera_dropdown_values.remove('SET1')
 
         if 'SET2' in camera_dropdown_values:
             for cam_name in global_camera_sets[1]:
                 camera_dropdown_values.append(cam_name)
-            camera_dropdown_values= list(set(camera_dropdown_values))
+            camera_dropdown_values= set(camera_dropdown_values)
             camera_dropdown_values.remove('SET2')
 
         if 'SET3' in camera_dropdown_values:
             for cam_name in global_camera_sets[2]:
                 camera_dropdown_values.append(cam_name)
-            camera_dropdown_values= list(set(camera_dropdown_values))
+            camera_dropdown_values= set(camera_dropdown_values)
             camera_dropdown_values.remove('SET3')
 
-        folder_name= "demo"
         output_array=[]
         path= "ROSE LAB "
 
+        cam_name_list = []
         for camera in camera_dropdown_values:
-            if len(os.listdir(os.path.join('static',camera))) > 0:
-                output_array.append(parse_gallery(folder_name, camera, int(frame_rate), reid_model, reid_weight, reid_device))
-                path = path + "<-- "+ str(camera)+" "
+            if os.path.exists(os.path.join('static',camera)):
+                if len(os.listdir(os.path.join('static',camera))) > 0:
+                    cam_name_list.append(camera)
+
+        img_path= os.path.join('static','query','query.png')
+        image_dict = retrieval(img_path,cam_name_list,int(frame_rate),reid_model, reid_weight, reid_device )
+
+        for camera in image_dict:
+            output_array.append(parse_gallery(camera, int(frame_rate), image_dict[camera]))
+            path = path + "<-- "+ str(camera)+" "
 
         hidden_divs=[]
-        for counter, name in enumerate(global_camera_names):
+        for counter, name in enumerate(camera_dropdown_values):
             hidden_divs.append(html.Div(id="state_container_{}".format(name), style={'display':'none'}))
 
 
         final_output= html.Div(children=output_array)
 
-        return  final_output, hidden_divs
-
+        return  final_output
 
 
 def update_state_container(camera_value):
-
     global image_value_list
     image_value_list.append(camera_value)
+    print("hi,", camera_value)
     return camera_value
 
-for counter,name in enumerate(global_camera_names):
-
-    app.callback(Output('state_container_{}'.format(name), 'children'),
-                    [Input('{}'.format(name), 'value')]
-                    )(update_state_container)
+for camera_set in global_camera_sets:
+    for counter,name in enumerate(camera_set):
+        app.callback(Output('state_container_{}'.format(name), 'children'),
+                        [Input('{}'.format(name), 'value')]
+                        )(update_state_container)
 
 
 
