@@ -1,303 +1,72 @@
 Initialised feature extractor function
+Initialised feature extractor function
 Starting the cameras
+S1-B4b-L-BL started!
+S1-B4b-L-BR started!
+S1-B4b-R-BL started!
+S1-B4b-R-BR started!
 S1-B3b-L-TL started!
-S1-B3b-R-T started!
-Detection 1624, 94, 1691, 302
-Detection 1601, 133, 1682, 434
-Detection 1517, 207, 1636, 668
-Detection 1334, 222, 1534, 814
-Detection 504, 177, 581, 377
-Detection 412, 181, 500, 470
-Detection 415, 272, 586, 632
-Detection 612, 441, 878, 1026
-Detection 737, 526, 1001, 1072
-Detection 499, 187, 550, 322
-Detection 544, 291, 729, 671
-Detection 507, 203, 572, 404
-Detection 642, 226, 713, 453
-Detection 486, 208, 585, 444
-Detection 462, 163, 529, 372
-Detection 334, 154, 375, 240
-Detection 454, 162, 518, 347
-Detection 387, 163, 437, 277
-Detection 466, 159, 519, 321
-Detection 374, 183, 427, 330
-Detection 482, 153, 524, 323
-Detection 378, 190, 445, 378
-Detection 462, 169, 532, 359
-Detection 0, 379, 222, 886
-Detection 399, 182, 470, 383
-Detection 445, 181, 508, 372
-Detection 8, 226, 101, 542
-Detection 425, 157, 474, 413
-Detection 229, 226, 381, 636
-Detection 0, 438, 103, 755
-Detection 425, 163, 474, 406
-Detection 17, 340, 140, 632
-Detection 861, 265, 1099, 1079
-Detection 425, 166, 473, 407
-Detection 431, 397, 649, 908
-Detection 429, 183, 495, 383
-Detection 393, 180, 459, 391
-Detection 291, 211, 365, 420
-Detection 469, 179, 548, 350
-Detection 406, 168, 457, 340
-Detection 378, 176, 445, 364
-Detection 297, 167, 347, 347
-Detection 381, 165, 452, 344
-Detection 459, 168, 527, 343
-Detection 514, 150, 563, 336
-Detection 479, 179, 534, 329
-Detection 402, 172, 467, 381
-Detection 611, 202, 691, 415
-Detection 1272, 520, 1460, 919
-Detection 270, 144, 314, 293
-Detection 0, 236, 54, 480
-Detection 173, 265, 366, 668
-Detection 1088, 262, 1307, 797
-Detection 1446, 140, 1544, 463
-Detection 1543, 109, 1611, 322
-Detection 1551, 95, 1611, 250
-Detection 319, 215, 391, 406
-Detection 367, 171, 422, 321
-Detection 365, 159, 401, 274
-Detection 341, 148, 379, 240
-Detection 601, 243, 742, 570
-Detection 276, 322, 512, 807
-Detection 932, 483, 1205, 1071
-Detection 934, 496, 1199, 1049
-Detection 375, 331, 547, 789
-Detection 569, 245, 684, 566
-Detection 532, 203, 616, 444
-Detection 379, 150, 410, 255
-Detection 122, 327, 372, 899
-Detection 1151, 367, 1293, 820
-Detection 438, 171, 501, 344
-Detection 1608, 161, 1674, 377
-Detection 448, 171, 511, 351
-Detection 440, 168, 489, 349
-Detection 423, 164, 472, 352
-Detection 4, 351, 159, 704
-Detection 430, 163, 481, 354
-Detection 436, 153, 492, 358
-Detection 355, 151, 390, 231
-Detection 447, 155, 491, 268
-Detection 358, 137, 400, 262
-Detection 386, 147, 449, 337
-Detection 425, 199, 524, 494
-Detection 940, 499, 1192, 1060
-Detection 609, 475, 885, 1052
-Detection 928, 493, 1193, 1067
-Detection 1569, 97, 1652, 288
-Detection 1505, 130, 1604, 460
-Detection 963, 289, 1214, 908
-Detection 459, 166, 506, 283
-Detection 459, 166, 506, 283
-Detection 698, 479, 981, 1066
-Detection 443, 542, 685, 1070
-Detection 760, 384, 989, 971
-Detection 364, 540, 623, 1067
-Detection 756, 386, 992, 967
-Detection 385, 182, 459, 384
-Detection 250, 231, 359, 500
-Detection 513, 463, 754, 1061
-Detection 363, 230, 497, 644
-Detection 426, 197, 484, 357
-Detection 371, 227, 500, 644
-Detection 557, 453, 796, 1021
-Detection 426, 276, 625, 768
-Detection 412, 221, 491, 407
-Detection 426, 276, 625, 768
-Detection 412, 221, 491, 407
-Detection 426, 276, 625, 768
-Detection 412, 221, 491, 407
-Detection 426, 276, 625, 768
-Detection 412, 221, 491, 407
-Detection 210, 394, 414, 816
-Detection 1, 378, 204, 926
-Detection 90, 372, 264, 721
-Detection 0, 416, 48, 789
-Detection 90, 372, 264, 721
-Detection 0, 416, 48, 789
-Detection 894, 502, 1145, 1053
-Detection 713, 238, 847, 580
-Detection 573, 368, 774, 901
-Detection 973, 501, 1195, 1017
-Detection 398, 150, 453, 319
-Detection 464, 164, 539, 378
-Detection 503, 170, 564, 390
-Detection 503, 170, 564, 390
-Detection 1649, 99, 1692, 223
-Detection 419, 138, 471, 298
-Detection 1504, 206, 1612, 550
-Detection 666, 356, 845, 923
-Detection 397, 157, 450, 331
-Detection 443, 179, 520, 344
-Detection 439, 170, 495, 352
-Detection 376, 156, 423, 293
-Detection 348, 149, 384, 253
-Detection 362, 151, 392, 239
-Detection 925, 500, 1170, 1050
-Detection 325, 130, 358, 215
-Detection 335, 144, 366, 236
-Detection 354, 146, 394, 260
-Detection 363, 161, 404, 279
-Detection 382, 168, 436, 306
-Detection 459, 180, 525, 392
-Detection 687, 216, 767, 422
-Detection 1233, 413, 1503, 1040
-Detection 1471, 222, 1609, 576
-Detection 1246, 443, 1450, 947
-Detection 1627, 161, 1711, 401
-Detection 1643, 131, 1713, 326
-Detection 1643, 100, 1693, 236
-Detection 1667, 93, 1703, 209
-Detection 345, 152, 382, 241
-Detection 412, 162, 463, 282
-Detection 402, 169, 460, 297
-Detection 356, 408, 661, 1025
-Detection 4, 322, 104, 648
-Detection 461, 468, 705, 1049
-Detection 289, 273, 397, 615
-Detection 281, 309, 473, 811
-Detection 378, 166, 443, 313
-Detection 14, 269, 170, 615
-Detection 277, 173, 350, 432
-Detection 0, 240, 52, 457
-Detection 389, 144, 456, 343
-Detection 370, 137, 416, 271
-Detection 330, 134, 375, 229
-Detection 421, 166, 498, 355
-Detection 445, 251, 494, 356
-Detection 379, 161, 452, 322
-Detection 322, 155, 371, 274
-Detection 234, 220, 310, 582
-Detection 475, 148, 528, 329
-Detection 517, 171, 565, 307
-Detection 378, 145, 429, 300
-Detection 431, 164, 474, 308
-Detection 321, 121, 360, 203
-Detection 18, 412, 200, 803
-Detection 447, 161, 489, 283
-Detection 395, 148, 439, 280
-Detection 408, 152, 453, 273
-Detection 443, 162, 484, 280
-Detection 385, 142, 437, 280
-Detection 450, 158, 489, 283
-Detection 385, 143, 436, 279
-Detection 449, 159, 489, 282
-Detection 385, 143, 436, 279
-Detection 449, 159, 489, 282
-Detection 381, 142, 423, 280
-Detection 447, 156, 487, 284
-Detection 381, 142, 422, 279
-Detection 449, 156, 488, 286
-Detection 0, 368, 75, 746
-Detection 385, 144, 436, 280
-Detection 448, 156, 487, 286
-Detection 1672, 93, 1708, 213
-Detection 381, 142, 422, 280
-Detection 448, 154, 487, 285
-Detection 832, 392, 1046, 983
-Detection 1653, 92, 1706, 256
-Detection 381, 142, 422, 279
-Detection 448, 155, 487, 284
-Detection 1619, 114, 1704, 337
-Detection 111, 302, 257, 624
-Detection 381, 143, 421, 281
-Detection 446, 154, 485, 284
-Detection 1532, 177, 1672, 537
-Detection 380, 140, 423, 282
-Detection 448, 155, 488, 284
-Detection 380, 143, 423, 281
-Detection 446, 158, 485, 282
-Detection 386, 145, 434, 278
-Detection 448, 158, 486, 280
-Detection 382, 144, 422, 278
-Detection 449, 159, 487, 280
-Detection 26, 318, 194, 788
-Detection 423, 156, 472, 280
-Detection 404, 140, 450, 266
-Detection 398, 138, 447, 285
-Detection 397, 141, 445, 285
-Detection 391, 142, 444, 286
-Detection 333, 139, 381, 282
-Detection 402, 157, 449, 280
-Detection 332, 145, 377, 279
-Detection 400, 156, 445, 279
-Detection 328, 144, 375, 279
-Detection 407, 151, 450, 274
-Detection 428, 139, 472, 269
-Detection 711, 348, 879, 754
-Detection 332, 142, 377, 283
-Detection 401, 157, 445, 281
-Detection 711, 348, 879, 754
-Detection 332, 142, 377, 283
-Detection 401, 157, 445, 281
-Detection 331, 140, 377, 285
-Detection 401, 157, 445, 280
-Detection 334, 141, 376, 285
-Detection 834, 386, 1013, 838
-Detection 402, 157, 446, 280
-Detection 332, 143, 377, 282
-Detection 399, 158, 446, 280
-Detection 333, 143, 375, 283
-Detection 401, 158, 446, 280
-Detection 641, 399, 870, 873
-Detection 332, 145, 376, 282
-Detection 401, 157, 447, 281
-Detection 630, 406, 887, 964
-Detection 332, 143, 377, 282
-Detection 400, 158, 447, 280
-Detection 795, 399, 1003, 872
-Detection 336, 150, 377, 280
-Detection 401, 159, 446, 280
-Detection 332, 146, 377, 281
-Detection 912, 414, 1101, 813
-Detection 401, 158, 446, 280
-Detection 331, 143, 376, 281
-Detection 399, 158, 445, 280
-Detection 334, 143, 377, 281
-Detection 401, 157, 445, 280
-Detection 955, 456, 1172, 895
-Detection 329, 149, 376, 278
-Detection 402, 158, 445, 281
-Detection 331, 152, 375, 279
-Detection 399, 160, 446, 279
-Detection 337, 137, 381, 289
-Detection 403, 158, 448, 281
-Detection 332, 144, 378, 281
-Detection 402, 159, 446, 280
-Detection 332, 144, 378, 281
-Detection 402, 159, 446, 280
-Detection 470, 143, 512, 264
-Detection 383, 155, 419, 271
-Detection 392, 160, 438, 264
-Detection 572, 575, 791, 1053
-Detection 596, 578, 812, 1051
-Detection 575, 534, 836, 1078
-Detection 742, 474, 994, 984
-Detection 1101, 501, 1331, 1027
-Detection 1149, 534, 1402, 1065
-Detection 1081, 535, 1328, 1028
-Detection 1421, 239, 1583, 695
-Detection 1138, 546, 1392, 1078
-Detection 1524, 157, 1622, 493
-Detection 1171, 582, 1404, 1051
-Detection 1602, 134, 1681, 389
-Detection 11, 348, 228, 838
-Detection 1639, 120, 1707, 325
-Detection 1621, 112, 1671, 268
-Detection 1353, 623, 1578, 1073
-Detection 372, 152, 414, 291
-Detection 1187, 556, 1414, 1050
-Detection 485, 137, 534, 352
-Detection 500, 181, 563, 359
-Detection 524, 448, 717, 894
-Detection 498, 187, 565, 363
-Detection 564, 521, 804, 1015
-Detection 491, 183, 553, 367
-Detection 366, 137, 401, 254
-ipcam stopped!
-Detection 489, 182, 557, 365
-ipcam stopped!
+S1-B3b-L-TR started!
+S1-B3b-R-TL started!
+S1-B3b-R-TR started!
+S1-B3b-R-TL : 1569, 266, 1654, 468
+S1-B4b-L-BL : 229, 142, 310, 333
+S1-B3b-L-TL : 23, 321, 176, 657
+S1-B3b-R-TL : 1535, 298, 1609, 550
+S1-B4b-L-BL : 234, 186, 316, 420
+S1-B3b-L-TL : 572, 309, 737, 908
+S1-B3b-R-TL : 1430, 344, 1540, 682
+S1-B4b-L-BL : 404, 283, 553, 646
+S1-B3b-L-TL : 1412, 370, 1618, 908
+S1-B3b-R-TL : 1262, 568, 1498, 1046
+S1-B4b-L-BL : 407, 308, 562, 674
+S1-B3b-R-TR : 397, 405, 600, 1051
+S1-B3b-R-TR : 346, 261, 438, 583
+S1-B3b-L-TL : 1477, 455, 1740, 992
+S1-B3b-R-TR : 304, 208, 400, 443
+S1-B4b-L-BR : 1385, 338, 1470, 547
+S1-B3b-L-TL : 1517, 196, 1628, 524
+S1-B3b-L-TL : 1620, 145, 1692, 365
+S1-B4b-L-BR : 1262, 372, 1415, 808
+S1-B4b-L-BR : 1289, 301, 1387, 556
+S1-B3b-R-TL : 1494, 288, 1573, 486
+S1-B4b-L-BR : 1354, 263, 1429, 451
+S1-B3b-R-TL : 1535, 353, 1632, 634
+S1-B3b-R-TL : 1369, 336, 1460, 625
+S1-B3b-R-TL : 1346, 495, 1506, 970
+S1-B3b-R-TL : 1103, 480, 1273, 953
+S1-B3b-R-TR : 450, 494, 674, 1044
+S1-B3b-R-TR : 689, 433, 903, 1001
+S1-B3b-L-TL : 1418, 263, 1657, 928
+S1-B3b-R-TR : 505, 243, 611, 561
+S1-B3b-R-TR : 358, 288, 466, 592
+S1-B3b-L-TL : 1517, 142, 1611, 455
+S1-B3b-L-TL : 1619, 82, 1688, 280
+S1-B3b-R-TR : 423, 188, 511, 417
+S1-B3b-R-TR : 346, 201, 428, 429
+S1-B3b-L-TL : 1608, 118, 1686, 340
+S1-B3b-L-TL : 1567, 121, 1640, 312
+S1-B3b-R-TR : 291, 230, 375, 450
+S1-B3b-L-TL : 1549, 151, 1652, 482
+S1-B3b-R-TR : 352, 287, 489, 640
+S1-B3b-L-TL : 1445, 264, 1603, 778
+S1-B3b-R-TL : 1348, 479, 1519, 904
+S1-B3b-L-TR : 390, 136, 548, 509
+S1-B3b-R-TL : 1476, 346, 1588, 629
+S1-B3b-L-TR : 355, 85, 441, 352
+S1-B3b-R-TL : 1541, 295, 1637, 514
+S1-B3b-L-TR : 307, 45, 381, 250
+S1-B3b-R-TL : 1567, 272, 1648, 445
+S1-B3b-R-TR : 295, 196, 375, 421
+S1-B3b-L-TL : 1599, 137, 1678, 334
+S1-B3b-L-TL : 1494, 124, 1575, 322
+S1-B3b-R-TR : 337, 230, 483, 617
+S1-B3b-L-TL : 1540, 181, 1646, 493
+S1-B3b-L-TL : 1402, 160, 1499, 476
+S1-B3b-L-TL : 1176, 333, 1413, 955
+S1-B3b-L-TL : 1016, 279, 1216, 774
+S1-B3b-L-TL : 83, 416, 289, 861
+S1-B3b-L-TL : 270, 302, 443, 726
+S1-B3b-L-TR : 1754, 414, 1919, 890
+S1-B3b-L-TL : 0, 259, 61, 538
+S1-B3b-L-TL : 38, 330, 164, 612
