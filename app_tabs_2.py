@@ -15,6 +15,7 @@ import os
 from layout.feature_extractor_layout_sets import feature_extractor_layout_sets
 from layout.feature_extractor_layout_2 import feature_extractor_layout
 from layout.retrieval_run_layout import retrieval_run_layout
+import itertools
 
 #path to save the image that you upload on the server.
 UPLOAD_DIRECTORY = "static/query"
@@ -47,7 +48,7 @@ app.layout= html.Div(
                         html.Div(
                             [
                                 html.Img(
-                                    src= app.get_asset_url("NTU_logo_new.png"), className="logo"
+                                    src= app.get_asset_url("NTU_Logo.png"), className="logo"
                                 ),
                                 # html.Img(
                                 #     src= app.get_asset_url("rose_lab_logo.png"), className="logo"
@@ -69,7 +70,6 @@ app.layout= html.Div(
                                     value='tab1',
                                     className='custom-tab',
                                     selected_className='custom-tab--selected',
-                                    selected_style={'color':'#60b5ab'},
                                     children=[
                                         html.Div(
                                             className="row",
@@ -82,7 +82,7 @@ app.layout= html.Div(
                                     value='tab2',
                                     className='custom-tab',
                                     selected_className='custom-tab--selected',
-                                    selected_style={'color':'#60b5ab'},
+
                                     children=[
                                         html.Div(
                                             className="row",
@@ -95,7 +95,6 @@ app.layout= html.Div(
                                     value='tab3',
                                     className='custom-tab',
                                     selected_className='custom-tab--selected',
-                                    selected_style={'color':'#60b5ab'},
                                     children=[
                                         html.Div(
                                             className="row",
@@ -104,15 +103,21 @@ app.layout= html.Div(
                                     ]),
 
                             ]),
-                            html.Iframe(id='console-out',className="console-out", srcDoc='Hello'),
-                            dcc.Interval(id="interval", interval=500, n_intervals=0),
+
 
                     ], className="four columns div-user-controls"
                 ),
                 html.Div(
                     [
-                        html.Div(id='state_container', style={'display': 'none'}),
+                        html.Div(
+                            id='state_container',
+                            style={'display': 'none'},
+                            children=[
+                                html.Div(id='state_container_{}'.format(x)) for set in global_camera_sets for x in set
+                                ]
+                        ),
                         html.Br(),
+                        dcc.Loading(id="loading-1", children=[html.Div(id="loading-output-1")], type="default"),
                         html.Div(id="camera_outputs", style={'margin-top':50,}),
                         html.Br(),
                         html.Div(id="floormaps_output", className='floormaps_output'),
@@ -314,8 +319,8 @@ def parse_contents(contents):
         # HTML images accept base64 encoded strings in the same format
         # that is supplied by the upload
         html.Img(src=contents, style={
-        'max-width':'250px',
-        'max-height':'250px',
+        'width':'105px',
+        'height':'225px',
         }),
     ])
 
@@ -351,8 +356,11 @@ def update_options(camera_name , frame_rate, images_timestamp):
 
 def parse_gallery(camera_name, frame_rate, image_list):
     children=[]
+    children1=[]
     MIN_NUM= min(int(frame_rate),len(image_list))
     images_timestamp=[]
+    if MIN_NUM > 5:
+        children2=[]
     for i in range(int(MIN_NUM)):
         image_src= image_list[i]
         image_id= "{}".format(camera_name)+ " "+ "Rank {}".format(i+1)
@@ -361,15 +369,31 @@ def parse_gallery(camera_name, frame_rate, image_list):
         time_stamp= datetime.strptime(time_stamp, '%Y-%m-%d-%H-%M-%S-%f')
         images_timestamp.append(time_stamp)
 
-        children.append(
-                html.Div([
-                    html.Img(id=image_id,src=image_src, className="img_style"),
-                    html.P("Rank {}".format(i+1), className="p_style"),
-                ],style={'float':'left',
-                'padding-left':'10px',
-                'padding-top':'10px',})
-                )
-
+        if i<5:
+            children1.append(
+                    html.Div([
+                        html.Img(id=image_id,src=image_src, className="img_style"),
+                        html.P("Rank {}".format(i+1), className="p_style"),
+                    ],style={'float':'left',
+                    'padding-left':'10px',
+                    'padding-top':'10px',})
+                    )
+        else:
+            children2.append(
+                    html.Div([
+                        html.Img(id=image_id,src=image_src, className="img_style"),
+                        html.P("Rank {}".format(i+1), className="p_style"),
+                    ],style={'float':'left',
+                    'padding-left':'10px',
+                    'padding-top':'10px',})
+                    )
+    if MIN_NUM > 5:
+        children= [
+                html.Div(children= children1, className="row"),
+                html.Div(children= children2, className="row"),
+        ]
+    else:
+        children = children1
     return html.Div([
             html.Div([
                 html.A([html.P(str(camera_name))], href='assets/maps/{}.png'.format("-".join(x for x in camera_name.split("-")[0:-1])), target='_blank'),
@@ -382,12 +406,12 @@ def parse_gallery(camera_name, frame_rate, image_list):
                     clearable=False,
                     )
             ], style={'textAlign':'center'},className='two columns'),
-            html.Div(children=children, className='ten columns'),
+            html.Div(children=children, className="ten columns"),
         ],className="row", style={'margin-top':50})
 
 
 @app.callback([Output('camera_outputs', 'children'),
-                Output('state_container','children')],
+                Output('loading-output-1','children')],
               [Input('show_results', 'n_clicks')],
               [State('camera_name_dropdown_reid', 'value'), State('frame_rate','value'),State('network_dropdown_reid','value'), State('network_weight_dropdown_reid', 'value'), State('devices_dropdown_reid','value')])
 
@@ -429,10 +453,10 @@ def update_output2(n_clicks, camera_dropdown_values, frame_rate, reid_model, rei
             if os.path.exists(os.path.join('static',camera)):
                 if len(os.listdir(os.path.join('static',camera))) > 0:
                     cam_name_list.append(camera)
-        
+
         img_path= os.path.join('static','query','query.png')
         image_dict = retrieval(img_path,cam_name_list,int(frame_rate),reid_model, reid_weight, reid_device )
-        
+
         for camera in image_dict:
             output_array.append(parse_gallery(camera, int(frame_rate), image_dict[camera]))
             path = path + "<-- "+ str(camera)+" "
@@ -442,16 +466,19 @@ def update_output2(n_clicks, camera_dropdown_values, frame_rate, reid_model, rei
             hidden_divs.append(html.Div(id="state_container_{}".format(name), style={'display':'none'}))
 
 
+        global image_value_list
+        image_value_list=[]                   #every time show results button is clicked, this empties the list.
+
+
         final_output= html.Div(children=output_array)
 
-        return  final_output, hidden_divs
-
+        return  final_output, []
 
 
 def update_state_container(camera_value):
     global image_value_list
     image_value_list.append(camera_value)
-    print("hi,", camera_value)
+    # print("hi,", camera_value)
     return camera_value
 
 for camera_set in global_camera_sets:
