@@ -26,15 +26,15 @@ server = app.server
 
 SET1= ["S2-B4b-R-TR","S2-B4b-R-TL","S2-B4b-R-BR","S2-B4b-R-BL","S2-B4b-L-TR","S2-B4b-L-TL","S2-B4b-L-BR","S2-B4b-L-BL"]
 SET2= ["S21-B3-L-T", "S21-B3-R-B","S22-B3-L-T", "S22-B3-R-B", "S21-B4-L-T", "S21-B4-R-B","S22-B4-L-T", "S22-B4-R-B"]
-SET3= ["S1-B4b-L-BL","S1-B4b-L-BR", "S1-B4b-R-BL","S1-B4b-L-BR","S1-B3b-L-TL","S1-B3b-L-TR", "S1-B3b-R-TL","S1-B3b-L-TR"]
+SET3= ["S1-B4b-L-BL","S1-B4b-L-BR", "S1-B4b-R-BL","S1-B4b-R-BR","S1-B3b-L-TL","S1-B3b-L-TR", "S1-B3b-R-TL","S1-B3b--TR"]
 global_camera_sets= [SET1, SET2, SET3]
 
-global_camera_names= ["S2-B4b-L-B","S2-B4b-L-BR","S1-B4b-L-BL","S1-B4b-R-B","S21-B4-T","S22-B4-T","S1-B3b-L-TL","S1-B3b-L-T","S1-B3b-R-TR","S1-B3b-R-T"]
+global_camera_names= ["S2-B4b-L-B","S2-B4b-L-BR","S1-B4b-L-BL","S1-B4b-R-B","S21-B4-T","S22-B4-T"]
 cams_map_testing= ["S2-B4b-L-B","S2-B4b-L-BR","S1-B4b-L-BL","S1-B4b-R-B","S21-B4-T","S22-B4-T"]
 models_dict={'ResNet50':['ResNet50_Market.pth'],'ResNet101':['ResNet101_Market.pth'],'SE_ResNet50':['SE_ResNet50_Market.pth'],'SE_ResNet101':['SE_ResNet101_Market.pth']}
 image_value_list=[]
 output_result=[]
-camera_dict= dict.fromkeys(global_camera_names)
+camera_dict= dict.fromkeys(x for set in global_camera_sets for x in set)
 count=0
 
 app.layout= html.Div(
@@ -404,24 +404,24 @@ def update_output2(n_clicks, camera_dropdown_values, frame_rate, reid_model, rei
             for set_list in global_camera_sets:
                 for cam_name in set_list:
                     camera_dropdown_values.append(cam_name)
-            camera_dropdown_values= list(set(camera_dropdown_values))
+            camera_dropdown_values= set(camera_dropdown_values)
 
         if 'SET1' in camera_dropdown_values:
             for cam_name in global_camera_sets[0]:
                 camera_dropdown_values.append(cam_name)
-            camera_dropdown_values= list(set(camera_dropdown_values))
+            camera_dropdown_values= set(camera_dropdown_values)
             camera_dropdown_values.remove('SET1')
 
         if 'SET2' in camera_dropdown_values:
             for cam_name in global_camera_sets[1]:
                 camera_dropdown_values.append(cam_name)
-            camera_dropdown_values= list(set(camera_dropdown_values))
+            camera_dropdown_values= set(camera_dropdown_values)
             camera_dropdown_values.remove('SET2')
 
         if 'SET3' in camera_dropdown_values:
             for cam_name in global_camera_sets[2]:
                 camera_dropdown_values.append(cam_name)
-            camera_dropdown_values= list(set(camera_dropdown_values))
+            camera_dropdown_values= set(camera_dropdown_values)
             camera_dropdown_values.remove('SET3')
 
         folder_name= "demo"
@@ -429,12 +429,13 @@ def update_output2(n_clicks, camera_dropdown_values, frame_rate, reid_model, rei
         path= "ROSE LAB "
 
         for camera in camera_dropdown_values:
-            if len(os.listdir(os.path.join('static',camera))) > 0:
-                output_array.append(parse_gallery(folder_name, camera, int(frame_rate), reid_model, reid_weight, reid_device))
-                path = path + "<-- "+ str(camera)+" "
+            if os.path.exists(os.path.join('static',camera)):
+                if len(os.listdir(os.path.join('static',camera))) > 0:
+                    output_array.append(parse_gallery(folder_name, camera, int(frame_rate), reid_model, reid_weight, reid_device))
+                    path = path + "<-- "+ str(camera)+" "
 
         hidden_divs=[]
-        for counter, name in enumerate(global_camera_names):
+        for counter, name in enumerate(camera_dropdown_values):
             hidden_divs.append(html.Div(id="state_container_{}".format(name), style={'display':'none'}))
 
 
@@ -445,16 +446,16 @@ def update_output2(n_clicks, camera_dropdown_values, frame_rate, reid_model, rei
 
 
 def update_state_container(camera_value):
-
     global image_value_list
     image_value_list.append(camera_value)
+    print("hi,", camera_value)
     return camera_value
 
-for counter,name in enumerate(global_camera_names):
-
-    app.callback(Output('state_container_{}'.format(name), 'children'),
-                    [Input('{}'.format(name), 'value')]
-                    )(update_state_container)
+for camera_set in global_camera_sets:
+    for counter,name in enumerate(camera_set):
+        app.callback(Output('state_container_{}'.format(name), 'children'),
+                        [Input('{}'.format(name), 'value')]
+                        )(update_state_container)
 
 
 

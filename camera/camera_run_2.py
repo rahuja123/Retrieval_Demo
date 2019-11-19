@@ -26,6 +26,7 @@ engine = create_engine('sqlite:///database.db')
 logger = make_logger('feature_extractor','.','log')
 Base = declarative_base()
 
+
 class Feature(Base):
     __tablename__ = 'features'
     id = Column(Integer, Sequence('id'), primary_key=True)
@@ -78,8 +79,10 @@ class Camera_Process(object):
 
         self.isstop = False
         self.num_cam = len(cam_list)
-        reader = csv.reader(open('camera/camera.csv', 'r'))
+
         self.camera = {}
+
+        reader = csv.reader(open('camera/camera.csv', 'r'))
         for row in reader:
             k, v = row
             self.camera[k] = v
@@ -123,20 +126,22 @@ class Camera_Process(object):
     def camera_run(self):
 
         ########################
-
+        dict_ipcam={}
         for i in range(self.num_cam):
-            globals()['ipcam_'+str(i)] = ipcamCapture(self.cam_list[i], self.camera[self.cam_list[i]])
-            globals()['ipcam_'+str(i)].start()
+            dict_ipcam['ipcam_{}'.format(i)] = ipcamCapture(self.cam_list[i], self.camera[self.cam_list[i]])
+            dict_ipcam['ipcam_{}'.format(i)].start()
             time.sleep(1)
 
         xmin, ymin, xmax, ymax = self.area
 
+
+        dict_frame={}
         while not self.isstop:
             for i in range(self.num_cam):
-                globals()['frame_'+str(i)] = globals()['ipcam_'+str(i)].getframe()
+                dict_frame['frame_{}'.format(i)] = dict_ipcam['ipcam_{}'.format(i)].getframe()
 
             for cam_i in range(self.num_cam):
-                frame = globals()['frame_'+str(cam_i)]
+                frame = dict_frame['frame_{}'.format(cam_i)]
                 frame= np.array(frame)
                 if frame is not None:
                     # im = frame[ymin:ymax, xmin:xmax]

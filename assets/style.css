@@ -154,7 +154,7 @@ a {
 .div-for-charts{
   display: flex;
   flex-direction: column;
-  height: 150vh;
+  height: 200vh;
   width: 100%;
   overflow-y: scroll;
 }
