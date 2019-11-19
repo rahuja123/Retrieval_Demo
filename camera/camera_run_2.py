@@ -78,6 +78,7 @@ class Camera_Process(object):
         self.session = Session()
 
         self.isstop = False
+        self.cam_list = cam_list
         self.num_cam = len(cam_list)
 
         self.camera = {}
@@ -103,7 +104,6 @@ class Camera_Process(object):
         self.im_height = int(vdo.get(cv2.CAP_PROP_FRAME_HEIGHT))
         self.area = 0, 0, self.im_width, self.im_height
 
-        self.cam_list=cam_list
         self.rtsp=rtsp
         logger.info("Initialised feature extractor function")
 
@@ -127,9 +127,9 @@ class Camera_Process(object):
 
         ########################
         dict_ipcam={}
-        for i in range(self.num_cam):
-            dict_ipcam['ipcam_{}'.format(i)] = ipcamCapture(self.cam_list[i], self.camera[self.cam_list[i]])
-            dict_ipcam['ipcam_{}'.format(i)].start()
+        for cam in self.cam_list:
+            dict_ipcam['ipcam_{}'.format(cam)] = ipcamCapture(cam, self.camera[cam])
+            dict_ipcam['ipcam_{}'.format(cam)].start()
             time.sleep(1)
 
         xmin, ymin, xmax, ymax = self.area
@@ -137,40 +137,46 @@ class Camera_Process(object):
 
         dict_frame={}
         while not self.isstop:
-            for i in range(self.num_cam):
-                dict_frame['frame_{}'.format(i)] = dict_ipcam['ipcam_{}'.format(i)].getframe()
+            for cam in self.cam_list:
+                dict_frame['frame_{}'.format(cam)] = dict_ipcam['ipcam_{}'.format(cam)].getframe()
 
-            for cam_i in range(self.num_cam):
-                frame = dict_frame['frame_{}'.format(cam_i)]
+            frame_dict = {}
+            for cam in self.cam_list:
+                frame = dict_frame['frame_{}'.format(cam)]
                 frame= np.array(frame)
                 if frame is not None:
-                    # im = frame[ymin:ymax, xmin:xmax]
+                    im = frame[ymin:ymax, xmin:xmax]
                     im = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-                    bbox_xywh, cls_conf, cls_ids = self.yolo3(im)
-                    current_time = datetime.now()
-                    if bbox_xywh is not None:
-                        for i,box in enumerate(bbox_xywh):
-                            x,y,w,h = box
-                            if h/w > 2 and w > 60:
-                                x1 = max(int(x-w/2),0)
-                                x2 = min(int(x+w/2),self.im_width-1)
-                                y1 = max(int(y-h/2),0)
-                                y2 = min(int(y+h/2),self.im_height-1)
-                                cropped = frame[y1:y2,x1:x2]
+                    frame_dict[cam]=im
+                     
+            result_dict = self.yolo3(frame_dict)
+            
+            for cam, result in result_dict.items():
+                bbox_xywh, cls_conf, cls_ids = result
+                current_time = datetime.now()
+                if bbox_xywh is not None:
+                    for i,box in enumerate(bbox_xywh):
+                        x,y,w,h = box
+                        if h/w > 2 and w > 60:
+                            x1 = max(int(x-w/2),0)
+                            x2 = min(int(x+w/2),self.im_width-1)
+                            y1 = max(int(y-h/2),0)
+                            y2 = min(int(y+h/2),self.im_height-1)
+                            frame = dict_frame['frame_{}'.format(cam)]
+                            cropped = frame[y1:y2,x1:x2]
 
-                                # print("Detection {}, {}, {}, {}".format(x1,y1,x2,y2))
-                                logger.info("{} : {}, {}, {}, {}".format(self.cam_list[cam_i],x1,y1,x2,y2))
+                            # print("Detection {}, {}, {}, {}".format(x1,y1,x2,y2))
+                            logger.info("{} : {}, {}, {}, {}".format(cam,x1,y1,x2,y2))
 
-                                cam_name = self.cam_list[cam_i]
-                                image_path = os.path.join('static',cam_name)
-                                image_name = str(current_time.strftime('%Y-%m-%d-%H-%M-%S-%f'))+'_'+str(i)+'.jpg'
-                                cv2.imwrite(os.path.join(image_path,image_name),cropped)
-                                pil_image=cv2.cvtColor(cropped, cv2.COLOR_BGR2RGB)
-                                feature = self.extractor(pil_image)[0]
-                                embed = str(feature.tostring())
-                                record = Feature(cam_name=cam_name, track_num=i, feature=embed,bb_coord=str(box),current_time=current_time,image_name=image_name)
-                                self.session.add(record)
-                        self.session.commit()
+                            image_path = os.path.join('static',cam)
+                            image_name = str(current_time.strftime('%Y-%m-%d-%H-%M-%S-%f'))+'_'+str(i)+'.jpg'
+                            cv2.imwrite(os.path.join(image_path,image_name),cropped)
+                            pil_image=cv2.cvtColor(cropped, cv2.COLOR_BGR2RGB)
+                            feature = self.extractor(pil_image)[0]
+                            embed = str(feature.tostring())
+                            record = Feature(cam_name=cam, track_num=i, feature=embed,bb_coord=str(box),current_time=current_time,image_name=image_name)
+                            self.session.add(record)
+                    self.session.commit()
 
 if __name__=="__main__":
     fire.Fire(camera_run)
