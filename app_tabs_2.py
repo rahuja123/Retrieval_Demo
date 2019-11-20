@@ -63,7 +63,7 @@ app.layout= html.Div(
 
                         dcc.Tabs(id="tabs",
                             className="custom-tabs-container",
-                            parent_className='custom-tabs',
+                            value='tab1',
                             children=[
                                 dcc.Tab(
                                     label='Extractor/Set',
