@@ -209,7 +209,11 @@ def feature_extractor_layout_sets(global_camera_sets,models_dict):
         ]),
         html.Div([
             html.Div(id='camera_stop_result_{}_sets'.format(i+1), style={'display':'none'}) for i in range(3)
-        ])
+        ]),
+
+        html.Iframe(id='console-out',className="console-out", srcDoc=' '),
+        dcc.Interval(id="interval", interval=500, n_intervals=0),
+
 
 
     ]
