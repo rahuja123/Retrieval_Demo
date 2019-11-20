@@ -34,7 +34,6 @@ class Feature(Base):
 
 Base.metadata.create_all(engine)
 
-
 if not os.path.exists(os.path.join('static','query')):
     os.makedirs(os.path.join('static','query'))
 
@@ -50,7 +49,7 @@ def retrieval(query="static/query/query.png",cam_name_list=['S1-B4b-L-B'],rank=1
     extractor = Extractor(reid_model,reid_weight,reid_device=reid_device)
     target_img = cv2.imread(query)[:,:,(2,1,0)]
     pil_image=cv2.cvtColor(target_img, cv2.COLOR_BGR2RGB)
-    qf = torch.from_numpy(extractor(pil_image)).float().to(reid_device)
+    qf = torch.from_numpy(extractor([pil_image])).float().to(reid_device)
 
     cam_rank_image = {}
     for cam_name in cam_name_list:
