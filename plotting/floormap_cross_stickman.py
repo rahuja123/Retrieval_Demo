@@ -3,7 +3,7 @@ import cv2
 import numpy
 
 background= r'../assets/images/overview_B3_cluster_1.png'
-logo= 'stickman.png'
+logo= 'plotting/stickman.png'
 
 
 def transparentOverlay(src, overlay, pos=(0, 0), scale=0.7):

@@ -9,7 +9,7 @@ from dash.exceptions import PreventUpdate
 import re
 from camera.retrieval import retrieval
 import cv2
-from plotting.floormap_cross_numbers import floormap_cross_stickman
+from plotting.floormap_cross_stickman import floormap_cross_numbers
 import base64
 import os
 from layout.feature_extractor_layout_sets import feature_extractor_layout_sets
@@ -538,7 +538,7 @@ def update_floormaps(n_clicks):
         line_traces, final_camera_list= calculate_line_trace(camera_dict_list)
 
         img_path= "./assets/images/overview_B3_cluster_1.png"
-        floormap_cross_stickman(img_path, final_camera_list)
+        floormap_cross_numbers(img_path, final_camera_list)
 
         df_line_traces= line_traces
 
@@ -572,7 +572,7 @@ def update_floormaps(n_clicks):
 @app.callback(Output('experimental_section', 'children'),
                         [Input('floormaps_graph', 'hoverData')])
 def update_experiments(hoverData):
-    # map_name= hoverData['points'][0]['hovertext']
+    map_name= hoverData['points'][0]['hovertext']
     # image_1= random.choice(["marker_s2_B4_L.png","marker_s2_B4_R.png", "marker_s2.1_B4_R.png", "marker_s2.1_B4_T.png"])
     return html.Div(html.Img(src='static/output_number_cross.png?t='+str(datetime.now()), style={'max-width':'750px',
     'max-height':'750px'}), style={'textAlign':'center'})
