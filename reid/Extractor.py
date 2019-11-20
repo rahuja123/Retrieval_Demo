@@ -16,7 +16,7 @@ class Extractor(object):
         #     last_stride = 1
         self.model = getattr(reid.models, model_name)(751)
         print("Network "+model_name+" loaded!")
-        self.model_path = os.path.join('./reid/weights/',model_weight)
+        self.model_path = os.path.join('.','reid','weights',model_weight)
         reid_weights_downloader(model_weight)
         self.device = reid_device
         # or model_name == 'Paper_MGN'

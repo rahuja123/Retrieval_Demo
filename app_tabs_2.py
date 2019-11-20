@@ -9,12 +9,13 @@ from dash.exceptions import PreventUpdate
 import re
 from camera.retrieval import retrieval
 import cv2
-from plotting.floormap_cross_numbers import floormap_cross_numbers
+from plotting.floormap_cross_stickman import floormap_cross_numbers
 import base64
 import os
 from layout.feature_extractor_layout_sets import feature_extractor_layout_sets
 from layout.feature_extractor_layout_2 import feature_extractor_layout
 from layout.retrieval_run_layout import retrieval_run_layout
+import itertools
 
 #path to save the image that you upload on the server.
 UPLOAD_DIRECTORY = "static/query"
@@ -26,7 +27,7 @@ server = app.server
 
 SET1= ["S2-B4b-R-TR","S2-B4b-R-TL","S2-B4b-R-BR","S2-B4b-R-BL","S2-B4b-L-TR","S2-B4b-L-TL","S2-B4b-L-BR","S2-B4b-L-BL"]
 SET2= ["S21-B3-L-T", "S21-B3-R-B","S22-B3-L-T", "S22-B3-R-B", "S21-B4-L-T", "S21-B4-R-B","S22-B4-L-T", "S22-B4-R-B"]
-SET3= ["S1-B4b-L-BL","S1-B4b-L-BR", "S1-B4b-R-BL","S1-B4b-R-BR","S1-B3b-L-TL","S1-B3b-L-TR", "S1-B3b-R-TL","S1-B3b--TR"]
+SET3= ["S1-B4b-L-BL","S1-B4b-L-BR", "S1-B4b-R-BL","S1-B4b-R-BR","S1-B3b-L-TL","S1-B3b-L-TR", "S1-B3b-R-TL","S1-B3b-R-TR"]
 global_camera_sets= [SET1, SET2, SET3]
 
 global_camera_names= ["S2-B4b-L-B","S2-B4b-L-BR","S1-B4b-L-BL","S1-B4b-R-B","S21-B4-T","S22-B4-T"]
@@ -34,7 +35,7 @@ cams_map_testing= ["S2-B4b-L-B","S2-B4b-L-BR","S1-B4b-L-BL","S1-B4b-R-B","S21-B4
 models_dict={'ResNet50':['ResNet50_Market.pth'],'ResNet101':['ResNet101_Market.pth'],'SE_ResNet50':['SE_ResNet50_Market.pth'],'SE_ResNet101':['SE_ResNet101_Market.pth']}
 image_value_list=[]
 output_result=[]
-camera_dict= dict.fromkeys(x for set in global_camera_sets for x in set)
+
 count=0
 
 app.layout= html.Div(
@@ -62,14 +63,13 @@ app.layout= html.Div(
 
                         dcc.Tabs(id="tabs",
                             className="custom-tabs-container",
-                            parent_className='custom-tabs',
+                            value='tab1',
                             children=[
                                 dcc.Tab(
                                     label='Extractor/Set',
                                     value='tab1',
                                     className='custom-tab',
                                     selected_className='custom-tab--selected',
-                                    selected_style={'color':'#60b5ab'},
                                     children=[
                                         html.Div(
                                             className="row",
@@ -82,7 +82,7 @@ app.layout= html.Div(
                                     value='tab2',
                                     className='custom-tab',
                                     selected_className='custom-tab--selected',
-                                    selected_style={'color':'#60b5ab'},
+
                                     children=[
                                         html.Div(
                                             className="row",
@@ -95,7 +95,6 @@ app.layout= html.Div(
                                     value='tab3',
                                     className='custom-tab',
                                     selected_className='custom-tab--selected',
-                                    selected_style={'color':'#60b5ab'},
                                     children=[
                                         html.Div(
                                             className="row",
@@ -118,6 +117,7 @@ app.layout= html.Div(
                                 ]
                         ),
                         html.Br(),
+                        dcc.Loading(id="loading-1", children=[html.Div(id="loading-output-1")], type="default"),
                         html.Div(id="camera_outputs", style={'margin-top':50,}),
                         html.Br(),
                         html.Div(id="floormaps_output", className='floormaps_output'),
@@ -319,8 +319,8 @@ def parse_contents(contents):
         # HTML images accept base64 encoded strings in the same format
         # that is supplied by the upload
         html.Img(src=contents, style={
-        'max-width':'250px',
-        'max-height':'250px',
+        'width':'105px',
+        'height':'225px',
         }),
     ])
 
@@ -356,8 +356,11 @@ def update_options(camera_name , frame_rate, images_timestamp):
 
 def parse_gallery(camera_name, frame_rate, image_list):
     children=[]
+    children1=[]
     MIN_NUM= min(int(frame_rate),len(image_list))
     images_timestamp=[]
+    if MIN_NUM > 5:
+        children2=[]
     for i in range(int(MIN_NUM)):
         image_src= image_list[i]
         image_id= "{}".format(camera_name)+ " "+ "Rank {}".format(i+1)
@@ -366,15 +369,31 @@ def parse_gallery(camera_name, frame_rate, image_list):
         time_stamp= datetime.strptime(time_stamp, '%Y-%m-%d-%H-%M-%S-%f')
         images_timestamp.append(time_stamp)
 
-        children.append(
-                html.Div([
-                    html.Img(id=image_id,src=image_src, className="img_style"),
-                    html.P("Rank {}".format(i+1), className="p_style"),
-                ],style={'float':'left',
-                'padding-left':'10px',
-                'padding-top':'10px',})
-                )
-
+        if i<5:
+            children1.append(
+                    html.Div([
+                        html.Img(id=image_id,src=image_src, className="img_style"),
+                        html.P("Rank {}".format(i+1), className="p_style"),
+                    ],style={'float':'left',
+                    'padding-left':'10px',
+                    'padding-top':'10px',})
+                    )
+        else:
+            children2.append(
+                    html.Div([
+                        html.Img(id=image_id,src=image_src, className="img_style"),
+                        html.P("Rank {}".format(i+1), className="p_style"),
+                    ],style={'float':'left',
+                    'padding-left':'10px',
+                    'padding-top':'10px',})
+                    )
+    if MIN_NUM > 5:
+        children= [
+                html.Div(children= children1, className="row"),
+                html.Div(children= children2, className="row"),
+        ]
+    else:
+        children = children1
     return html.Div([
             html.Div([
                 html.A([html.P(str(camera_name))], href='assets/maps/{}.png'.format("-".join(x for x in camera_name.split("-")[0:-1])), target='_blank'),
@@ -387,11 +406,12 @@ def parse_gallery(camera_name, frame_rate, image_list):
                     clearable=False,
                     )
             ], style={'textAlign':'center'},className='two columns'),
-            html.Div(children=children, className='ten columns'),
+            html.Div(children=children, className="ten columns"),
         ],className="row", style={'margin-top':50})
 
 
-@app.callback(Output('camera_outputs', 'children'),
+@app.callback([Output('camera_outputs', 'children'),
+                Output('loading-output-1','children')],
               [Input('show_results', 'n_clicks')],
               [State('camera_name_dropdown_reid', 'value'), State('frame_rate','value'),State('network_dropdown_reid','value'), State('network_weight_dropdown_reid', 'value'), State('devices_dropdown_reid','value')])
 
@@ -446,15 +466,19 @@ def update_output2(n_clicks, camera_dropdown_values, frame_rate, reid_model, rei
             hidden_divs.append(html.Div(id="state_container_{}".format(name), style={'display':'none'}))
 
 
+        global image_value_list
+        image_value_list=[]                   #every time show results button is clicked, this empties the list.
+
+
         final_output= html.Div(children=output_array)
 
-        return  final_output
+        return  final_output, []
 
 
 def update_state_container(camera_value):
     global image_value_list
     image_value_list.append(camera_value)
-    print("hi,", camera_value)
+    # print("hi,", camera_value)
     return camera_value
 
 for camera_set in global_camera_sets:
@@ -487,6 +511,8 @@ def calculate_line_trace(camera_dict_list):
 @app.callback(Output('floormaps_output', 'children'),
                 [Input('show_locations','n_clicks')])
 def update_floormaps(n_clicks):
+
+    camera_dict= dict.fromkeys(x for set in global_camera_sets for x in set)
     if n_clicks is None:
         raise PreventUpdate
     else:
@@ -500,7 +526,7 @@ def update_floormaps(n_clicks):
             time_stamp= name_split[1]
             camera_name= name_split[0].split()[0]
 
-            global camera_dict
+
             camera_dict[camera_name]=time_stamp
 
         camera_dict_list= list({k: v for k, v in camera_dict.items() if v is not None}.items())
