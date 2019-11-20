@@ -35,7 +35,7 @@ cams_map_testing= ["S2-B4b-L-B","S2-B4b-L-BR","S1-B4b-L-BL","S1-B4b-R-B","S21-B4
 models_dict={'ResNet50':['ResNet50_Market.pth'],'ResNet101':['ResNet101_Market.pth'],'SE_ResNet50':['SE_ResNet50_Market.pth'],'SE_ResNet101':['SE_ResNet101_Market.pth']}
 image_value_list=[]
 output_result=[]
-camera_dict= dict.fromkeys(x for set in global_camera_sets for x in set)
+
 count=0
 
 app.layout= html.Div(
@@ -511,6 +511,8 @@ def calculate_line_trace(camera_dict_list):
 @app.callback(Output('floormaps_output', 'children'),
                 [Input('show_locations','n_clicks')])
 def update_floormaps(n_clicks):
+
+    camera_dict= dict.fromkeys(x for set in global_camera_sets for x in set)
     if n_clicks is None:
         raise PreventUpdate
     else:
@@ -524,7 +526,7 @@ def update_floormaps(n_clicks):
             time_stamp= name_split[1]
             camera_name= name_split[0].split()[0]
 
-            global camera_dict
+
             camera_dict[camera_name]=time_stamp
 
         camera_dict_list= list({k: v for k, v in camera_dict.items() if v is not None}.items())
