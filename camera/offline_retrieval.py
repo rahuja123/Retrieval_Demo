@@ -117,9 +117,9 @@ def offline_retrieval(query="static/query/query.png",cam_name_list=['S1-B4b-L-B'
                         x,y,w,h = box
                         if h/w > 2 and w > 60:
                             x1 = max(int(x-w/2),0)
-                            x2 = min(int(x+w/2),self.im_width-1)
+                            x2 = min(int(x+w/2),im_width-1)
                             y1 = max(int(y-h/2),0)
-                            y2 = min(int(y+h/2),self.im_height-1)
+                            y2 = min(int(y+h/2),im_height-1)
                             frame = dict_frame['frame_{}'.format(cam)]
                             cropped = frame[y1:y2,x1:x2]
                             # print("Detection {}, {}, {}, {}".format(x1,y1,x2,y2))
