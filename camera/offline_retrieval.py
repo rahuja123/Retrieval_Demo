@@ -94,7 +94,7 @@ def offline_retrieval(query="static/query/query.png",cam_name_list=['S1-B4b-L-B'
     
     for video in video_list:
         cam = video.split('/')[-1].split("_")[0]
-        print("Extracting "cam)
+        print("Extracting "+cam)
         vdo.open(video)
         im_width = int(vdo.get(cv2.CAP_PROP_FRAME_WIDTH))
         im_height = int(vdo.get(cv2.CAP_PROP_FRAME_HEIGHT))
