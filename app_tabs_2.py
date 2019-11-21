@@ -8,6 +8,7 @@ from datetime import datetime
 from dash.exceptions import PreventUpdate
 import re
 from camera.retrieval import retrieval
+from camera.offline_retrieval import offline_retrieval
 import cv2
 from plotting.floormap_cross_stickman import floormap_cross_numbers
 import base64
@@ -550,10 +551,7 @@ def update_output2(n_clicks, camera_dropdown_values, frame_rate, reid_model, rei
 
         img_path= os.path.join('static','query','query.png')
         if toggle==False:
-
-            print(date)
-            print(starttime)
-            print(endtime)
+            offline_retrieval(img_path,cam_name_list,int(frame_rate),reid_model, reid_weight, reid_device,date,starttime,endtime)
             return [], [], {}
             """
             run the offline code

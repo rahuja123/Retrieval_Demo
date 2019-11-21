@@ -75,6 +75,7 @@ def feature_extractor_layout_sets(global_camera_sets,models_dict):
                                     options=populate_camera_dropdown_menu(global_camera_sets[0]),
                                     placeholder="Camera...",
                                     multi=True,
+                                    style={'fontSize': 12}
                                 )
                             ]
                         ),
@@ -126,6 +127,7 @@ def feature_extractor_layout_sets(global_camera_sets,models_dict):
                                     options=populate_camera_dropdown_menu(global_camera_sets[1]),
                                     placeholder="Camera...",
                                     multi=True,
+                                    style={'fontSize': 12}
                                 )
                             ]
                         ),
@@ -175,6 +177,7 @@ def feature_extractor_layout_sets(global_camera_sets,models_dict):
                                     options=populate_camera_dropdown_menu(global_camera_sets[2]),
                                     placeholder="Camera...",
                                     multi=True,
+                                    style={'fontSize': 12}
                                 )
                             ]
                         ),
@@ -224,6 +227,7 @@ def feature_extractor_layout_sets(global_camera_sets,models_dict):
                                     options=populate_camera_dropdown_menu(global_camera_sets[3]),
                                     placeholder="Camera...",
                                     multi=True,
+                                    style={'fontSize': 12}
                                 )
                             ]
                         ),
@@ -272,6 +276,7 @@ def feature_extractor_layout_sets(global_camera_sets,models_dict):
                                     options=populate_camera_dropdown_menu_all(global_camera_sets),
                                     placeholder="Camera...",
                                     multi=True,
+                                    style={'fontSize': 12}
                                 )
                             ]
                         ),

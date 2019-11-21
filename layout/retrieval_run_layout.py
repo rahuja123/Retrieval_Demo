@@ -145,7 +145,8 @@ def retrieval_run_layout(global_camera_sets,models_dict):
                             # className='date-picker',
                             id='date_picker',
                             date=dt.now(),
-                            style={'background-color':'white'}
+                            display_format='Y-M-D',
+                            style={'background-color':'white','fontSize': 12}
                         ),
                     ],
                     ),
