@@ -41,7 +41,7 @@ int main(int argc, char** argv) {
     hPlayback = NET_DVR_GetFileByTime_V40(lUserID, argv[14],&struDownloadCond);
     if(hPlayback < 0)
     {
-//     printf("NET_DVR_GetFileByTime_V40 fail,last error %d\n",NET_DVR_GetLastError());
+    printf("NET_DVR_GetFileByTime_V40 fail,last error %d\n",NET_DVR_GetLastError());
     NET_DVR_Logout(lUserID);
     NET_DVR_Cleanup();
     return 0;
@@ -58,8 +58,8 @@ int main(int argc, char** argv) {
     int nPos = 0;
     for(nPos = 0; nPos < 100&&nPos>=0; nPos = NET_DVR_GetDownloadPos(hPlayback)) 
     {
-//         printf("Downloading... %d %%\n",nPos); //下载进度
-        usleep(1000); //millisecond 
+        printf("Be downloading... %d %%\n",nPos); //下载进度
+        usleep(5000); //millisecond 
     }
     
     
@@ -71,13 +71,12 @@ int main(int argc, char** argv) {
     }
     
     if(nPos<0||nPos>100) {
-        printf("download err [%d]\n",NET_DVR_GetLastError()); 
-        NET_DVR_Logout(lUserID);
+        printf("download err [%d]\n",NET_DVR_GetLastError()); NET_DVR_Logout(lUserID);
         NET_DVR_Cleanup();
         return 0;
     }
     
-//     printf("Download Completed... %d %%\n",nPos);
+    printf("Be downloading... %d %%\n",nPos);
     
     //注销用户 
     NET_DVR_Logout(lUserID); 
