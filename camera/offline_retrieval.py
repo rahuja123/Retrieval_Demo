@@ -121,7 +121,6 @@ def offline_retrieval(query="static/query/query.png",cam_name_list=['S1-B4b-L-B'
                             x2 = min(int(x+w/2),im_width-1)
                             y1 = max(int(y-h/2),0)
                             y2 = min(int(y+h/2),im_height-1)
-                            frame = im
                             cropped = frame[y1:y2,x1:x2]
                             # print("Detection {}, {}, {}, {}".format(x1,y1,x2,y2))
                             print("{} : {}, {}, {}, {}".format(cam,x1,y1,x2,y2))
