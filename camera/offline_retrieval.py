@@ -123,7 +123,7 @@ def offline_retrieval(query="static/query/query.png",cam_name_list=['S1-B4b-L-B'
                             frame = im
                             cropped = frame[y1:y2,x1:x2]
                             # print("Detection {}, {}, {}, {}".format(x1,y1,x2,y2))
-                            logger.info("{} : {}, {}, {}, {}".format(cam,x1,y1,x2,y2))
+                            print("{} : {}, {}, {}, {}".format(cam,x1,y1,x2,y2))
 
                             image_path = os.path.join('static','ExtractedImages',cam)
                             os.makedirs(image_path, exist_ok=True)
