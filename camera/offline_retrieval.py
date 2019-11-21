@@ -55,8 +55,8 @@ def offline_retrieval(query="static/query/query.png",cam_name_list=['S1-B4b-L-B'
     year,month,day = date.split('-')
     s_hour,s_mintue= start.split(":")
     e_hour,e_mintue= end.split(":")
-    starttime= datetime(year,month,day,s_hour,s_mintue,0)
-    endtime= datetime(year,month,day,e_hour,e_mintue,0)
+    starttime= datetime(int(year),int(month),int(day),int(s_hour),int(s_mintue),0)
+    endtime= datetime(int(year),int(month),int(day),int(e_hour),int(e_mintue),0)
     
     video_list = []
     for cam in cam_name_list:
