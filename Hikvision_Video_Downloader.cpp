@@ -76,7 +76,7 @@ int main(int argc, char** argv) {
         return 0;
     }
     
-    printf("Be downloading... %d %%\n",nPos);
+    // printf("Be downloading... %d %%\n",nPos);
     
     //注销用户 
     NET_DVR_Logout(lUserID); 

@@ -57,7 +57,7 @@ def offline_retrieval(query="static/query/query.png",cam_name_list=['S1-B4b-L-B'
         rtsp = camera[cam]
         channel = int(rtsp.split('/')[-1][:2])
         ip = rtsp.split('/')[-4].split('@')[1].split(':')[0]
-        file_name = "{}_{}_{}-{}_{}-{}".format(cam,date,s_hour,s_mintue,e_hour,e_mintue)
+        file_name = "{}_{}_{}-{}_{}-{}.mp4".format(cam,date,s_hour,s_mintue,e_hour,e_mintue)
         print("Downloading "+file_name)
         proc = subprocess.Popen(["./Hikvision_Video_Downloader", ip, 'admin', 'admin12345', 
                                 str(channel), str(year), str(month), str(day), 
