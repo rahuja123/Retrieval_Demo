@@ -58,7 +58,7 @@ int main(int argc, char** argv) {
     int nPos = 0;
     for(nPos = 0; nPos < 100&&nPos>=0; nPos = NET_DVR_GetDownloadPos(hPlayback)) 
     {
-        printf("Be downloading... %d %%\n",nPos); //下载进度
+        // printf("Be downloading... %d %%\n",nPos); //下载进度
         usleep(5000); //millisecond 
     }
     

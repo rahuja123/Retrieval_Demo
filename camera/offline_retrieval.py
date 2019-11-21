@@ -71,7 +71,7 @@ def offline_retrieval(query="static/query/query.png",cam_name_list=['S1-B4b-L-B'
         #                         str(s_hour), str(s_mintue), str(0), 
         #                         str(e_hour), str(e_mintue), str(0),
         #                         os.path.join(save_dir,file_name))
-
+    print('Download Completed')
     # Session = sessionmaker(bind=engine)
     # session = Session()
 
