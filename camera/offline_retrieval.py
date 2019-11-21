@@ -184,9 +184,8 @@ def offline_retrieval(query="static/query/query.png",cam_name_list=['S1-B4b-L-B'
                         image_list.append(image_path)
 
                     cam_rank_image[cam_name]=image_list
-
-                session.close()
-                return cam_rank_image
+    session.close()
+    return cam_rank_image
 
 if __name__=="__main__":
     fire.Fire(retrieval)
