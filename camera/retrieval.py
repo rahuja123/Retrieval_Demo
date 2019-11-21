@@ -47,7 +47,7 @@ def retrieval(query="static/query/query.png",cam_name_list=['S1-B4b-L-B'],rank=1
     # print(rank)
     embed_npdtype = np.float32
     extractor = Extractor(reid_model,reid_weight,reid_device=reid_device)
-    target_img = cv2.imread(query)[:,:,(2,1,0)]
+    target_img = cv2.imread(query)
     pil_image=cv2.cvtColor(target_img, cv2.COLOR_BGR2RGB)
     qf = torch.from_numpy(extractor([pil_image])).float().to(reid_device)
 

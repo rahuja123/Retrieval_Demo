@@ -551,8 +551,8 @@ def update_output2(n_clicks, camera_dropdown_values, frame_rate, reid_model, rei
 
         img_path= os.path.join('static','query','query.png')
         if toggle==False:
-            offline_retrieval(img_path,cam_name_list,int(frame_rate),reid_model, reid_weight, reid_device,date,starttime,endtime)
-            return [], [], {}
+            image_dict = offline_retrieval(img_path,cam_name_list,int(frame_rate),reid_model, reid_weight, reid_device,date,starttime,endtime)
+            # return [], [], {}
             """
             run the offline code
             image_dict= offline function.
