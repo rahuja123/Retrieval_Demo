@@ -18,6 +18,7 @@ from layout.feature_extractor_layout_2 import feature_extractor_layout
 from layout.retrieval_run_layout import retrieval_run_layout
 import itertools
 
+
 #path to save the image that you upload on the server.
 UPLOAD_DIRECTORY = "static/query"
 # external_stylesheets = ['https://codepen.io/amyoshino/pen/jzXypZ.css']
@@ -549,14 +550,13 @@ def update_output2(n_clicks, camera_dropdown_values, frame_rate, reid_model, rei
                 if len(os.listdir(os.path.join('static',camera))) > 0:
                     cam_name_list.append(camera)
 
+        offline_cam_name_list = []
+        for camera in camera_dropdown_values:
+            offline_cam_name_list.append(camera)
+
         img_path= os.path.join('static','query','query.png')
         if toggle==False:
-            image_dict = offline_retrieval(img_path,cam_name_list,int(frame_rate),reid_model, reid_weight, reid_device,date,starttime,endtime)
-            # return [], [], {}
-            """
-            run the offline code
-            image_dict= offline function.
-            """
+            image_dict = offline_retrieval(img_path,offline_cam_name_list,int(frame_rate),reid_model, reid_weight, reid_device,date,starttime,endtime)
         else:
             image_dict = retrieval(img_path,cam_name_list,int(frame_rate),reid_model, reid_weight, reid_device )
 
@@ -703,4 +703,4 @@ def toggle_datetime(value):
 
 
 if __name__ == '__main__':
-    app.run_server(debug=True, port=8051)
+    app.run_server(debug=True, port=8050)

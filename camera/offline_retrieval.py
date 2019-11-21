@@ -7,6 +7,7 @@ import torch
 import numpy as np
 from PIL import Image
 from datetime import datetime
+from datetime import timedelta
 from ast import literal_eval
 from reid import Extractor
 from reid import reid_weights_downloader
@@ -21,9 +22,10 @@ from reid import Extractor
 from reid import reid_weights_downloader
 
 import warnings
+warnings.filterwarnings("ignore")
 
-Base = declarative_base()
 engine = create_engine('sqlite:///offline_database.db')
+Base = declarative_base()
 class Feature(Base):
     __tablename__ = 'features'
     id = Column(Integer, Sequence('id'), primary_key=True)
@@ -50,7 +52,6 @@ def offline_retrieval(query="static/query/query.png",cam_name_list=['S1-B4b-L-B'
         k, v = row
         camera[k] = v
     
-    print(date)
     date = date.split('T')[0]
     year,month,day = date.split('-')
     s_hour,s_mintue= start.split(":")
@@ -75,11 +76,7 @@ def offline_retrieval(query="static/query/query.png",cam_name_list=['S1-B4b-L-B'
                                 os.path.join(save_dir,file_name)])
         
         proc.wait()
-        # print("./camera/Hikvision_Video_Downloader", ip, 'admin', 'admin12345', 
-        #                         str(channel), str(year), str(month), str(day), 
-        #                         str(s_hour), str(s_mintue), str(0), 
-        #                         str(e_hour), str(e_mintue), str(0),
-        #                         os.path.join(save_dir,file_name))
+
     print('Download Completed')
     Session = sessionmaker(bind=engine)
     session = Session()
@@ -90,10 +87,11 @@ def offline_retrieval(query="static/query/query.png",cam_name_list=['S1-B4b-L-B'
     extractor = Extractor(reid_model,reid_weight,reid_device=reid_device)
     
     vdo = cv2.VideoCapture()
-    # vdo.set(cv2.CAP_PROP_FPS, 10)
+    vdo.set(cv2.CAP_PROP_FPS, 10)
     
-    for video in video_list:
-        cam = video.split('/')[-1].split("_")[0]
+    for cam in cam_name_list:
+        file_name = "{}_{}_{}-{}_{}-{}.mp4".format(cam,date,s_hour,s_mintue,e_hour,e_mintue)
+        video = os.path.join('.','static','RawVideos',cam,file_name)
         print("Extracting "+cam)
         vdo.open(video)
         im_width = int(vdo.get(cv2.CAP_PROP_FRAME_WIDTH))
@@ -124,10 +122,15 @@ def offline_retrieval(query="static/query/query.png",cam_name_list=['S1-B4b-L-B'
                             cropped = frame[y1:y2,x1:x2]
                             # print("Detection {}, {}, {}, {}".format(x1,y1,x2,y2))
                             print("{} : {}, {}, {}, {}".format(cam,x1,y1,x2,y2))
-
+                            second = ct // 10
+                            microsecond =ct % 10
+                            delta = timedelta(seconds=second, microseconds=microsecond)
+                            final_time = starttime + delta
+                            
                             image_path = os.path.join('static','ExtractedImages',cam)
                             os.makedirs(image_path, exist_ok=True)
-                            image_name = '{}_{}_{}-{}_{}_{}.jpg'.format(cam,date,s_hour,s_mintue,ct,i)
+                            
+                            image_name = '{}-{}-{}-{}-{}_{}.jpg'.format(date,final_time.hour,final_time.minute,final_time.second,final_time.microsecond,i)
                             cv2.imwrite(os.path.join(image_path,image_name),cropped)
                             pil_image=cv2.cvtColor(cropped, cv2.COLOR_BGR2RGB)
                             feature = extractor([pil_image])
@@ -147,8 +150,8 @@ def offline_retrieval(query="static/query/query.png",cam_name_list=['S1-B4b-L-B'
 
     cam_rank_image = {}
     for cam_name in cam_name_list:
-        if os.path.exists(os.path.join('static','ExtractedImages',camera)):
-                if len(os.listdir(os.path.join('static','ExtractedImages',camera))) > 0:
+        if os.path.exists(os.path.join('static','ExtractedImages',cam_name)):
+                if len(os.listdir(os.path.join('static','ExtractedImages',cam_name))) > 0:
                     gf = []
                     gf_image = []
                     # print(cam_name)
@@ -177,7 +180,7 @@ def offline_retrieval(query="static/query/query.png",cam_name_list=['S1-B4b-L-B'
 
                     for i in range(number):
                         index = int(indices[i])
-                        image_path = os.path.join('static',gf_image[index])
+                        image_path = os.path.join('static','ExtractedImages',gf_image[index])
                         image_list.append(image_path)
 
                     cam_rank_image[cam_name]=image_list
