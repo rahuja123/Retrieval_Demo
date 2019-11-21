@@ -133,7 +133,7 @@ def offline_retrieval(query="static/query/query.png",cam_name_list=['S1-B4b-L-B'
                             pil_image=cv2.cvtColor(cropped, cv2.COLOR_BGR2RGB)
                             feature = extractor([pil_image])
                             embed = str(feature[0].tostring())
-                            record = Feature(cam_name=cam, track_num=ct, feature=embed,bb_coord=str(box),star_time=starttime,end_time=endtime,image_name=image_name)
+                            record = Feature(cam_name=cam, frame_num=ct, feature=embed,bb_coord=str(box),star_time=starttime,end_time=endtime,image_name=image_name)
                             session.add(record)
                             session.commit()
             ct += 1
