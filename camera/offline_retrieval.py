@@ -128,7 +128,7 @@ def offline_retrieval(query="static/query/query.png",cam_name_list=['S1-B4b-L-B'
 
                             image_path = os.path.join('static','ExtractedImages',cam)
                             os.makedirs(image_path, exist_ok=True)
-                            image_name = '{}_{}_{}-{}_{}_{}.jpg'.formate(cam,date,s_hour,s_mintue,ct,i)
+                            image_name = '{}_{}_{}-{}_{}_{}.jpg'.format(cam,date,s_hour,s_mintue,ct,i)
                             cv2.imwrite(os.path.join(image_path,image_name),cropped)
                             pil_image=cv2.cvtColor(cropped, cv2.COLOR_BGR2RGB)
                             feature = extractor([pil_image])
