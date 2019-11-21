@@ -59,12 +59,18 @@ def offline_retrieval(query="static/query/query.png",cam_name_list=['S1-B4b-L-B'
         ip = rtsp.split('/')[-4].split('@')[1].split(':')[0]
         file_name = "{}_{}_{}-{}_{}-{}".format(cam,date,s_hour,s_mintue,e_hour,e_mintue)
         print("Downloading "+file_name)
-        proc = subprocess.Popen(["./camera/Hikvision_Video_Downloader", ip, 'admin', 'admin12345', 
+        proc = subprocess.Popen(["./Hikvision_Video_Downloader", ip, 'admin', 'admin12345', 
                                 str(channel), str(year), str(month), str(day), 
                                 str(s_hour), str(s_mintue), str(0), 
                                 str(e_hour), str(e_mintue), str(0),
                                 os.path.join(save_dir,file_name)])
+        
         proc.wait()
+        # print("./camera/Hikvision_Video_Downloader", ip, 'admin', 'admin12345', 
+        #                         str(channel), str(year), str(month), str(day), 
+        #                         str(s_hour), str(s_mintue), str(0), 
+        #                         str(e_hour), str(e_mintue), str(0),
+        #                         os.path.join(save_dir,file_name))
 
     # Session = sessionmaker(bind=engine)
     # session = Session()
