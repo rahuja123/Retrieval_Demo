@@ -65,7 +65,22 @@ a {
   padding: 5px;
 }
 
+.date_picker{
+  background-color: #4181FF;
+}
 
+.datetime_class {
+  width: 90%;
+}
+
+/* .time_class {
+  width: 85%;
+  margin-right: 3px;
+} */
+
+.timeinput{
+  width:85%;
+}
 
 /*
 @media (max-width: 950px) {

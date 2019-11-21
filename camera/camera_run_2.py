@@ -133,7 +133,7 @@ class Camera_Process(object):
             time.sleep(1)
 
         xmin, ymin, xmax, ymax = self.area
-
+        counter=0
 
         dict_frame={}
         while not self.isstop:
@@ -148,9 +148,9 @@ class Camera_Process(object):
                     im = frame[ymin:ymax, xmin:xmax]
                     im = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
                     frame_dict[cam]=im
-                     
+
             result_dict = self.yolo3(frame_dict)
-            
+
             list_image = []
             list_info = []
             for cam, result in result_dict.items():
@@ -167,7 +167,8 @@ class Camera_Process(object):
                             frame = dict_frame['frame_{}'.format(cam)]
                             cropped = frame[y1:y2,x1:x2]
                             # print("Detection {}, {}, {}, {}".format(x1,y1,x2,y2))
-                            logger.info("{} : {}, {}, {}, {}".format(cam,x1,y1,x2,y2))
+                            counter +=1
+                            logger.info("{}  {} : {}, {}, {}, {}".format(counter, cam,x1,y1,x2,y2))
 
                             image_path = os.path.join('static',cam)
                             image_name = str(current_time.strftime('%Y-%m-%d-%H-%M-%S-%f'))+'_'+str(i)+'.jpg'
@@ -175,8 +176,8 @@ class Camera_Process(object):
                             pil_image=cv2.cvtColor(cropped, cv2.COLOR_BGR2RGB)
                             list_image.append(pil_image)
                             list_info.append([cam,i,str(box),current_time,image_name])
-            
-            if list_image: 
+
+            if list_image:
                 feature_list = self.extractor(list_image)
                 for count,f in enumerate(feature_list):
                     embed = str(f.tostring())

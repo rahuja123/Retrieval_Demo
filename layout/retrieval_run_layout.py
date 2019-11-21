@@ -1,6 +1,8 @@
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
+import dash_daq as daq
+from datetime import datetime as dt
 
 
 def populate_devices():
@@ -43,6 +45,19 @@ def retrieval_run_layout(global_camera_sets,models_dict):
 
         html.Br(),
         html.Br(),
+
+        html.Div(
+            children=[
+                daq.ToggleSwitch(
+                    id='offline_toggle',
+                    label=['Offline', 'Online'],
+                    style={'width': '250px', 'margin': 'auto'},
+                    value=False
+                ),
+            ]
+        ),
+
+
         html.Div(
             children=[
                 html.P("Network Model", className='p-dropdown'),
@@ -112,6 +127,54 @@ def retrieval_run_layout(global_camera_sets,models_dict):
                     placeholder="Select the number of frames..",
                     clearable=False,
                     value='5'
+                )
+            ]
+        ),
+
+        html.Br(),
+
+        html.Div(
+            id='datetime_class',
+            className='datetime_class',
+            children=[
+                html.Div(
+                    className="four columns",
+                    children=[
+                        html.P('Pick a Date:'),
+                        dcc.DatePickerSingle(
+                            # className='date-picker',
+                            id='date_picker',
+                            date=dt.now(),
+                            style={'background-color':'white'}
+                        ),
+                    ],
+                    ),
+
+                html.Div(
+                    className= "four columns time_class",
+                    children=[
+                        html.P('Start-time:'),
+                        dcc.Input(
+                            className='timeinput',
+                            id="starttime",
+                            value=dt.strftime(dt.now(), '%H:%M'),
+
+                            ),
+
+                    ]),
+
+                html.Div(
+                    className= "four columns time_class",
+                    children=[
+                        html.P('End-time:'),
+                        dcc.Input(
+                            className='timeinput',
+                            id="endtime",
+
+                            value=dt.strftime(dt.now(), '%H:%M'),
+
+                            ),
+                    ]
                 )
             ]
         ),

@@ -27,8 +27,9 @@ server = app.server
 
 SET1= ["S2-B4b-R-TR","S2-B4b-R-TL","S2-B4b-R-BR","S2-B4b-R-BL","S2-B4b-L-TR","S2-B4b-L-TL","S2-B4b-L-BR","S2-B4b-L-BL"]
 SET2= ["S21-B3-L-T", "S21-B3-R-B","S22-B3-L-T", "S22-B3-R-B", "S21-B4-L-T", "S21-B4-R-B","S22-B4-L-T", "S22-B4-R-B"]
-SET3= ["S1-B4b-L-BL","S1-B4b-L-BR", "S1-B4b-R-BL","S1-B4b-R-BR","S1-B3b-L-TL","S1-B3b-L-TR", "S1-B3b-R-TL","S1-B3b-R-TR"]
-global_camera_sets= [SET1, SET2, SET3]
+SET3= ["S1-B4b-L-BL","S1-B4b-L-BR", "S1-B4b-R-BL","S1-B4b-R-BR","S1-B3b-L-TL","S1-B3b-L-TR", "S1-B3b-R-TL","S1-B3b-R-TR", "S1-B4b-L-TL","S1-B4b-L-TR", "S1-B4b-R-TL","S1-B4b-R-TR","S1-B3b-L-BL","S1-B3b-L-BR", "S1-B3b-R-BL","S1-B3b-R-BR"]
+SET4= ["S1-B4b-d-BL"] #change it
+global_camera_sets= [SET1, SET2, SET3, SET4]
 
 global_camera_names= ["S2-B4b-L-B","S2-B4b-L-BR","S1-B4b-L-BL","S1-B4b-R-B","S21-B4-T","S22-B4-T"]
 cams_map_testing= ["S2-B4b-L-B","S2-B4b-L-BR","S1-B4b-L-BL","S1-B4b-R-B","S21-B4-T","S22-B4-T"]
@@ -310,6 +311,78 @@ def stop_camera_run_sets(n_clicks):
             global p3
             p3.stop()
 
+@app.callback(
+    Output('camera_run_result_4_sets', 'children'),
+    [Input('camera_run_4_sets', 'n_clicks')],
+    [State('network_dropdown_sets','value'),
+     State('network_weight_dropdown_sets', 'value'),
+     State('camera_name_dropdown_4_sets', 'value'),
+     State('devices_dropdown_4_sets','value')]
+)
+def run_camera_run_sets(n_clicks, reid_model, reid_weight,cam_name, reid_device):
+
+    if n_clicks is None:
+        raise PreventUpdate
+    else:
+        # print("working3")
+        if 'ALL' in cam_name:
+            cam_name= global_camera_sets[2]
+
+        from camera.camera_run_2 import Camera_Process
+        globals()['p4'] = Camera_Process(cam_list=cam_name, rtsp=True, reid_model=reid_model,reid_weight=reid_weight, reid_device=reid_device)
+        p4.start()
+
+
+@app.callback(
+    Output('camera_stop_result_4_sets', 'children'),
+    [Input('camera_stop_4_sets', 'n_clicks')],
+)
+def stop_camera_run_sets(n_clicks):
+
+        if n_clicks is None:
+            raise PreventUpdate
+        else:
+            print("stopped")
+            global p4
+            p4.stop()
+
+
+
+
+@app.callback(
+    Output('camera_run_result_5_sets', 'children'),
+    [Input('camera_run_5_sets', 'n_clicks')],
+    [State('network_dropdown_sets','value'),
+     State('network_weight_dropdown_sets', 'value'),
+     State('camera_name_dropdown_5_sets', 'value'),
+     State('devices_dropdown_5_sets','value')]
+)
+def run_camera_run_sets(n_clicks, reid_model, reid_weight,cam_name, reid_device):
+
+    if n_clicks is None:
+        raise PreventUpdate
+    else:
+        # print("working3")
+        if 'ALL' in cam_name:
+            cam_name= global_camera_sets[2]
+
+        from camera.camera_run_2 import Camera_Process
+        globals()['p5'] = Camera_Process(cam_list=cam_name, rtsp=True, reid_model=reid_model,reid_weight=reid_weight, reid_device=reid_device)
+        p5.start()
+
+
+@app.callback(
+    Output('camera_stop_result_5_sets', 'children'),
+    [Input('camera_stop_5_sets', 'n_clicks')],
+)
+def stop_camera_run_sets(n_clicks):
+
+        if n_clicks is None:
+            raise PreventUpdate
+        else:
+            print("stopped")
+            global p5
+            p5.stop()
 
 
 
@@ -336,6 +409,10 @@ def save_file(name, content):
 def update_output(images):
     if not images:
         return
+
+    global image_value_list
+    image_value_list=[]                   #every time show results button is clicked, this empties the list.
+
 
     for i, image_str in enumerate(images):
         image = image_str.split(',')[1]
@@ -411,11 +488,20 @@ def parse_gallery(camera_name, frame_rate, image_list):
 
 
 @app.callback([Output('camera_outputs', 'children'),
-                Output('loading-output-1','children')],
+                Output('loading-output-1','children'),
+                Output('floormaps_division','style')],
               [Input('show_results', 'n_clicks')],
-              [State('camera_name_dropdown_reid', 'value'), State('frame_rate','value'),State('network_dropdown_reid','value'), State('network_weight_dropdown_reid', 'value'), State('devices_dropdown_reid','value')])
+              [State('camera_name_dropdown_reid', 'value'),
+               State('frame_rate','value'),
+               State('network_dropdown_reid','value'),
+               State('network_weight_dropdown_reid', 'value'),
+               State('devices_dropdown_reid','value'),
+               State('offline_toggle', 'value'),
+               State('date_picker','date'),
+               State('starttime','value'),
+               State('endtime','value')])
 
-def update_output2(n_clicks, camera_dropdown_values, frame_rate, reid_model, reid_weight, reid_device):
+def update_output2(n_clicks, camera_dropdown_values, frame_rate, reid_model, reid_weight, reid_device,toggle,  date, starttime, endtime):
     if n_clicks is None:
         raise PreventUpdate
     else:
@@ -445,6 +531,14 @@ def update_output2(n_clicks, camera_dropdown_values, frame_rate, reid_model, rei
             camera_dropdown_values= set(camera_dropdown_values)
             camera_dropdown_values.remove('SET3')
 
+        if 'SET4' in camera_dropdown_values:
+            for cam_name in global_camera_sets[3]:
+                camera_dropdown_values.append(cam_name)
+            camera_dropdown_values= set(camera_dropdown_values)
+            camera_dropdown_values.remove('SET4')
+
+
+
         output_array=[]
         path= "ROSE LAB "
 
@@ -455,7 +549,18 @@ def update_output2(n_clicks, camera_dropdown_values, frame_rate, reid_model, rei
                     cam_name_list.append(camera)
 
         img_path= os.path.join('static','query','query.png')
-        image_dict = retrieval(img_path,cam_name_list,int(frame_rate),reid_model, reid_weight, reid_device )
+        if toggle==False:
+
+            print(date)
+            print(starttime)
+            print(endtime)
+            return [], [], {}
+            """
+            run the offline code
+            image_dict= offline function.
+            """
+        else:
+            image_dict = retrieval(img_path,cam_name_list,int(frame_rate),reid_model, reid_weight, reid_device )
 
         for camera in image_dict:
             output_array.append(parse_gallery(camera, int(frame_rate), image_dict[camera]))
@@ -466,13 +571,9 @@ def update_output2(n_clicks, camera_dropdown_values, frame_rate, reid_model, rei
             hidden_divs.append(html.Div(id="state_container_{}".format(name), style={'display':'none'}))
 
 
-        global image_value_list
-        image_value_list=[]                   #every time show results button is clicked, this empties the list.
-
-
         final_output= html.Div(children=output_array)
 
-        return  final_output, []
+        return  final_output, [], {'display':'none'}
 
 
 def update_state_container(camera_value):
@@ -525,8 +626,6 @@ def update_floormaps(n_clicks):
             name_split= name.split('_')
             time_stamp= name_split[1]
             camera_name= name_split[0].split()[0]
-
-
             camera_dict[camera_name]=time_stamp
 
         camera_dict_list= list({k: v for k, v in camera_dict.items() if v is not None}.items())
@@ -563,9 +662,10 @@ def update_floormaps(n_clicks):
                         yaxis= {'categoryorder':'array', 'categoryarray':['B6','B5','B4','B3','B2', 'B1'], "title": "Floors" },
                        # "zaxis": {'categoryorder':'array', 'categoryarray':global_camera_floors,"title": "Floors" }
                        )
-                    }
+                    },
+            style={'display':'block'},
                     )
-        return GRAPH
+        return html.Div(id='floormaps_division', children=[GRAPH], style={'display':'block'})
 
 
 
@@ -593,6 +693,15 @@ def update_console_output(n):
             data=data+line + '<BR>'
         file.close()
     return data
+
+
+@app.callback(Output('datetime_class', 'style'),
+                [Input('offline_toggle', 'value')])
+def toggle_datetime(value):
+    if value==False:
+        return {'display': 'block'}
+    else:
+        return {'display':'none'}
 
 
 if __name__ == '__main__':
