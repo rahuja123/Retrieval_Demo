@@ -48,6 +48,14 @@ p {
   border-radius: 4px;
 }
 
+
+.img_style_true {
+  height: 215px;
+  width: 95px;
+  border: 3px solid #fc2403;
+  border-radius: 4px;
+}
+
 .floormaps_output {
   margin: auto;
   width: 50%;
@@ -73,10 +81,11 @@ a {
   width: 90%;
 }
 
-/* .time_class {
-  width: 85%;
-  margin-right: 3px;
-} */
+.toggle_switch{
+  width: 250px;
+  margin: auto;
+  color:#2a3f5f;
+}
 
 .timeinput{
   width:85%;

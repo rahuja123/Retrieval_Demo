@@ -113,7 +113,7 @@ def feature_extractor_layout_sets(global_camera_sets,models_dict):
                     ]
                 ),
 
-                html.Br(),
+
 
                 html.Div(
                     className='four rows',
@@ -163,7 +163,7 @@ def feature_extractor_layout_sets(global_camera_sets,models_dict):
                     ]
                 ),
 
-                html.Br(),
+                
 
                 html.Div(
                     className='four rows',
@@ -312,7 +312,7 @@ def feature_extractor_layout_sets(global_camera_sets,models_dict):
 
                     ]
                 ),
-                
+
                  html.Div(
                     className='four rows',
                     children=[

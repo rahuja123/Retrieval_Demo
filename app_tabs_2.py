@@ -17,15 +17,24 @@ from layout.feature_extractor_layout_sets import feature_extractor_layout_sets
 from layout.feature_extractor_layout_2 import feature_extractor_layout
 from layout.retrieval_run_layout import retrieval_run_layout
 import itertools
+from flask import (render_template, url_for, flash, session,
+                   redirect, request, abort, Blueprint, jsonify)
+import flask
+import time
 
 
 #path to save the image that you upload on the server.
 UPLOAD_DIRECTORY = "static/query"
 # external_stylesheets = ['https://codepen.io/amyoshino/pen/jzXypZ.css']
-app = dash.Dash(__name__, meta_tags=[{"name": "viewport", "content": "width=device-width"}])
+
+server = flask.Flask(__name__)
+external_scripts = [
+    'https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js'
+]
+app = dash.Dash(__name__, meta_tags=[{"name": "viewport", "content": "width=device-width"}], external_scripts=external_scripts,server=server, url_base_pathname='/')
 app.config.suppress_callback_exceptions = True
-app.scripts.config.serve_locally = True
-server = app.server
+app.scripts.config.serve_locally = False
+
 
 SET1= ["S1-B3b-L-TL","S1-B3b-L-BL","S1-B3b-R-TR","S1-B3b-R-BR"]
 SET2= ["S1-B4b-L-TL","S1-B4b-L-BL","S1-B4b-R-TR","S1-B4b-R-BR"]
@@ -84,7 +93,7 @@ app.layout= html.Div(
                                 #     value='tab2',
                                 #     className='custom-tab',
                                 #     selected_className='custom-tab--selected',
-
+                                #
                                 #     children=[
                                 #         html.Div(
                                 #             className="row",
@@ -384,7 +393,7 @@ def stop_camera_run_sets(n_clicks):
             print("stopped")
             global p5
             p5.stop()
-            
+
 @app.callback(
     Output('camera_run_result_6_sets', 'children'),
     [Input('camera_run_6_sets', 'n_clicks')],
@@ -477,11 +486,11 @@ def parse_gallery(camera_name, frame_rate, image_list):
         children2=[]
     for i in range(int(MIN_NUM)):
         image_src= image_list[i]
-        image_id= "{}".format(camera_name)+ " "+ "Rank {}".format(i+1)
         image_path_list = os.path.split(image_src)[1]
         time_stamp= image_path_list.split('.')[0].split('_')[0]
         time_stamp= datetime.strptime(time_stamp, '%Y-%m-%d-%H-%M-%S-%f')
         images_timestamp.append(time_stamp)
+        image_id= "{}".format(camera_name)+ " "+ "Rank{}_".format(i+1)+str(time_stamp)
 
         if i<5:
             children1.append(
@@ -511,14 +520,6 @@ def parse_gallery(camera_name, frame_rate, image_list):
     return html.Div([
             html.Div([
                 html.A([html.P(str(camera_name))], href='assets/maps/{}.png'.format("-".join(x for x in camera_name.split("-")[0:-1])), target='_blank'),
-                dcc.Dropdown(
-                    id="{}".format(camera_name),
-                    options= update_options(camera_name, MIN_NUM, images_timestamp),
-                    value= 'None',
-                    style= {'display':'inline-block','margin-top':'40px', 'width':'100px'},
-                    searchable=False,
-                    clearable=False,
-                    )
             ], style={'textAlign':'center'},className='two columns'),
             html.Div(children=children, className="ten columns"),
         ],className="row", style={'margin-top':50})
@@ -608,21 +609,6 @@ def update_output2(n_clicks, camera_dropdown_values, frame_rate, reid_model, rei
 
         return  final_output, [], {'display':'none'}
 
-
-def update_state_container(camera_value):
-    global image_value_list
-    image_value_list.append(camera_value)
-    # print("hi,", camera_value)
-    return camera_value
-
-for camera_set in global_camera_sets:
-    for counter,name in enumerate(camera_set):
-        app.callback(Output('state_container_{}'.format(name), 'children'),
-                        [Input('{}'.format(name), 'value')]
-                        )(update_state_container)
-
-
-
 def calculate_line_trace(camera_dict_list):
     final_trace={'S1':{'x':[], 'y':[], 'customdata':[]}, 'S2':{'x':[], 'y':[], 'customdata':[]}, 'S21':{'x':[],'y':[], 'customdata':[]}, 'S22':{'x':[],'y':[], 'customdata':[]}}
     # final_trace={}
@@ -646,13 +632,13 @@ def calculate_line_trace(camera_dict_list):
                 [Input('show_locations','n_clicks')])
 def update_floormaps(n_clicks):
 
+    time.sleep(4)
     camera_dict= dict.fromkeys(x for set in global_camera_sets for x in set)
     if n_clicks is None:
         raise PreventUpdate
     else:
 
         global image_value_list
-        image_value_list = list(filter(lambda a: a !='None', image_value_list))
 
         print( "image_value_list",image_value_list)
         for name in image_value_list:
@@ -735,6 +721,25 @@ def toggle_datetime(value):
         return {'display': 'block'}
     else:
         return {'display':'none'}
+
+
+
+@server.route('/', methods=['POST', 'GET'])
+def submit():
+    try:
+        data = request.get_json()
+        annotated = data['annotated']
+        print("true")
+        print(annotated)
+        print(type(annotated))
+        global image_value_list
+        image_value_list.extend(annotated)
+        print(type(image_value_list))
+        print(list(image_value_list))
+        # print(type(list(image_value_list)))
+    except ValueError:
+        abort(500)
+    return jsonify({'status': 'sucess'})
 
 
 if __name__ == '__main__':

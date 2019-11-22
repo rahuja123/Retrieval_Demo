@@ -51,12 +51,13 @@ def retrieval_run_layout(global_camera_sets,models_dict):
                 daq.ToggleSwitch(
                     id='offline_toggle',
                     label=['Offline', 'Online'],
-                    style={'width': '250px', 'margin': 'auto'},
+                    className='toggle_switch',
                     value=False
                 ),
             ]
         ),
 
+        html.Br(),
 
         html.Div(
             children=[
