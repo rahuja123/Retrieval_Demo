@@ -273,7 +273,7 @@ def feature_extractor_layout_sets(global_camera_sets,models_dict):
                                 html.P("Set 5:", className="p-dropdown"),
                                 dcc.Dropdown(
                                     id='camera_name_dropdown_5_sets',
-                                    options=populate_camera_dropdown_menu_all(global_camera_sets),
+                                    options=populate_camera_dropdown_menu(global_camera_sets[4]),
                                     placeholder="Camera...",
                                     multi=True,
                                     style={'fontSize': 12}
@@ -305,6 +305,55 @@ def feature_extractor_layout_sets(global_camera_sets,models_dict):
                             children=[
                                 html.Button(
                                     "Stop", id="camera_stop_5_sets", className="button_submit"
+                                ),
+                            ]
+                        ),
+
+
+                    ]
+                ),
+                
+                 html.Div(
+                    className='four rows',
+                    children=[
+                        html.Div(
+                            className='four columns',
+                            children=[
+                                html.P("All:", className="p-dropdown"),
+                                dcc.Dropdown(
+                                    id='camera_name_dropdown_6_sets',
+                                    options=populate_camera_dropdown_menu_all(global_camera_sets),
+                                    placeholder="Camera...",
+                                    multi=True,
+                                    style={'fontSize': 12}
+                                )
+                            ]
+                        ),
+                        html.Div(
+                            className='four columns',
+                            children=[
+                                html.P("Device:", className="p-dropdown"),
+                                dcc.Dropdown(
+                                    id="devices_dropdown_6_sets",
+                                    options=populate_devices(),
+                                    placeholder="Select device...",
+                                )
+                            ]
+                        ),
+                        html.Div(
+                            className='two columns',
+                            children=[
+                                html.Button(
+                                    "Run", id="camera_run_6_sets", className="button_submit"
+                                ),
+                            ]
+                        ),
+
+                        html.Div(
+                            className='two columns',
+                            children=[
+                                html.Button(
+                                    "Stop", id="camera_stop_6_sets", className="button_submit"
                                 ),
                             ]
                         ),
