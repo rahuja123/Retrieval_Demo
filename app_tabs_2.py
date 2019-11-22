@@ -79,18 +79,18 @@ app.layout= html.Div(
                                         )
                                     ]),
 
-                                dcc.Tab(
-                                    label='Extractor/Single',
-                                    value='tab2',
-                                    className='custom-tab',
-                                    selected_className='custom-tab--selected',
+                                # dcc.Tab(
+                                #     label='Extractor/Single',
+                                #     value='tab2',
+                                #     className='custom-tab',
+                                #     selected_className='custom-tab--selected',
 
-                                    children=[
-                                        html.Div(
-                                            className="row",
-                                            children=feature_extractor_layout(global_camera_names, models_dict)
-                                        )
-                                    ]),
+                                #     children=[
+                                #         html.Div(
+                                #             className="row",
+                                #             children=feature_extractor_layout(global_camera_names, models_dict)
+                                #         )
+                                #     ]),
 
                                 dcc.Tab(
                                     label='Retrieval',
