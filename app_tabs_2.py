@@ -8,6 +8,7 @@ from datetime import datetime
 from dash.exceptions import PreventUpdate
 import re
 from camera.retrieval import retrieval
+from camera.offline_retrieval import offline_retrieval
 import cv2
 from plotting.floormap_cross_stickman import floormap_cross_numbers
 import base64
@@ -16,22 +17,32 @@ from layout.feature_extractor_layout_sets import feature_extractor_layout_sets
 from layout.feature_extractor_layout_2 import feature_extractor_layout
 from layout.retrieval_run_layout import retrieval_run_layout
 import itertools
+from flask import (render_template, url_for, flash, session,
+                   redirect, request, abort, Blueprint, jsonify)
+import flask
+import time
+
 
 #path to save the image that you upload on the server.
 UPLOAD_DIRECTORY = "static/query"
 # external_stylesheets = ['https://codepen.io/amyoshino/pen/jzXypZ.css']
-app = dash.Dash(__name__, meta_tags=[{"name": "viewport", "content": "width=device-width"}])
+
+server = flask.Flask(__name__)
+external_scripts = [
+    'https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js'
+]
+app = dash.Dash(__name__, meta_tags=[{"name": "viewport", "content": "width=device-width"}], external_scripts=external_scripts,server=server, url_base_pathname='/')
 app.config.suppress_callback_exceptions = True
-app.scripts.config.serve_locally = True
-server = app.server
+app.scripts.config.serve_locally = False
 
-SET1= ["S2-B4b-R-TR","S2-B4b-R-TL","S2-B4b-R-BR","S2-B4b-R-BL","S2-B4b-L-TR","S2-B4b-L-TL","S2-B4b-L-BR","S2-B4b-L-BL"]
-SET2= ["S21-B3-L-T", "S21-B3-R-B","S22-B3-L-T", "S22-B3-R-B", "S21-B4-L-T", "S21-B4-R-B","S22-B4-L-T", "S22-B4-R-B"]
-SET3= ["S1-B4b-L-BL","S1-B4b-L-BR", "S1-B4b-R-BL","S1-B4b-R-BR","S1-B3b-L-TL","S1-B3b-L-TR", "S1-B3b-R-TL","S1-B3b-R-TR"]
-global_camera_sets= [SET1, SET2, SET3]
 
+SET1= ["S1-B3b-L-TL","S1-B3b-L-BL","S1-B3b-R-TR","S1-B3b-R-BR"]
+SET2= ["S1-B4b-L-TL","S1-B4b-L-BL","S1-B4b-R-TR","S1-B4b-R-BR"]
+SET3= ["S2-B3b-L-TL","S2-B3b-L-BL","S2-B3b-R-TR","S2-B3b-R-BR"]
+SET4= ["S4-B4b-L-TL","S4-B4b-L-BL","S4-B4b-R-TR","S4-B4b-R-BR"]
+SET5= ["S21-B3-R-B","S22-B3-L-T","S21-B4-R-B","S22-B4-L-T"]
+global_camera_sets= [SET1, SET2, SET3, SET4, SET5]
 global_camera_names= ["S2-B4b-L-B","S2-B4b-L-BR","S1-B4b-L-BL","S1-B4b-R-B","S21-B4-T","S22-B4-T"]
-cams_map_testing= ["S2-B4b-L-B","S2-B4b-L-BR","S1-B4b-L-BL","S1-B4b-R-B","S21-B4-T","S22-B4-T"]
 models_dict={'ResNet50':['ResNet50_Market.pth'],'ResNet101':['ResNet101_Market.pth'],'SE_ResNet50':['SE_ResNet50_Market.pth'],'SE_ResNet101':['SE_ResNet101_Market.pth']}
 image_value_list=[]
 output_result=[]
@@ -77,18 +88,18 @@ app.layout= html.Div(
                                         )
                                     ]),
 
-                                dcc.Tab(
-                                    label='Extractor/Single',
-                                    value='tab2',
-                                    className='custom-tab',
-                                    selected_className='custom-tab--selected',
-
-                                    children=[
-                                        html.Div(
-                                            className="row",
-                                            children=feature_extractor_layout(global_camera_names, models_dict)
-                                        )
-                                    ]),
+                                # dcc.Tab(
+                                #     label='Extractor/Single',
+                                #     value='tab2',
+                                #     className='custom-tab',
+                                #     selected_className='custom-tab--selected',
+                                #
+                                #     children=[
+                                #         html.Div(
+                                #             className="row",
+                                #             children=feature_extractor_layout(global_camera_names, models_dict)
+                                #         )
+                                #     ]),
 
                                 dcc.Tab(
                                     label='Retrieval',
@@ -117,10 +128,12 @@ app.layout= html.Div(
                                 ]
                         ),
                         html.Br(),
-                        dcc.Loading(id="loading-1", children=[html.Div(id="loading-output-1")], type="default"),
-                        html.Div(id="camera_outputs", style={'margin-top':50,}),
+                        dcc.Loading(id="loading-1", children=[html.Div(id="camera_outputs", style={'margin-top':50,})], type="default", fullscreen=True),
+                        html.Div(id="loading-output-1"),
+                        # html.Div(id="camera_outputs", style={'margin-top':50,}),
                         html.Br(),
-                        html.Div(id="floormaps_output", className='floormaps_output'),
+                        dcc.Loading(id='loading-2', children=[
+                                        html.Div(id="floormaps_output", className='floormaps_output')], type='circle'),
                         html.Br(),
                         html.Br(),
                         html.Div(id="experimental_section"),
@@ -310,6 +323,114 @@ def stop_camera_run_sets(n_clicks):
             global p3
             p3.stop()
 
+@app.callback(
+    Output('camera_run_result_4_sets', 'children'),
+    [Input('camera_run_4_sets', 'n_clicks')],
+    [State('network_dropdown_sets','value'),
+     State('network_weight_dropdown_sets', 'value'),
+     State('camera_name_dropdown_4_sets', 'value'),
+     State('devices_dropdown_4_sets','value')]
+)
+def run_camera_run_sets(n_clicks, reid_model, reid_weight,cam_name, reid_device):
+
+    if n_clicks is None:
+        raise PreventUpdate
+    else:
+        # print("working3")
+        if 'ALL' in cam_name:
+            cam_name= global_camera_sets[2]
+
+        from camera.camera_run_2 import Camera_Process
+        globals()['p4'] = Camera_Process(cam_list=cam_name, rtsp=True, reid_model=reid_model,reid_weight=reid_weight, reid_device=reid_device)
+        p4.start()
+
+
+@app.callback(
+    Output('camera_stop_result_4_sets', 'children'),
+    [Input('camera_stop_4_sets', 'n_clicks')],
+)
+def stop_camera_run_sets(n_clicks):
+
+        if n_clicks is None:
+            raise PreventUpdate
+        else:
+            print("stopped")
+            global p4
+            p4.stop()
+
+
+
+
+@app.callback(
+    Output('camera_run_result_5_sets', 'children'),
+    [Input('camera_run_5_sets', 'n_clicks')],
+    [State('network_dropdown_sets','value'),
+     State('network_weight_dropdown_sets', 'value'),
+     State('camera_name_dropdown_5_sets', 'value'),
+     State('devices_dropdown_5_sets','value')]
+)
+def run_camera_run_sets(n_clicks, reid_model, reid_weight,cam_name, reid_device):
+
+    if n_clicks is None:
+        raise PreventUpdate
+    else:
+        # print("working3")
+        if 'ALL' in cam_name:
+            cam_name= global_camera_sets[4]
+
+        from camera.camera_run_2 import Camera_Process
+        globals()['p5'] = Camera_Process(cam_list=cam_name, rtsp=True, reid_model=reid_model,reid_weight=reid_weight, reid_device=reid_device)
+        p5.start()
+
+
+@app.callback(
+    Output('camera_stop_result_5_sets', 'children'),
+    [Input('camera_stop_5_sets', 'n_clicks')],
+)
+def stop_camera_run_sets(n_clicks):
+
+        if n_clicks is None:
+            raise PreventUpdate
+        else:
+            print("stopped")
+            global p5
+            p5.stop()
+
+@app.callback(
+    Output('camera_run_result_6_sets', 'children'),
+    [Input('camera_run_6_sets', 'n_clicks')],
+    [State('network_dropdown_sets','value'),
+     State('network_weight_dropdown_sets', 'value'),
+     State('camera_name_dropdown_6_sets', 'value'),
+     State('devices_dropdown_6_sets','value')]
+)
+def run_camera_run_sets(n_clicks, reid_model, reid_weight,cam_name, reid_device):
+
+    if n_clicks is None:
+        raise PreventUpdate
+    else:
+        # print("working3")
+        if 'ALL' in cam_name:
+            cam_name= [x for set in global_camera_sets for x in set]
+
+        from camera.camera_run_2 import Camera_Process
+        globals()['p6'] = Camera_Process(cam_list=cam_name, rtsp=True, reid_model=reid_model,reid_weight=reid_weight, reid_device=reid_device)
+        p6.start()
+
+
+@app.callback(
+    Output('camera_stop_result_6_sets', 'children'),
+    [Input('camera_stop_6_sets', 'n_clicks')],
+)
+def stop_camera_run_sets(n_clicks):
+
+        if n_clicks is None:
+            raise PreventUpdate
+        else:
+            print("stopped")
+            global p6
+            p6.stop()
+
 
 
 
@@ -337,6 +458,10 @@ def update_output(images):
     if not images:
         return
 
+    global image_value_list
+    image_value_list=[]                   #every time show results button is clicked, this empties the list.
+
+
     for i, image_str in enumerate(images):
         image = image_str.split(',')[1]
         data = base64.decodestring(image.encode('ascii'))
@@ -363,11 +488,11 @@ def parse_gallery(camera_name, frame_rate, image_list):
         children2=[]
     for i in range(int(MIN_NUM)):
         image_src= image_list[i]
-        image_id= "{}".format(camera_name)+ " "+ "Rank {}".format(i+1)
         image_path_list = os.path.split(image_src)[1]
         time_stamp= image_path_list.split('.')[0].split('_')[0]
         time_stamp= datetime.strptime(time_stamp, '%Y-%m-%d-%H-%M-%S-%f')
         images_timestamp.append(time_stamp)
+        image_id= "{}".format(camera_name)+ " "+ "Rank{}_".format(i+1)+str(time_stamp)
 
         if i<5:
             children1.append(
@@ -397,25 +522,26 @@ def parse_gallery(camera_name, frame_rate, image_list):
     return html.Div([
             html.Div([
                 html.A([html.P(str(camera_name))], href='assets/maps/{}.png'.format("-".join(x for x in camera_name.split("-")[0:-1])), target='_blank'),
-                dcc.Dropdown(
-                    id="{}".format(camera_name),
-                    options= update_options(camera_name, MIN_NUM, images_timestamp),
-                    value= 'None',
-                    style= {'display':'inline-block','margin-top':'40px', 'width':'100px'},
-                    searchable=False,
-                    clearable=False,
-                    )
             ], style={'textAlign':'center'},className='two columns'),
             html.Div(children=children, className="ten columns"),
         ],className="row", style={'margin-top':50})
 
 
 @app.callback([Output('camera_outputs', 'children'),
-                Output('loading-output-1','children')],
+                Output('loading-output-1','children'),
+                Output('floormaps_division','style')],
               [Input('show_results', 'n_clicks')],
-              [State('camera_name_dropdown_reid', 'value'), State('frame_rate','value'),State('network_dropdown_reid','value'), State('network_weight_dropdown_reid', 'value'), State('devices_dropdown_reid','value')])
+              [State('camera_name_dropdown_reid', 'value'),
+               State('frame_rate','value'),
+               State('network_dropdown_reid','value'),
+               State('network_weight_dropdown_reid', 'value'),
+               State('devices_dropdown_reid','value'),
+               State('offline_toggle', 'value'),
+               State('date_picker','date'),
+               State('starttime','value'),
+               State('endtime','value')])
 
-def update_output2(n_clicks, camera_dropdown_values, frame_rate, reid_model, reid_weight, reid_device):
+def update_output2(n_clicks, camera_dropdown_values, frame_rate, reid_model, reid_weight, reid_device,toggle,  date, starttime, endtime):
     if n_clicks is None:
         raise PreventUpdate
     else:
@@ -445,6 +571,14 @@ def update_output2(n_clicks, camera_dropdown_values, frame_rate, reid_model, rei
             camera_dropdown_values= set(camera_dropdown_values)
             camera_dropdown_values.remove('SET3')
 
+        if 'SET4' in camera_dropdown_values:
+            for cam_name in global_camera_sets[3]:
+                camera_dropdown_values.append(cam_name)
+            camera_dropdown_values= set(camera_dropdown_values)
+            camera_dropdown_values.remove('SET4')
+
+
+
         output_array=[]
         path= "ROSE LAB "
 
@@ -454,8 +588,15 @@ def update_output2(n_clicks, camera_dropdown_values, frame_rate, reid_model, rei
                 if len(os.listdir(os.path.join('static',camera))) > 0:
                     cam_name_list.append(camera)
 
+        offline_cam_name_list = []
+        for camera in camera_dropdown_values:
+            offline_cam_name_list.append(camera)
+
         img_path= os.path.join('static','query','query.png')
-        image_dict = retrieval(img_path,cam_name_list,int(frame_rate),reid_model, reid_weight, reid_device )
+        if toggle==False:
+            image_dict = offline_retrieval(img_path,offline_cam_name_list,int(frame_rate),reid_model, reid_weight, reid_device,date,starttime,endtime)
+        else:
+            image_dict = retrieval(img_path,cam_name_list,int(frame_rate),reid_model, reid_weight, reid_device )
 
         for camera in image_dict:
             output_array.append(parse_gallery(camera, int(frame_rate), image_dict[camera]))
@@ -466,28 +607,9 @@ def update_output2(n_clicks, camera_dropdown_values, frame_rate, reid_model, rei
             hidden_divs.append(html.Div(id="state_container_{}".format(name), style={'display':'none'}))
 
 
-        global image_value_list
-        image_value_list=[]                   #every time show results button is clicked, this empties the list.
-
-
         final_output= html.Div(children=output_array)
 
-        return  final_output, []
-
-
-def update_state_container(camera_value):
-    global image_value_list
-    image_value_list.append(camera_value)
-    # print("hi,", camera_value)
-    return camera_value
-
-for camera_set in global_camera_sets:
-    for counter,name in enumerate(camera_set):
-        app.callback(Output('state_container_{}'.format(name), 'children'),
-                        [Input('{}'.format(name), 'value')]
-                        )(update_state_container)
-
-
+        return  final_output, [], {'display':'none'}
 
 def calculate_line_trace(camera_dict_list):
     final_trace={'S1':{'x':[], 'y':[], 'customdata':[]}, 'S2':{'x':[], 'y':[], 'customdata':[]}, 'S21':{'x':[],'y':[], 'customdata':[]}, 'S22':{'x':[],'y':[], 'customdata':[]}}
@@ -508,25 +630,24 @@ def calculate_line_trace(camera_dict_list):
 
 
 
-@app.callback(Output('floormaps_output', 'children'),
+@app.callback([Output('floormaps_output', 'children'),
+                Output('experimental_section', 'children')],
                 [Input('show_locations','n_clicks')])
 def update_floormaps(n_clicks):
 
+    time.sleep(4)
     camera_dict= dict.fromkeys(x for set in global_camera_sets for x in set)
     if n_clicks is None:
         raise PreventUpdate
     else:
 
         global image_value_list
-        image_value_list = list(filter(lambda a: a !='None', image_value_list))
 
         print( "image_value_list",image_value_list)
         for name in image_value_list:
             name_split= name.split('_')
             time_stamp= name_split[1]
             camera_name= name_split[0].split()[0]
-
-
             camera_dict[camera_name]=time_stamp
 
         camera_dict_list= list({k: v for k, v in camera_dict.items() if v is not None}.items())
@@ -563,19 +684,23 @@ def update_floormaps(n_clicks):
                         yaxis= {'categoryorder':'array', 'categoryarray':['B6','B5','B4','B3','B2', 'B1'], "title": "Floors" },
                        # "zaxis": {'categoryorder':'array', 'categoryarray':global_camera_floors,"title": "Floors" }
                        )
-                    }
+                    },
+            style={'display':'block'},
                     )
-        return GRAPH
 
 
+        experimental_section= html.Div(html.Img(src='static/output_number_cross.png?t='+str(datetime.now()), style={'max-width':'750px',
+        'max-height':'750px'}), style={'textAlign':'center'})
+        return html.Div(id='floormaps_division', children=[GRAPH], style={'display':'block'}), experimental_section
 
-@app.callback(Output('experimental_section', 'children'),
-                        [Input('floormaps_graph', 'hoverData')])
-def update_experiments(hoverData):
-    map_name= hoverData['points'][0]['hovertext']
-    # image_1= random.choice(["marker_s2_B4_L.png","marker_s2_B4_R.png", "marker_s2.1_B4_R.png", "marker_s2.1_B4_T.png"])
-    return html.Div(html.Img(src='static/output_number_cross.png?t='+str(datetime.now()), style={'max-width':'750px',
-    'max-height':'750px'}), style={'textAlign':'center'})
+
+#
+# @app.callback(Output('experimental_section', 'children'),
+#                         [Input('floormaps_graph', 'hoverData')])
+# def update_experiments(hoverData):
+#     map_name= hoverData['points'][0]['hovertext']
+#     # image_1= random.choice(["marker_s2_B4_L.png","marker_s2_B4_R.png", "marker_s2.1_B4_R.png", "marker_s2.1_B4_T.png"])
+#     return
 
 @app.callback(Output('console-out','srcDoc'),
     [Input('interval', 'n_intervals')])
@@ -593,6 +718,34 @@ def update_console_output(n):
             data=data+line + '<BR>'
         file.close()
     return data
+
+
+@app.callback(Output('datetime_class', 'style'),
+                [Input('offline_toggle', 'value')])
+def toggle_datetime(value):
+    if value==False:
+        return {'display': 'block'}
+    else:
+        return {'display':'none'}
+
+
+
+@server.route('/', methods=['POST', 'GET'])
+def submit():
+    try:
+        data = request.get_json()
+        annotated = data['annotated']
+        print("true")
+        print(annotated)
+        print(type(annotated))
+        global image_value_list
+        image_value_list.extend(annotated)
+        print(type(image_value_list))
+        print(list(image_value_list))
+        # print(type(list(image_value_list)))
+    except ValueError:
+        abort(500)
+    return jsonify({'status': 'sucess'})
 
 
 if __name__ == '__main__':

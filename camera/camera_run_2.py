@@ -133,7 +133,7 @@ class Camera_Process(object):
             time.sleep(1)
 
         xmin, ymin, xmax, ymax = self.area
-
+        counter=0
 
         dict_frame={}
         while not self.isstop:
@@ -148,9 +148,11 @@ class Camera_Process(object):
                     im = frame[ymin:ymax, xmin:xmax]
                     im = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
                     frame_dict[cam]=im
-                     
+
             result_dict = self.yolo3(frame_dict)
-            
+
+            list_image = []
+            list_info = []
             for cam, result in result_dict.items():
                 bbox_xywh, cls_conf, cls_ids = result
                 current_time = datetime.now()
@@ -164,19 +166,24 @@ class Camera_Process(object):
                             y2 = min(int(y+h/2),self.im_height-1)
                             frame = dict_frame['frame_{}'.format(cam)]
                             cropped = frame[y1:y2,x1:x2]
-
                             # print("Detection {}, {}, {}, {}".format(x1,y1,x2,y2))
-                            logger.info("{} : {}, {}, {}, {}".format(cam,x1,y1,x2,y2))
+                            counter +=1
+                            logger.info("{}  {} : {}, {}, {}, {}".format(counter, cam,x1,y1,x2,y2))
 
                             image_path = os.path.join('static',cam)
                             image_name = str(current_time.strftime('%Y-%m-%d-%H-%M-%S-%f'))+'_'+str(i)+'.jpg'
                             cv2.imwrite(os.path.join(image_path,image_name),cropped)
                             pil_image=cv2.cvtColor(cropped, cv2.COLOR_BGR2RGB)
-                            feature = self.extractor(pil_image)[0]
-                            embed = str(feature.tostring())
-                            record = Feature(cam_name=cam, track_num=i, feature=embed,bb_coord=str(box),current_time=current_time,image_name=image_name)
-                            self.session.add(record)
-                    self.session.commit()
+                            list_image.append(pil_image)
+                            list_info.append([cam,i,str(box),current_time,image_name])
+
+            if list_image:
+                feature_list = self.extractor(list_image)
+                for count,f in enumerate(feature_list):
+                    embed = str(f.tostring())
+                    record = Feature(cam_name=list_info[count][0], track_num=list_info[count][1], feature=embed,bb_coord=list_info[count][2],current_time=list_info[count][3],image_name=list_info[count][4])
+                    self.session.add(record)
+                self.session.commit()
 
 if __name__=="__main__":
     fire.Fire(camera_run)

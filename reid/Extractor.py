@@ -31,18 +31,24 @@ class Extractor(object):
         self.resize = transforms.Resize([384, 128])
         self.totensor = transforms.ToTensor()
 
-    def __call__(self, img):
-        assert isinstance(img, np.ndarray), "type error"
-        img = img.astype(np.float)#/255.
-        img = cv2.resize(img, (128,384))
-        img = torch.from_numpy(img).float().permute(2,0,1)
-        img = self.norm(img).unsqueeze(0)
+    def __call__(self, img_list):
+        for count, img in enumerate(img_list):
+            assert isinstance(img, np.ndarray), "type error"
+            img = img.astype(np.float)#/255.
+            img = cv2.resize(img, (128,384))
+            img = torch.from_numpy(img).float().permute(2,0,1).unsqueeze(0)
+            if count == 0:
+                final_img = img
+            else:
+                final_img = torch.cat((final_img, img), 0)
+
         self.model.eval()
         with torch.no_grad():
-            img = img.to(self.device)
-            feature = self.model(img)
-        return feature.cpu().numpy()
-
+            img = final_img.to(self.device)
+            feature_list = self.model(img)
+            feature_list = feature_list.cpu().numpy()
+        
+        return feature_list
 
 if __name__ == '__main__': 
     pass   
