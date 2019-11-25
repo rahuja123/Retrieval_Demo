@@ -128,10 +128,12 @@ app.layout= html.Div(
                                 ]
                         ),
                         html.Br(),
-                        dcc.Loading(id="loading-1", children=[html.Div(id="loading-output-1")], type="default"),
-                        html.Div(id="camera_outputs", style={'margin-top':50,}),
+                        dcc.Loading(id="loading-1", children=[html.Div(id="camera_outputs", style={'margin-top':50,})], type="default", fullscreen=True),
+                        html.Div(id="loading-output-1"),
+                        # html.Div(id="camera_outputs", style={'margin-top':50,}),
                         html.Br(),
-                        html.Div(id="floormaps_output", className='floormaps_output'),
+                        dcc.Loading(id='loading-2', children=[
+                                        html.Div(id="floormaps_output", className='floormaps_output')], type='circle'),
                         html.Br(),
                         html.Br(),
                         html.Div(id="experimental_section"),
@@ -628,7 +630,8 @@ def calculate_line_trace(camera_dict_list):
 
 
 
-@app.callback(Output('floormaps_output', 'children'),
+@app.callback([Output('floormaps_output', 'children'),
+                Output('experimental_section', 'children')],
                 [Input('show_locations','n_clicks')])
 def update_floormaps(n_clicks):
 
@@ -684,17 +687,20 @@ def update_floormaps(n_clicks):
                     },
             style={'display':'block'},
                     )
-        return html.Div(id='floormaps_division', children=[GRAPH], style={'display':'block'})
 
 
+        experimental_section= html.Div(html.Img(src='static/output_number_cross.png?t='+str(datetime.now()), style={'max-width':'750px',
+        'max-height':'750px'}), style={'textAlign':'center'})
+        return html.Div(id='floormaps_division', children=[GRAPH], style={'display':'block'}), experimental_section
 
-@app.callback(Output('experimental_section', 'children'),
-                        [Input('floormaps_graph', 'hoverData')])
-def update_experiments(hoverData):
-    map_name= hoverData['points'][0]['hovertext']
-    # image_1= random.choice(["marker_s2_B4_L.png","marker_s2_B4_R.png", "marker_s2.1_B4_R.png", "marker_s2.1_B4_T.png"])
-    return html.Div(html.Img(src='static/output_number_cross.png?t='+str(datetime.now()), style={'max-width':'750px',
-    'max-height':'750px'}), style={'textAlign':'center'})
+
+#
+# @app.callback(Output('experimental_section', 'children'),
+#                         [Input('floormaps_graph', 'hoverData')])
+# def update_experiments(hoverData):
+#     map_name= hoverData['points'][0]['hovertext']
+#     # image_1= random.choice(["marker_s2_B4_L.png","marker_s2_B4_R.png", "marker_s2.1_B4_R.png", "marker_s2.1_B4_T.png"])
+#     return
 
 @app.callback(Output('console-out','srcDoc'),
     [Input('interval', 'n_intervals')])

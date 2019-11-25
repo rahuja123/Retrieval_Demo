@@ -2,12 +2,30 @@ $(document).on('click', '.img_style', function() {
   $(this).toggleClass('img_style_true')
 });
 
+$(document).on('click', '#show_results', function() {
+  var x = document.getElementById("floormaps_output");
+  var y= document.getElementById("experimental_section");
+  if (x.style.display === "none") {
+    x.style.display = "block";
+    y.style.display= "block";
+  } else {
+    x.style.display = "none";
+    y.style.display ="none";
+  }
+});
+
+
 
 $(document).on('click', '#show_locations', function() {
     var annotation = [];
     $('.img_style_true').map(function() {
       annotation.push($(this).attr('id'));
     })
+    var y= document.getElementById("experimental_section");
+    if (y.style.display === "none") {
+      y.style.display= "block";
+    }
+
     console.log(annotation);
     $.ajax({
       url: '/',
@@ -27,5 +45,8 @@ $(document).on('click', '#show_locations', function() {
       //   }
       // }
     });
+
   }
 );
+
+//
